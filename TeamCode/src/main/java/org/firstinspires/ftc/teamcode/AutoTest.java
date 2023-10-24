@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -19,7 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @Config
-@Autonomous (name="Robot: Auto Test--BE CAREFUL!!", group="Robot")
+@Autonomous (name="Robot: Auto Test", group="Robot")
 public class AutoTest extends ActionOpMode {
 
     @Override
@@ -60,12 +61,16 @@ public class AutoTest extends ActionOpMode {
 
         telemetry.update();
 
+        HuskyLens huskyLens;
+        int direction = 1;
+        int error;
+
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        HuskyLens.Block[] blocks;
+
         waitForStart();
 
         while (opModeIsActive()) {
-
-            telemetry.addLine("Inside while loop");
-            telemetry.update();
 
 //            runBlocking(trajectory);
 
@@ -83,38 +88,40 @@ public class AutoTest extends ActionOpMode {
             //       Experiment by looking at telemetry if the center tag always returns the same ID.
             // 4. Strafe right or left to center the robot right in front of the center tag.
 
-            HuskyLens huskyLens;
-
-            huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-
-            HuskyLens.Block[] blocks = huskyLens.blocks();
+            blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
+
+            if (blocks.length == 0) {
+                telemetry.update();
+                continue;
+            }
+
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
             }
 
-            telemetry.update();
+            telemetry.addData("center id", center(blocks));
 
-            switch (blocks.length) {
-                case 1:
-                    Action trajCenter =
-                            drive.actionBuilder(drive.pose)
-                                    .lineToX(blocks[center(blocks)].x)
-                                    .build();
-                    runBlocking(trajCenter);
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
+            error = blocks[center(blocks)].x-160;
+            telemetry.addData("error", error);
+
+            if (error < 0)
+                direction = -1;
+            else {
+                direction = 1;
             }
 
-            Action trajCenter =
-                    drive.actionBuilder(drive.pose)
-                            .lineToX(blocks[center(blocks)].x)
-                            .build();
-            runBlocking(trajCenter);
+            if (Math.abs(error) > 2) {
+                drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.0,
+                                0.2*direction
+                        ),
+                        0.0
+                ));
+            }
 
+            drive.updatePoseEstimate();
 
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
@@ -125,7 +132,7 @@ public class AutoTest extends ActionOpMode {
         }
     }
 
-    int center(HuskyLens.Block[] b) { //TODO: shoudl tjhis be a switch statemnt
+    int center(HuskyLens.Block[] b) {
         int centerId = -1;
 
         if (b.length == 3) {
@@ -148,11 +155,18 @@ public class AutoTest extends ActionOpMode {
             }
         }
         else if (b.length == 2) {
-            // First find the relative order
+            // first find the relative order
             int left, right;
-            if (b[0].x<b[1].x) {left = 0; right=1} else {left=1; right=0}
+            if (b[0].x < b[1].x){
+                left = 0;
+                right = 1;
+            }
+            else {
+                left = 1;
+                right = 0;
+            }
 
-            // then, compare and find which ever is closer to the edge
+            // then compare and find whichever is closer to the edge
             if (b[left].x < 320-b[right].x) {
                 centerId = left;
             }
@@ -160,8 +174,10 @@ public class AutoTest extends ActionOpMode {
                 centerId = right;
             }
         }
+        else if (b.length == 1) {
+            centerId = 0;
+        }
 
         return centerId;
-
     }
 }
