@@ -18,6 +18,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 @Autonomous (name="Robot: Auto Test", group="Robot")
@@ -68,6 +71,15 @@ public class AutoTest extends ActionOpMode {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
         HuskyLens.Block[] blocks;
 
+        DistanceSensor sensorDistanceLeft, sensorDistanceRight;
+        sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "sensor_distanceLeft");
+        DistanceSensor sensorDistance2;
+        sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "sensor_distanceRight");
+
+        double distanceLeft = 0;
+        double distanceRight = 0;
+        boolean approached = false; // indicator that the robot is close enough to the desired tag
+
         waitForStart();
 
         while (opModeIsActive()) {
@@ -111,7 +123,7 @@ public class AutoTest extends ActionOpMode {
                 direction = 1;
             }
 
-            if (Math.abs(error) > 2) {
+            if (!approached && Math.abs(error) > 2) {
                 drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
                                 0.0,
@@ -120,14 +132,54 @@ public class AutoTest extends ActionOpMode {
                         0.0
                 ));
             }
+            else {
+                approached = true;
+            }
 
             drive.updatePoseEstimate();
 
+            telemetry.addData("Approached=",approached);
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
 
             telemetry.update();
+
+            distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.CM);
+            distanceRight = sensorDistanceRight.getDistance(DistanceUnit.CM);
+
+            telemetry.addData("Left distance =",distanceLeft);
+            telemetry.addData("Right distance=",distanceRight);
+            telemetry.update();
+
+            if(approached) {
+
+                if(Math.abs(distanceRight-distanceLeft)>1) {
+                    if (distanceLeft < distanceRight) {
+                        double turnAngle = Math.asin(distanceRight - distanceLeft / 14);
+                        telemetry.addData("Turn Angle = ", Math.toRadians(turnAngle));
+
+                        runBlocking(
+                                drive.actionBuilder(drive.pose)
+                                        .turn(turnAngle) //TODO: what is robot's horizontal length?? also which direction is this??
+                                        .build()
+                        );
+                    } else {
+                        double turnAngle = Math.asin(distanceLeft - distanceRight / 14);
+                        telemetry.addData("Turn Angle = ", Math.toRadians(turnAngle));
+
+                        runBlocking(
+                                drive.actionBuilder(drive.pose)
+                                        .turn(Math.asin(distanceLeft - distanceRight / 14)) //TODO: what is robot's horizontal length?? also which direction is this??
+                                        .build()
+                        );
+                    }
+                }
+            }
+
+            telemetry.update();
+
+            //TODO: else here? what would i say?
 
         }
     }
@@ -180,4 +232,7 @@ public class AutoTest extends ActionOpMode {
 
         return centerId;
     }
+
+
+
 }
