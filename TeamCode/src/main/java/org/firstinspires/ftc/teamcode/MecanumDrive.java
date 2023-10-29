@@ -49,9 +49,9 @@ import java.util.List;
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick = 0.0009158;    // 32/34942
+        public double inPerTick = 0.0009158;
         public double lateralInPerTick = 1;
-        public double trackWidthTicks = 11666.046615897812;
+        public double trackWidthTicks = 12061.048344826673;
 
         // feedforward parameters (in tick units)
         public double kS = 1.6259078646556695;
