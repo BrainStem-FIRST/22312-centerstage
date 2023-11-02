@@ -74,13 +74,13 @@ public class AutoTest extends ActionOpMode {
 
         DistanceSensor sensorDistanceLeft, sensorDistanceRight;
         sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "sensor_distanceLeft");
-        DistanceSensor sensorDistance2;
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "sensor_distanceRight");
 
         double distanceLeft = 0;
         double distanceRight = 0;
         double turnAngle_rad = 0;
         boolean approached = false; // indicator that the robot is close enough to the desired tag
+        boolean aligned = false;
 
         // Recognize the team prop during init
         blocks = huskyLens.blocks();
@@ -88,6 +88,10 @@ public class AutoTest extends ActionOpMode {
         // Determine the prop position
         int targetTagPos = getTargetTag(blocks, alliance.BLUE);
         int targetBlockPos = 0; // The block of interest within the blocks array
+
+
+        double opposite = distanceLeft - distanceRight;
+        double hypoteneuse = 355.66;    // mm
 
         waitForStart();
 
@@ -127,6 +131,7 @@ public class AutoTest extends ActionOpMode {
             }
 
             telemetry.addData("block of interest is in slot", targetBlockPos);
+            telemetry.update();
 
             error = blocks[targetBlockPos].x - 160;
             telemetry.addData("error", error);
@@ -137,77 +142,81 @@ public class AutoTest extends ActionOpMode {
                 direction = 1;
             }
 
-            if (!approached && Math.abs(error) > 2) {
-                drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                0.0,
-                                0.2 * direction
-                        ),
-                        0.0
-                ));
+            // Strafe left or right to align with the target tag
+            if (!approached && Math.abs(error) > 10) {
+                    drive.setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(
+                                    0.0,
+                                    0.2 * direction
+                            ),
+                            0.0
+                    ));
             }
-            else {
-                approached = true;
-            }
+            else approached = true;
 
             drive.updatePoseEstimate();
 
             telemetry.addData("Approached=",approached);
-            telemetry.addData("x", drive.pose.position.x);
-            telemetry.addData("y", drive.pose.position.y);
-            telemetry.addData("heading", drive.pose.heading);
+//            telemetry.addData("x", drive.pose.position.x);
+//            telemetry.addData("y", drive.pose.position.y);
+//            telemetry.addData("heading", drive.pose.heading);
 
             telemetry.update();
 
-            distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.CM);
-            distanceRight = sensorDistanceRight.getDistance(DistanceUnit.CM);
+            // make sure the delta of distance readings are not extreme
 
-            telemetry.addData("Left distance =",distanceLeft);
-            telemetry.addData("Right distance=",distanceRight);
-            telemetry.update();
+            if(approached & !aligned) {
 
-            if(approached) {
-                if(Math.abs(distanceRight-distanceLeft)>1) {
+                distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
+                distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
+                opposite = Math.abs(distanceLeft - distanceRight);
+
+                telemetry.addData("Left distance =",distanceLeft);
+                telemetry.addData("Right distance=",distanceRight);
+                telemetry.addData("Opposite =",opposite);
+
+//
+//                if (opposite > hypoteneuse){
+//                    if (distanceLeft > distanceRight) {
+//                        runBlocking(
+//                                drive.actionBuilder(drive.pose)
+//                                        .turn(Math.toRadians(-10))
+//                                        .build()
+//                        );
+//                    }
+//                    else if (distanceRight > distanceLeft) {
+//                        runBlocking(
+//                                drive.actionBuilder(drive.pose)
+//                                        .turn(Math.toRadians(10))
+//                                        .build()
+//                        );
+//                    }
+//                }
+
+                if(opposite > 10) {
+
+                    turnAngle_rad = Math.asin(opposite / hypoteneuse);
+                    telemetry.addData("Turn Angle = ", Math.toRadians(turnAngle_rad));
+
                     if (distanceLeft < distanceRight) {
-                        double turnAngle = Math.asin(distanceRight - distanceLeft / 14);
-                        telemetry.addData("Turn Angle = ", Math.toRadians(turnAngle));
-                        telemetry.update();
 
-                        runBlocking(
-                                drive.actionBuilder(drive.pose)
-                                        .turn(turnAngle) //TODO: what is robot's horizontal length?? also which direction is this??
-                                        .build()
-                        );
-                    } else {
-
-                        double opposite = distanceLeft - distanceRight;
-                        double hypoteneuse = 355.66;
-
-                        telemetry.addData("distanceLeft=",distanceLeft);
-                        telemetry.addData("distanceRight=",distanceRight);
-
-                        turnAngle_rad = Math.asin(opposite / hypoteneuse);
-                        telemetry.addData("turnAngle in deg=",Math.toDegrees(turnAngle_rad));
-
-                        telemetry.update();
-
-                        if (opposite > hypoteneuse){
-                            telemetry.addData("turnAngle_rad = ", 0);
-                            telemetry.update();
-                        }
-                        else {
-                            telemetry.addData("turnAngle_rad = ", turnAngle_rad);
-                            telemetry.update();
-                        }
+                        //get inverse sin radians for how much the robot should turn
 
                         runBlocking(
                                 drive.actionBuilder(drive.pose)
                                         .turn(turnAngle_rad) //TODO: what is robot's horizontal length?? also which direction is this??
                                         .build()
                         );
+                    } else {
+                        runBlocking(
+                                drive.actionBuilder(drive.pose)
+                                        .turn(-turnAngle_rad) //TODO: what is robot's horizontal length?? also which direction is this??
+                                        .build()
+                        );
 
                     }
                 }
+                else aligned = true;
             }
 
             telemetry.update();
@@ -283,14 +292,14 @@ public class AutoTest extends ActionOpMode {
         int propPos;
         // for test purposes, return a known value
         // delete this segment when team prop is available
-        return 1;
+//        return 1;
 
-        if(blocks.length == 1) {
-            if (blocks[1].x < 120) {
+        if (blocks.length == 1) {
+            if (blocks[0].x < 120) {
                 // Prop is on left
                 propPos = (a==alliance.BLUE) ? 1 : 4;
             }
-            else if (blocks[1].x > 200) {
+            else if (blocks[0].x > 200) {
                 // prop is on right
                 propPos = (a==alliance.BLUE) ? 3 : 6;
             }
