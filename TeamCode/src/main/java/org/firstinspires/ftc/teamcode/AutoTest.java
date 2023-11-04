@@ -20,12 +20,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.opencv.core.Mat;
 
 @Config
 @Autonomous (name="Robot: Auto Test", group="Robot")
 public class AutoTest extends ActionOpMode {
     HuskyLens huskyLens;
+
+    /********************************************
+     *   Constants and configurable parameters
+     ********************************************/
+    static double IN_TO_MM = 25.4;  // conversion multiplier from inch to millimeter
+    static double DISTANCE_BETWEEN_DISTSENSORS = 10;    // distance between two sensors in inches
+
+
 
     @Override
     public void runOpMode() {
@@ -78,9 +88,10 @@ public class AutoTest extends ActionOpMode {
 
         double distanceLeft = 0;
         double distanceRight = 0;
-        double turnAngle_rad = 0;
         boolean approached = false; // indicator that the robot is close enough to the desired tag
         boolean aligned = false;
+
+        // TODO: Read blocks continuously until Start. Have some feedback to DS to confirm recognition
 
         // Recognize the team prop during init
         blocks = huskyLens.blocks();
@@ -89,9 +100,6 @@ public class AutoTest extends ActionOpMode {
         int targetTagPos = getTargetTag(blocks, alliance.BLUE);
         int targetBlockPos = 0; // The block of interest within the blocks array
 
-
-        double opposite = distanceLeft - distanceRight;
-        double hypoteneuse = 355.66;    // mm
 
         waitForStart();
 
@@ -103,22 +111,16 @@ public class AutoTest extends ActionOpMode {
 
             // 1. Read the blocks
             // 2. Print all blocks as String to telemetry (for debugging purposes)
-            // 3. Identify the tag at the center
-            //    a) Do you see 3 tags? The one in the middle (compare x values) is the Center one.
-            //    b) Do you see 2 tags? Where are they relative to the robot? If the tags are towards
-            //       the right side of the screen, robot is on the left. The center tag is the rightmost tag.
-            //       If the tags are towards the left, the robot is on the right. The center tag is the leftmost
-            //       tag.
-            //    c) Do you see only one tag? Cannot determine if it is the center tag unless we know the exact ID.
-            //       Experiment by looking at telemetry if the center tag always returns the same ID.
-            // 4. Strafe right or left to center the robot right in front of the center tag.
+            // 3. Identify the tag to align to (based on where the team prop is located)
+            // 4. Strafe right or left to center the robot right in front of the targeted tag
+            // 5. Turn left or right just the right amount to align robot with the backdrop using distance sensors
 
             blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
 
             if (blocks.length == 0) {
                 telemetry.update();
-                continue;
+                continue;   // if no tags recognized, do not proceed; just restart the while loop and re-read blocks
             }
 
             // poll all block[i] and check if any of their id matches targetPos
@@ -136,13 +138,14 @@ public class AutoTest extends ActionOpMode {
             error = blocks[targetBlockPos].x - 160;
             telemetry.addData("error", error);
 
+            // which way to strafe?
             if (error < 0)
                 direction = -1;
             else {
                 direction = 1;
             }
 
-            // Strafe left or right to align with the target tag
+            // Strafe left or right to approach to the target tag
             if (!approached && Math.abs(error) > 10) {
                     drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(
@@ -157,15 +160,32 @@ public class AutoTest extends ActionOpMode {
             drive.updatePoseEstimate();
 
             telemetry.addData("Approached=",approached);
-//            telemetry.addData("x", drive.pose.position.x);
-//            telemetry.addData("y", drive.pose.position.y);
-//            telemetry.addData("heading", drive.pose.heading);
+            telemetry.addData("Aligned   =",aligned);
+
+            telemetry.addData("x", drive.pose.position.x);
+            telemetry.addData("y", drive.pose.position.y);
+            telemetry.addData("heading", drive.pose.heading);
 
             telemetry.update();
 
-            // make sure the delta of distance readings are not extreme
 
-            if(approached & !aligned) {
+            if(approached && !aligned) {
+
+                runBlocking(
+                        drive.actionBuilder(drive.pose)
+                                .turn(getAlignmentAngle(sensorDistanceLeft, sensorDistanceRight, telemetry))
+                                .build()
+                );
+
+                // check if aligned
+                distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
+                distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
+                if (Math.abs(distanceLeft - distanceRight) < 10) {
+                    aligned = true;
+                }
+            }
+
+/************************** from wednesday  **********************************************************************
 
                 distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
                 distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
@@ -220,65 +240,14 @@ public class AutoTest extends ActionOpMode {
             }
 
             telemetry.update();
+ *************************************************************************************************************/
 
             //TODO: else here? what would i say?
 
         }
     }
 
-    /*
-    int center(HuskyLens.Block[] b) {
-        int centerId = -1;
 
-        if (b.length == 3) {
-            if (b[0].x < b[1].x) { //if 0 is left of 1
-                if (b[1].x < b[2].x) {
-                    centerId = 1;
-                } else if (b[2].x < b[0].x) {
-                    centerId = 0;
-                } else {
-                    centerId = 2;
-                }
-            } else if (b[1].x < b[2].x) {
-                if (b[2].x < b[0].x) {
-                    centerId = 2;
-                } else {
-                    centerId = 0;
-                }
-            } else {
-                centerId = 1;
-            }
-        } else if (b.length == 2) {
-            // first find the relative order
-            int left, right;
-            if (b[0].x < b[1].x) {
-                left = 0;
-                right = 1;
-            } else {
-                left = 1;
-                right = 0;
-            }
-
-            // then compare and find whichever is closer to the edge
-            if (b[left].x < 320 - b[right].x) {
-                centerId = left;
-            } else {
-                centerId = right;
-            }
-        } else if (b.length == 1) {
-            centerId = 0;
-        }
-
-        return centerId;
-    }
-     */
-
-    enum propPos {
-        LEFT,
-        CENTER,
-        RIGHT,
-        NOWHERE
-    }
     enum alliance{
         RED,
         BLUE
@@ -286,7 +255,7 @@ public class AutoTest extends ActionOpMode {
 
 
     // Returns the position of the prop.
-    // If not recognized, returns NOWHERE
+    // If not recognized, returns CENTER (2 or 5 depending on alliance)
     int getTargetTag(HuskyLens.Block[] blocks, alliance a) {
 
         int propPos;
@@ -314,5 +283,51 @@ public class AutoTest extends ActionOpMode {
         }
 
         return propPos;
+    }
+
+    // Return turn angle in radian that is necessary to align the robot with the backdrop using distance sensors
+    double getAlignmentAngle(DistanceSensor leftSensor, DistanceSensor rightSensor, Telemetry t) {
+
+        double opposite, adjacent, hypotenuse;
+        double left, right; // readings from sensors
+        double turnAngle; // in radians
+
+        int    turnDirection = 1;
+        double epsilon = 0.035; // close enough (2 degrees) to return 0 in radians
+
+        // Read distance sensors and calculate legs of the triangle
+        left  = leftSensor.getDistance(DistanceUnit.MM);
+        right = rightSensor.getDistance(DistanceUnit.MM);
+
+        opposite   = Math.abs(left-right);
+        adjacent   = DISTANCE_BETWEEN_DISTSENSORS * IN_TO_MM;
+        hypotenuse = Math.sqrt(opposite*opposite + adjacent*adjacent);
+
+        t.addData("opposite  =", opposite);
+        t.addData("adjacent  =", adjacent);
+        t.addData("hypotenuse=", hypotenuse);
+        t.update();
+
+        // Catch exceptions
+
+        // Both distance sensors must hit the backdrop for this algorithm to work.
+        // If opposite is a large number, that indicates one of the sensors is not hitting the backdrop.
+        // TODO: In that case, use IMU only to determine the turn angle. Until then, return 0 for test purposes
+
+        if (opposite > hypotenuse) {
+            turnAngle = 0.0;
+        }
+        else {
+            turnDirection = (left>right) ? 1 : -1;
+            turnAngle = turnDirection * Math.asin(opposite/hypotenuse);
+
+            // don't bother to turn if the calculated angle is too small
+            if(turnAngle<epsilon) turnAngle = 0.00;
+        }
+
+        t.addData("turnAngle = ", Math.toDegrees(turnAngle));
+        t.update();
+
+        return turnAngle;
     }
 }
