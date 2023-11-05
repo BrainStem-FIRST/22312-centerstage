@@ -35,12 +35,59 @@ public class AutoTest extends ActionOpMode {
     static double IN_TO_MM = 25.4;  // conversion multiplier from inch to millimeter
     static double DISTANCE_BETWEEN_DISTSENSORS = 10;    // distance between two sensors in inches
 
+    // Important field positions
 
+    double TILE_INSIDE_TO_INSIDE = 22.875;
+    double TILE_CENTER_TO_CENTER = 23.625;
+    double TILE_CENTER_TO_EDGE   = 23.25;
+    double TILE_TEETH            = 0.75;
+
+    double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
+
+    // White Pixel Stack positions
+    Vector2d vRedStack_Inner   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,-FIELD_BOUNDARY_FROM_CENTER+35.0);
+    Vector2d vRedStack_Center  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,-FIELD_BOUNDARY_FROM_CENTER+46.875);
+    Vector2d vRedStack_Outer   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,-FIELD_BOUNDARY_FROM_CENTER+58.75);
+
+    Vector2d vBlueStack_Inner  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,FIELD_BOUNDARY_FROM_CENTER-35.0);
+    Vector2d vBlueStack_Center = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,FIELD_BOUNDARY_FROM_CENTER-46.875);
+    Vector2d vBlueStack_Outer  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,FIELD_BOUNDARY_FROM_CENTER-58.75);
+
+    // Spike positions
+    Vector2d vRedLeftSpike_Left   = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_CENTER_TO_EDGE+0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
+    Vector2d vRedLeftSpike_Center = new Vector2d(-1.5*TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5);
+    Vector2d vRedLeftSpike_Right  = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
+
+    Vector2d vRedRightSpike_Left   = new Vector2d(TILE_TEETH/2.0+0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
+    Vector2d vRedRightSpike_Center = new Vector2d(0.5*TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5);
+    Vector2d vRedRightSpike_Right  = new Vector2d(TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
+
+    Vector2d vBlueRightSpike_Left   = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_CENTER_TO_EDGE+0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
+    Vector2d vBlueRightSpike_Center = new Vector2d(-1.5*TILE_CENTER_TO_CENTER,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+0.5);
+    Vector2d vBlueRightSpike_Right  = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
+
+    Vector2d vBlueLeftSpike_Left   = new Vector2d(TILE_TEETH/2.0+0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
+    Vector2d vBlueLeftSpike_Center = new Vector2d(0.5*TILE_CENTER_TO_CENTER,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+0.5);
+    Vector2d vBlueLeftSpike_Right  = new Vector2d(TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
+
+    // Backstage positions
+    double FIELD_BACKSTAGE_X = 2.0 * TILE_CENTER_TO_CENTER + TILE_TEETH/2.0 + 0.5;
+    double FIELD_BACKDROP_X  = TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE + 13.5 - 2.0;    // 2 inches short of hitting the backdrop
+
+    // Backdrop April Tag Positions
+    Vector2d vRedBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,-1.5*TILE_CENTER_TO_CENTER+6);
+    Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X,-1.5*TILE_CENTER_TO_CENTER);
+    Vector2d vRedBackdrop_Right  = new Vector2d(FIELD_BACKDROP_X,-1.5*TILE_CENTER_TO_CENTER-6);
+
+    Vector2d vBlueBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,1.5*TILE_CENTER_TO_CENTER-6);
+    Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X,1.5*TILE_CENTER_TO_CENTER);
+    Vector2d vBlueBackdrop_Right  = new Vector2d(FIELD_BACKDROP_X,1.5*TILE_CENTER_TO_CENTER+6);
 
     @Override
     public void runOpMode() {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+
         drive.pose = new Pose2d(-36, -61, Math.toRadians(90));
         Action trajectory =
                 drive.actionBuilder(drive.pose)
