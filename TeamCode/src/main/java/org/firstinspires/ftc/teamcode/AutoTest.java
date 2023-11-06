@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -88,31 +89,15 @@ public class AutoTest extends ActionOpMode {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-        drive.pose = new Pose2d(-36, -61, Math.toRadians(90));
-        Action trajectory =
+        drive.pose = new Pose2d(-36,-61, Math.toRadians(-90));
+        Action traj =
                 drive.actionBuilder(drive.pose)
-                        .lineToY(-33)
-                        .waitSeconds(1)
-
-                        // Goto Backdrop to place your purple pixel
-                        .setReversed(true)
-                        .splineToLinearHeading(new Pose2d(-36, -36, Math.toRadians(0)), Math.toRadians(0))
-                        .lineToX(48)
-                        .waitSeconds(1)
-
-                        // Goto stack and collect 2 white pixels
-                        .setReversed(true)
-                        .setTangent(Math.toRadians(180))
-                        .splineTo(new Vector2d(12, -12), Math.toRadians(180))
-                        .lineToX(-61)
-                        .waitSeconds(1)
-
-                        // Goto Backstage and drop 2 white pixels
-                        .setReversed(false)
-                        .lineToX(12)
-                        .setTangent(Math.toRadians(0))
-                        .splineTo(new Vector2d(48, -36), Math.toRadians(0))
-                        .waitSeconds(1)
+                        .lineToY(-30)
+//                        .waitSeconds(1)
+//
+//                         Goto Backdrop to place your purple pixel
+//                        .setReversed(true)
+//                        .splineToLinearHeading(new Pose2d(vRedBackdrop_Center.x-10, vRedBackdrop_Center.y, Math.toRadians(0)), Math.toRadians(200))
 
                         .build();
 
@@ -144,7 +129,7 @@ public class AutoTest extends ActionOpMode {
         blocks = huskyLens.blocks();
 
         // Determine the prop position
-        int targetTagPos = getTargetTag(blocks, alliance.BLUE);
+        int targetTagPos = getTargetTag(blocks, alliance.RED);
         int targetBlockPos = 0; // The block of interest within the blocks array
 
 
@@ -152,7 +137,15 @@ public class AutoTest extends ActionOpMode {
 
         while (opModeIsActive()) {
 
-//            runBlocking(trajectory);
+            runBlocking(
+                new SequentialAction(
+                        traj,
+
+                        drive.actionBuilder(drive.pose)
+//                                .turn(getAlignmentAngle(sensorDistanceLeft, sensorDistanceRight, telemetry))
+                                .turn(Math.toRadians(10))
+                                .build()
+                ));
 
             /*****************  Huskylens test  *****************************/
 
@@ -161,6 +154,7 @@ public class AutoTest extends ActionOpMode {
             // 3. Identify the tag to align to (based on where the team prop is located)
             // 4. Strafe right or left to center the robot right in front of the targeted tag
             // 5. Turn left or right just the right amount to align robot with the backdrop using distance sensors
+
 
             blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
@@ -215,22 +209,13 @@ public class AutoTest extends ActionOpMode {
 
             telemetry.update();
 
-
-            if(approached && !aligned) {
-
-                runBlocking(
-                        drive.actionBuilder(drive.pose)
-                                .turn(getAlignmentAngle(sensorDistanceLeft, sensorDistanceRight, telemetry))
-                                .build()
-                );
-
-                // check if aligned
-                distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
-                distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
-                if (Math.abs(distanceLeft - distanceRight) < 10) {
-                    aligned = true;
-                }
-            }
+//                // check if aligned
+//                distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
+//                distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
+//                if (Math.abs(distanceLeft - distanceRight) < 10) {
+//                    aligned = true;
+//                }
+//            }
 
 /************************** from wednesday  **********************************************************************
 

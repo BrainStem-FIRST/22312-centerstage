@@ -16,12 +16,12 @@ public class MeepMeepTesting {
     static double TILE_CENTER_TO_EDGE   = 23.25;
     static double TILE_TEETH            = 0.75;
 
-    double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
+    static double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
     // White Pixel Stack positions
-    Vector2d vRedStack_Inner   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 35.0);
+    static Vector2d vRedStack_Inner   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 35.0);
     Vector2d vRedStack_Center  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 46.875);
-    Vector2d vRedStack_Outer   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 58.75);
+    static Vector2d vRedStack_Outer   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 58.75);
 
     Vector2d vBlueStack_Inner  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,FIELD_BOUNDARY_FROM_CENTER - 35.0);
     Vector2d vBlueStack_Center = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,FIELD_BOUNDARY_FROM_CENTER - 46.875);
@@ -46,7 +46,7 @@ public class MeepMeepTesting {
 
     // Backstage positions
     double FIELD_BACKSTAGE_X = 2.0 * TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5;
-    static double FIELD_BACKDROP_X  = TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE + 13.5 - 2.0;    // 2 inches short of hitting the backdrop
+    static double FIELD_BACKDROP_X  = TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
     // Backdrop April Tag Positions
     Vector2d vRedBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,-1.5 * TILE_CENTER_TO_CENTER + 6);
@@ -96,24 +96,28 @@ public class MeepMeepTesting {
 
                         // Goto Backdrop to place your purple pixel
                         .setReversed(true)
-                        .splineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)), Math.toRadians(0))
-                        .strafeTo(vRedBackdrop_Center)
+                        .splineToLinearHeading(new Pose2d(vRedBackdrop_Center.x, vRedBackdrop_Center.y, Math.toRadians(0)), Math.toRadians(200))
+//                        .splineToLinearHeading(new Pose2d(24, -12, Math.toRadians(180)), Math.toRadians(0))
+//                        .strafeTo(vRedBackdrop_Center)
+
+//                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))
 //                        .splineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(0)),Math.toRadians(0))
-                       /* .lineToX(48)
+//                        .lineToX(48)
                         .waitSeconds(1)
 
                         // Goto stack and collect 2 white pixels
-                        .setReversed(true)
+                        .setReversed(false)
                         .setTangent(Math.toRadians(180))
-                        .splineTo(new Vector2d(12, -12),Math.toRadians(180))
-                        .lineToX(-61)
+//                        .strafeTo(new Vector2d(12, -12))
+                        .setTangent(-180)
+                        .splineToConstantHeading(vRedStack_Outer, Math.toRadians(180))
                         .waitSeconds(1)
 
                         // Goto Backstage and drop 2 white pixels
                         .setReversed(false)
-                        .lineToX(12)
+                        .lineToXConstantHeading(24)
                         .setTangent(Math.toRadians(0))
-                        .splineTo(new Vector2d(48, -36),Math.toRadians(0))
+                        .strafeTo(vRedBackdrop_Center)
                         .waitSeconds(1)
 
                         // go to alliance partner's robot and collect their pixels
@@ -123,7 +127,7 @@ public class MeepMeepTesting {
                         // place their purple pixel to the backdrop
 
                         // park
-*/
+
                         .build();
 
         myBot.runAction(trajectory);
