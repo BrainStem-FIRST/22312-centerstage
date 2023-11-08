@@ -4,6 +4,8 @@ import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
 import android.drm.DrmStore;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -38,85 +40,180 @@ public class AutoTest extends ActionOpMode {
 
     // Important field positions
 
-    double TILE_INSIDE_TO_INSIDE = 22.875;
-    double TILE_CENTER_TO_CENTER = 23.625;
-    double TILE_CENTER_TO_EDGE   = 23.25;
-    double TILE_TEETH            = 0.75;
+    static double TILE_INSIDE_TO_INSIDE = 22.875;
+    static double TILE_CENTER_TO_CENTER = 23.625;
+    static double TILE_CENTER_TO_EDGE   = 23.25;
+    static double TILE_TEETH            = 0.75;
 
-    double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
+    static double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
     // White Pixel Stack positions
-    Vector2d vRedStack_Inner   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,-FIELD_BOUNDARY_FROM_CENTER+35.0);
-    Vector2d vRedStack_Center  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,-FIELD_BOUNDARY_FROM_CENTER+46.875);
-    Vector2d vRedStack_Outer   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,-FIELD_BOUNDARY_FROM_CENTER+58.75);
+    public static Vector2d vRedStack_Inner   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 35.0);
+    public static Vector2d vRedStack_Center  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 46.875);
+    public static Vector2d vRedStack_Outer   = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,-FIELD_BOUNDARY_FROM_CENTER + 58.75);
 
-    Vector2d vBlueStack_Inner  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,FIELD_BOUNDARY_FROM_CENTER-35.0);
-    Vector2d vBlueStack_Center = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,FIELD_BOUNDARY_FROM_CENTER-46.875);
-    Vector2d vBlueStack_Outer  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER+1.5,FIELD_BOUNDARY_FROM_CENTER-58.75);
+    public static Vector2d vBlueStack_Inner  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,FIELD_BOUNDARY_FROM_CENTER - 35.0);
+    public static Vector2d vBlueStack_Center = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,FIELD_BOUNDARY_FROM_CENTER - 46.875);
+    public static Vector2d vBlueStack_Outer  = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5,FIELD_BOUNDARY_FROM_CENTER - 58.75);
 
     // Spike positions
-    Vector2d vRedLeftSpike_Left   = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_CENTER_TO_EDGE+0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
-    Vector2d vRedLeftSpike_Center = new Vector2d(-1.5*TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5);
-    Vector2d vRedLeftSpike_Right  = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
+    public static Vector2d vRedLeftSpike_Left   = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 6.0);
+    public static Vector2d vRedLeftSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 0.5);
+    public static Vector2d vRedLeftSpike_Right  = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 9.0); // Not go to center to avoid hitting the A-Beam
 
-    Vector2d vRedRightSpike_Left   = new Vector2d(TILE_TEETH/2.0+0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
-    Vector2d vRedRightSpike_Center = new Vector2d(0.5*TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5);
-    Vector2d vRedRightSpike_Right  = new Vector2d(TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-6.0);
+    public static Vector2d vRedRightSpike_Left   = new Vector2d(TILE_TEETH / 2.0 + 0.5,-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 6.0);
+    public static Vector2d vRedRightSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5);
+    public static Vector2d vRedRightSpike_Right  = new Vector2d(TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 0.5,-TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 6.0);
 
-    Vector2d vBlueRightSpike_Left   = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_CENTER_TO_EDGE+0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
-    Vector2d vBlueRightSpike_Center = new Vector2d(-1.5*TILE_CENTER_TO_CENTER,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+0.5);
-    Vector2d vBlueRightSpike_Right  = new Vector2d(-TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
+    public static Vector2d vBlueRightSpike_Left   = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 0.5,TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueRightSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER,TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5);
+    public static Vector2d vBlueRightSpike_Right  = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5,TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
 
-    Vector2d vBlueLeftSpike_Left   = new Vector2d(TILE_TEETH/2.0+0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
-    Vector2d vBlueLeftSpike_Center = new Vector2d(0.5*TILE_CENTER_TO_CENTER,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+0.5);
-    Vector2d vBlueLeftSpike_Right  = new Vector2d(TILE_CENTER_TO_CENTER-TILE_TEETH/2.0-0.5,TILE_CENTER_TO_CENTER+TILE_TEETH/2.0+6.0);
+    public static Vector2d vBlueLeftSpike_Left   = new Vector2d(TILE_TEETH / 2.0 + 0.5,TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueLeftSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER,TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5);
+    public static Vector2d vBlueLeftSpike_Right  = new Vector2d(TILE_CENTER_TO_CENTER-TILE_TEETH / 2.0 - 0.5,TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
 
     // Backstage positions
-    double FIELD_BACKSTAGE_X = 2.0 * TILE_CENTER_TO_CENTER + TILE_TEETH/2.0 + 0.5;
-    double FIELD_BACKDROP_X  = TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE + 13.5 - 2.0;    // 2 inches short of hitting the backdrop
+    public static double FIELD_BACKSTAGE_X = 2.0 * TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5;
+    public static double FIELD_BACKDROP_X  = TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
     // Backdrop April Tag Positions
-    Vector2d vRedBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,-1.5*TILE_CENTER_TO_CENTER+6);
-    Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X,-1.5*TILE_CENTER_TO_CENTER);
-    Vector2d vRedBackdrop_Right  = new Vector2d(FIELD_BACKDROP_X,-1.5*TILE_CENTER_TO_CENTER-6);
+    public static Vector2d vRedBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,-1.5 * TILE_CENTER_TO_CENTER + 6);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X,-1.5 * TILE_CENTER_TO_CENTER);
+    public static Vector2d vRedBackdrop_Right  = new Vector2d(FIELD_BACKDROP_X,-1.5 * TILE_CENTER_TO_CENTER - 6);
 
-    Vector2d vBlueBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,1.5*TILE_CENTER_TO_CENTER-6);
-    Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X,1.5*TILE_CENTER_TO_CENTER);
-    Vector2d vBlueBackdrop_Right  = new Vector2d(FIELD_BACKDROP_X,1.5*TILE_CENTER_TO_CENTER+6);
+    public static Vector2d vBlueBackdrop_Left   = new Vector2d(FIELD_BACKDROP_X,1.5 * TILE_CENTER_TO_CENTER - 6);
+    public static Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X,1.5 * TILE_CENTER_TO_CENTER);
+    public static Vector2d vBlueBackdrop_Right  = new Vector2d(FIELD_BACKDROP_X,1.5 * TILE_CENTER_TO_CENTER + 6);
+
+    // Important waypoints on the field
+    public static Vector2d vRedClearStageGate  = new Vector2d(TILE_CENTER_TO_CENTER/2.0,-TILE_CENTER_TO_CENTER/2.0);
+    public static Vector2d vBlueClearStageGate  = new Vector2d(TILE_CENTER_TO_CENTER/2.0,TILE_CENTER_TO_CENTER/2.0);
+
+    // Robot dimensions. Will become handy to orient around waypoints
+    static double robot_length = 14;
+    static double robot_width  = 12;
+
+    // Starting positions
+    public static Pose2d pStartingPose_RedLeft   = new Pose2d(-1.5*TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER+robot_length/2, Math.toRadians(-90));
+    public static Pose2d pStartingPose_RedRight  = new Pose2d( 0.5*TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER+robot_length/2, Math.toRadians(-90));
+    public static Pose2d pStartingPose_BlueRight = new Pose2d(-1.5*TILE_CENTER_TO_CENTER,  FIELD_BOUNDARY_FROM_CENTER-robot_length/2, Math.toRadians(90));
+    public static Pose2d pStartingPose_BlueLeft  = new Pose2d( 0.5*TILE_CENTER_TO_CENTER,  FIELD_BOUNDARY_FROM_CENTER-robot_length/2, Math.toRadians(90));
+
+
 
     @Override
     public void runOpMode() {
 
+        /************** Hardware Initialization ***************/
+        /**    TODO: Can be moved to brainSTEMRobot class    **/
+        /******************************************************/
+
+        // Huskylens initialization (device and Selection of algorithm)
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_RECOGNITION);
+        HuskyLens.Block[] blocks;   // recognized objects will be added to this array
+
+        // Drivetrain
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-        drive.pose = new Pose2d(-36,-61, Math.toRadians(-90));
-        Action traj =
-                drive.actionBuilder(drive.pose)
-                        .lineToY(-30)
-//                        .waitSeconds(1)
-//
-//                         Goto Backdrop to place your purple pixel
-//                        .setReversed(true)
-//                        .splineToLinearHeading(new Pose2d(vRedBackdrop_Center.x-10, vRedBackdrop_Center.y, Math.toRadians(0)), Math.toRadians(200))
-
-                        .build();
-
-        telemetry.addLine("Trajectory built");
-
-        // Huskylens initialization (HW and Selection of algorithm)
+        // Distance sensors
+        DistanceSensor sensorDistanceLeft, sensorDistanceRight;
+        sensorDistanceLeft  = hardwareMap.get(DistanceSensor.class, "sensor_distanceLeft");
+        sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "sensor_distanceRight");
 
 
-        telemetry.update();
+        // TODO: Determine Alliance (RED/BLUE) and Orientation (LEFT/RIGHT)
+        // Assume RED-LEFT for now
 
+        // Setup possible trajectories
+        Pose2d startingPose = pStartingPose_RedLeft;
+        drive.pose = startingPose;
+
+        // Define trajectories for each target position
+        Action traj_center =
+            drive.actionBuilder(startingPose)
+                // go backwards
+                .setReversed(true)
+
+                // Replace prop with your yellow pixel (just push)
+                .lineToY(vRedRightSpike_Center.y+robot_length/2)
+
+                .stopAndAdd(new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        telemetry.addLine("Spit out yellow pixel on center spike.");
+                        telemetry.update();
+                        return false;
+                    }
+                })
+
+                // Goto Backdrop to place your purple pixel
+                .splineTo(vRedClearStageGate,Math.toRadians(0))     // First clear the trusses
+                .splineTo(vRedBackdrop_Center,Math.toRadians(0))     // Then, go to designated tag position
+
+                .build();
+
+        Action traj_left  =
+            drive.actionBuilder(startingPose)
+                // go backwards
+                .setReversed(true)
+
+                .splineTo(vRedLeftSpike_Left,Math.toRadians(90))
+                .lineToY(vRedLeftSpike_Left.y+robot_length/2)
+
+                .stopAndAdd(new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        telemetry.addLine("Spit out yellow pixel at left spike.");
+                        telemetry.update();
+                        return false;
+                    }
+                })
+
+                // Goto Backdrop to place your purple pixel
+                .splineTo(vRedClearStageGate,Math.toRadians(0))     // First clear the trusses
+                .splineTo(vRedBackdrop_Left,Math.toRadians(0))     // Then, go to designated tag position
+
+                .build();
+
+        Action traj_right =
+            drive.actionBuilder(startingPose)
+                // go backwards
+                .setReversed(true)
+
+                // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
+                .lineToYSplineHeading(vRedLeftSpike_Right.y,Math.toRadians(0))
+                .endTrajectory()
+                .lineToX(vRedLeftSpike_Right.x-robot_length/2)
+
+                // Drop yellow pixel in position
+                .stopAndAdd(new Action() {
+                     @Override
+                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                         telemetry.addLine("Spit out yellow pixel at right spike.");
+                         telemetry.update();
+                         return false;
+                     }
+                })
+
+                // Discontinue trajectory since angles do not jive
+                .endTrajectory()
+
+                // Goto Backdrop to place your purple pixel
+                .setReversed(true)
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER/2.0,Math.toRadians(180.00001)),Math.toRadians(0))
+
+                .splineTo(vRedClearStageGate,Math.toRadians(0))     // First clear the trusses
+                .splineTo(vRedBackdrop_Right,Math.toRadians(0))
+
+                .build();
+
+
+        // Additional variables
         int direction = 1;
         int error;
-
-        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-        HuskyLens.Block[] blocks;
-
-        DistanceSensor sensorDistanceLeft, sensorDistanceRight;
-        sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "sensor_distanceLeft");
-        sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "sensor_distanceRight");
 
         double distanceLeft = 0;
         double distanceRight = 0;
@@ -125,25 +222,25 @@ public class AutoTest extends ActionOpMode {
 
         // TODO: Read blocks continuously until Start. Have some feedback to DS to confirm recognition
 
-        // Recognize the team prop during init
+        // Read the scene to recognize team prop during init
         blocks = huskyLens.blocks();
 
         // Determine the prop position
         int targetTagPos = getTargetTag(blocks, alliance.RED);
-        int targetBlockPos = 0; // The block of interest within the blocks array
+        int targetBlockPos = -1; // The block of interest within the blocks array.
 
 
         waitForStart();
 
         while (opModeIsActive()) {
 
+
             runBlocking(
                 new SequentialAction(
-                        traj,
+                        traj_center,
 
                         drive.actionBuilder(drive.pose)
-//                                .turn(getAlignmentAngle(sensorDistanceLeft, sensorDistanceRight, telemetry))
-                                .turn(Math.toRadians(10))
+                                .turn(getAlignmentAngle(sensorDistanceLeft, sensorDistanceRight, telemetry))
                                 .build()
                 ));
 
@@ -155,7 +252,7 @@ public class AutoTest extends ActionOpMode {
             // 4. Strafe right or left to center the robot right in front of the targeted tag
             // 5. Turn left or right just the right amount to align robot with the backdrop using distance sensors
 
-
+// TODO: Move the AprilTag read and strafe to a separate method
             blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
 
@@ -217,62 +314,6 @@ public class AutoTest extends ActionOpMode {
 //                }
 //            }
 
-/************************** from wednesday  **********************************************************************
-
-                distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
-                distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
-                opposite = Math.abs(distanceLeft - distanceRight);
-
-                telemetry.addData("Left distance =",distanceLeft);
-                telemetry.addData("Right distance=",distanceRight);
-                telemetry.addData("Opposite =",opposite);
-
-//
-//                if (opposite > hypoteneuse){
-//                    if (distanceLeft > distanceRight) {
-//                        runBlocking(
-//                                drive.actionBuilder(drive.pose)
-//                                        .turn(Math.toRadians(-10))
-//                                        .build()
-//                        );
-//                    }
-//                    else if (distanceRight > distanceLeft) {
-//                        runBlocking(
-//                                drive.actionBuilder(drive.pose)
-//                                        .turn(Math.toRadians(10))
-//                                        .build()
-//                        );
-//                    }
-//                }
-
-                if(opposite > 10) {
-
-                    turnAngle_rad = Math.asin(opposite / hypoteneuse);
-                    telemetry.addData("Turn Angle = ", Math.toRadians(turnAngle_rad));
-
-                    if (distanceLeft < distanceRight) {
-
-                        //get inverse sin radians for how much the robot should turn
-
-                        runBlocking(
-                                drive.actionBuilder(drive.pose)
-                                        .turn(turnAngle_rad) //TODO: what is robot's horizontal length?? also which direction is this??
-                                        .build()
-                        );
-                    } else {
-                        runBlocking(
-                                drive.actionBuilder(drive.pose)
-                                        .turn(-turnAngle_rad) //TODO: what is robot's horizontal length?? also which direction is this??
-                                        .build()
-                        );
-
-                    }
-                }
-                else aligned = true;
-            }
-
-            telemetry.update();
- *************************************************************************************************************/
 
             //TODO: else here? what would i say?
 
