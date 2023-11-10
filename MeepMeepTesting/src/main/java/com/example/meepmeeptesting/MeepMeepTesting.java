@@ -1,5 +1,6 @@
 package com.example.meepmeeptesting;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
@@ -91,28 +92,24 @@ public class MeepMeepTesting {
 
         Action trajectory =
                 myBot.getDrive().actionBuilder(new Pose2d(-36,-61, Math.toRadians(-90)))
-
-                        // RIGHT PLACEMENT
+                        // go backwards
                         .setReversed(true)
 
                         // Replace prop with your yellow pixel (just push)
-                        .lineToYSplineHeading(vRedLeftSpike_Right.y,Math.toRadians(0))
-                        .endTrajectory()
-                        .lineToX(vRedLeftSpike_Right.x-robot_length/2)
+                        .lineToY(vRedRightSpike_Center.y + robot_length / 2)
 
-//                      // Add action to drop yellow pixel
-//                      .stopAndAdd()
-
-                        .endTrajectory()
-
-                        // Goto Backdrop to place your purple pixel
+//                        .stopAndAdd(new Action() {
+//                            @Override
+//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                                telemetry.addLine("Spit out yellow pixel on center spike.");
+//                                telemetry.update();
+//                                return false;
+//                            }
+//                        })
                         .setReversed(true)
-                        .setTangent(Math.toRadians(135))
-                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER/2.0,Math.toRadians(180.00001)),Math.toRadians(0))
-
-                        .splineTo(vRedClearStageGate,Math.toRadians(0))     // First clear the trusses
-                        .splineTo(vRedBackdrop_Right,Math.toRadians(0))
-
+                        // Goto Backdrop to place your purple pixel
+                        .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
+                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
 
                         .build();
 

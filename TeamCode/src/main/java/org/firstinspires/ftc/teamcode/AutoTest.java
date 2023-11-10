@@ -110,7 +110,6 @@ public class AutoTest extends ActionOpMode {
 
         // Huskylens initialization (device and Selection of algorithm)
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_RECOGNITION);
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Drivetrain
@@ -138,15 +137,15 @@ public class AutoTest extends ActionOpMode {
                         // Replace prop with your yellow pixel (just push)
                         .lineToY(vRedRightSpike_Center.y + robot_length / 2)
 
-                        .stopAndAdd(new Action() {
-                            @Override
-                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                                telemetry.addLine("Spit out yellow pixel on center spike.");
-                                telemetry.update();
-                                return false;
-                            }
-                        })
-
+//                        .stopAndAdd(new Action() {
+//                            @Override
+//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                                telemetry.addLine("Spit out yellow pixel on center spike.");
+//                                telemetry.update();
+//                                return false;
+//                            }
+//                        })
+                        .setReversed(true)
                         // Goto Backdrop to place your purple pixel
                         .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
                         .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
@@ -161,14 +160,16 @@ public class AutoTest extends ActionOpMode {
                         .splineTo(vRedLeftSpike_Left, Math.toRadians(90))
                         .lineToY(vRedLeftSpike_Left.y + robot_length / 2)
 
-                        .stopAndAdd(new Action() {
-                            @Override
-                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                                telemetry.addLine("Spit out yellow pixel at left spike.");
-                                telemetry.update();
-                                return false;
-                            }
-                        })
+//                        .stopAndAdd(new Action() {
+//                            @Override
+//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                                telemetry.addLine("Spit out yellow pixel at left spike.");
+//                                telemetry.update();
+//                                return false;
+//                            }
+//                        })
+//
+//                        .setReversed(true)
 
                         // Goto Backdrop to place your purple pixel
                         .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
@@ -222,11 +223,11 @@ public class AutoTest extends ActionOpMode {
         // TODO: Read blocks continuously until Start. Have some feedback to DS to confirm recognition
 
         // Determine the prop position
-        int targetTagPos = 0;
+        int targetTagPos = -1;
         int targetBlockPos = -1; // The block of interest within the blocks array.
 
         // find prop and target tag before START
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_RECOGNITION);
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -236,19 +237,20 @@ public class AutoTest extends ActionOpMode {
 
             if (blocks.length != 0) {
                 targetTagPos = getTargetTag(blocks, alliance.RED); //TODO: this is just an example, change alliance later
-                telemetry.addData("Found target tag: ", targetTagPos);
+                telemetry.addData("Found target prop: ", targetTagPos);
             } else {
                 telemetry.addLine("Don't see the prop :(");
 
                 if (targetTagPos == -1) {
-                    telemetry.addLine("(The tag has never been seen)");
+                    telemetry.addLine("(The prop has never been seen)");
                 } else {
-                    telemetry.addLine("\nBut we HAVE seen the tag before");
+                    telemetry.addLine("\nBut we HAVE seen the prop before");
+                    telemetry.addData("which was: ", targetTagPos);
                 }
 
-                telemetry.update();
                 sleep(20);
             }
+            telemetry.update();
         }
 
         Action trajectory;
@@ -379,10 +381,10 @@ public class AutoTest extends ActionOpMode {
         //        return 1;
 
         if (blocks.length == 1) {
-            if (blocks[0].x < 120) {
+            if (blocks[0].x < 110) {
                 // Prop is on left
                 propPos = (a == alliance.BLUE) ? 1 : 4;
-            } else if (blocks[0].x > 200) {
+            } else if (blocks[0].x > 210) {
                 // prop is on right
                 propPos = (a == alliance.BLUE) ? 3 : 6;
             } else {
