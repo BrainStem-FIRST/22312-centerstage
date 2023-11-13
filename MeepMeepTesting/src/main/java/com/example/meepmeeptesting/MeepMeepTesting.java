@@ -92,24 +92,35 @@ public class MeepMeepTesting {
 
         Action trajectory =
                 myBot.getDrive().actionBuilder(new Pose2d(-36,-61, Math.toRadians(-90)))
-                        // go backwards
                         .setReversed(true)
 
-                        // Replace prop with your yellow pixel (just push)
-                        .lineToY(vRedRightSpike_Center.y + robot_length / 2)
+                        // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
+                        .lineToYSplineHeading(vRedLeftSpike_Right.y, Math.toRadians(0))
+                        .endTrajectory()
+                        .lineToX(vRedLeftSpike_Right.x - robot_length / 2)
 
+                        // Drop yellow pixel in position
 //                        .stopAndAdd(new Action() {
 //                            @Override
 //                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                                telemetry.addLine("Spit out yellow pixel on center spike.");
+//                                telemetry.addLine("Spit out yellow pixel at right spike.");
 //                                telemetry.update();
 //                                return false;
 //                            }
 //                        })
+
+                        // Discontinue trajectory
+                        .endTrajectory()
                         .setReversed(true)
+
                         // Goto Backdrop to place your purple pixel
-                        .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
-                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                        .setTangent(Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER, -TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
+
+//                        .setReversed(true)
+                        .splineTo(vRedClearStageGate, Math.toRadians(0))
+//                        .setReversed(true)// First clear the trusses
+                        .splineTo(vRedBackdrop_Right, Math.toRadians(0))
 
                         .build();
 

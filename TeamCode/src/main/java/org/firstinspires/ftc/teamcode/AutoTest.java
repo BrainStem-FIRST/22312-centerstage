@@ -79,7 +79,9 @@ public class AutoTest extends ActionOpMode {
 
     // Backdrop April Tag Positions
     public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER + 6);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
+//    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(36,-36);
+
     public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER - 6);
 
     public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, 1.5 * TILE_CENTER_TO_CENTER - 6);
@@ -128,6 +130,21 @@ public class AutoTest extends ActionOpMode {
         Pose2d startingPose = pStartingPose_RedLeft;
         drive.pose = startingPose;
 
+        Action reverseTest =
+                drive.actionBuilder(startingPose)
+                        .setReversed(true)
+                        .lineToY(-48)
+                        .setReversed(false)
+                        .lineToY(-60)
+                        .build();
+
+//        Action turnTest =
+//                drive.actionBuilder(startingPose)
+//                        .setReversed(true)
+//                        .lineToY(-48)
+//                        .turn(Math.toRadians(0))
+//                        .build();
+
         // Define trajectories for each target position
         Action traj_center =
                 drive.actionBuilder(startingPose)
@@ -137,17 +154,19 @@ public class AutoTest extends ActionOpMode {
                         // Replace prop with your yellow pixel (just push)
                         .lineToY(vRedRightSpike_Center.y + robot_length / 2)
 
-//                        .stopAndAdd(new Action() {
-//                            @Override
-//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                                telemetry.addLine("Spit out yellow pixel on center spike.");
-//                                telemetry.update();
-//                                return false;
-//                            }
-//                        })
-                        .setReversed(true)
-                        // Goto Backdrop to place your purple pixel
-                        .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
+                        .stopAndAdd(new Action() {
+                            @Override
+                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                                telemetry.addLine("Spit out yellow pixel on center spike.");
+                                telemetry.update();
+                                return false;
+                            }
+                        })
+                        .endTrajectory()
+                        .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
+
+                        // Go to backdrop to place your purple pixel
+                        .splineTo(vRedClearStageGate, Math.toRadians(0))      // First clear the trusses
                         .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
 
                         .build();
@@ -160,18 +179,19 @@ public class AutoTest extends ActionOpMode {
                         .splineTo(vRedLeftSpike_Left, Math.toRadians(90))
                         .lineToY(vRedLeftSpike_Left.y + robot_length / 2)
 
-//                        .stopAndAdd(new Action() {
-//                            @Override
-//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                                telemetry.addLine("Spit out yellow pixel at left spike.");
-//                                telemetry.update();
-//                                return false;
-//                            }
-//                        })
-//
-//                        .setReversed(true)
+                        .stopAndAdd(new Action() {
+                            @Override
+                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                                telemetry.addLine("Spit out yellow pixel at left spike.");
+                                telemetry.update();
+                                return false;
+                            }
+                        })
 
-                        // Goto Backdrop to place your purple pixel
+                        .endTrajectory()
+                        .setReversed(true)
+
+                        // Go to backdrop to place your purple pixel
                         .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
                         .splineTo(vRedBackdrop_Left, Math.toRadians(0))     // Then, go to designated tag position
 
@@ -199,13 +219,15 @@ public class AutoTest extends ActionOpMode {
 
                         // Discontinue trajectory
                         .endTrajectory()
+                        .setReversed(true)
 
                         // Goto Backdrop to place your purple pixel
-                        .setReversed(true)
                         .setTangent(Math.toRadians(135))
                         .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER, -TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
 
-                        .splineTo(vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
+//                        .setReversed(true)
+                        .splineTo(vRedClearStageGate, Math.toRadians(0))
+//                        .setReversed(true)// First clear the trusses
                         .splineTo(vRedBackdrop_Right, Math.toRadians(0))
 
                         .build();
@@ -279,14 +301,7 @@ public class AutoTest extends ActionOpMode {
 
             runBlocking(trajectory);
 
-//            runBlocking(
-//                    new SequentialAction(
-//                            trajectory,
-//
-//                            drive.actionBuilder(drive.pose)
-//                                    .turn(getAlignmentAngle(sensorDistanceLeft, sensorDistanceRight, telemetry))
-//                                    .build()
-//                    ));
+//            runBlocking(turnTest);
 
             /*****************  Huskylens test  *****************************/
 
