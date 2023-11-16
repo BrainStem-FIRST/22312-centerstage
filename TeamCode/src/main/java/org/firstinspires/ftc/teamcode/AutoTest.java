@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
-
-import android.drm.DrmStore;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -11,21 +7,13 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Trajectory;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.opencv.core.Mat;
 
 @Config
 @Autonomous (name="Robot: Auto Test", group="Robot")
@@ -102,6 +90,7 @@ public class AutoTest extends ActionOpMode {
     public static Pose2d pStartingPose_BlueRight = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2, Math.toRadians(90));
     public static Pose2d pStartingPose_BlueLeft = new Pose2d(0.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2, Math.toRadians(90));
 
+    public Alliance alliance = Alliance.RED;
 
     @Override
     public void runOpMode() {
@@ -250,6 +239,7 @@ public class AutoTest extends ActionOpMode {
 
         // find prop and target tag before START
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+        sleep(100);
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -258,7 +248,7 @@ public class AutoTest extends ActionOpMode {
             telemetry.addData("amount of blocks", blocks.length);
 
             if (blocks.length != 0) {
-                targetTagPos = getTargetTag(blocks, alliance.RED); //TODO: this is just an example, change alliance later
+                targetTagPos = getTargetTag(blocks, Alliance.RED); //TODO: this is just an example, change alliance later
                 telemetry.addData("Found target prop: ", targetTagPos);
             } else {
                 telemetry.addLine("Don't see the prop :(");
@@ -274,6 +264,10 @@ public class AutoTest extends ActionOpMode {
             }
             telemetry.update();
         }
+
+        ////////////// Start is given ///////////////
+
+        // If the prop never seen, set it to Center
 
         Action trajectory;
 
@@ -292,6 +286,13 @@ public class AutoTest extends ActionOpMode {
                 break;
             default:
                 trajectory = traj_center;
+                //if we dont see the prop this will default to center5
+                if (alliance == Alliance.RED) {
+                    targetTagPos = 5;
+                }
+                else {
+                    targetTagPos = 2;
+                }
                 break;
         }
 
@@ -300,6 +301,7 @@ public class AutoTest extends ActionOpMode {
         while (opModeIsActive()) {
 
             runBlocking(trajectory);
+
 
 //            runBlocking(turnTest);
 
@@ -313,6 +315,8 @@ public class AutoTest extends ActionOpMode {
 
 // TODO: Move the AprilTag read and strafe to a separate method
             huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
+            sleep(100);
+
             blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
 
@@ -331,6 +335,7 @@ public class AutoTest extends ActionOpMode {
             }
 
             telemetry.addData("block of interest is in slot", targetBlockPos);
+            telemetry.addData("target tag pose ", targetTagPos);
             telemetry.update();
 
             error = blocks[targetBlockPos].x - 160;
@@ -380,7 +385,7 @@ public class AutoTest extends ActionOpMode {
     }
 
 
-    enum alliance {
+    public enum Alliance {
         RED,
         BLUE
     }
@@ -388,7 +393,7 @@ public class AutoTest extends ActionOpMode {
 
     // Returns the position of the prop.
     // If not recognized, returns CENTER (2 or 5 depending on alliance)
-    int getTargetTag(HuskyLens.Block[] blocks, alliance a) {
+    int getTargetTag(HuskyLens.Block[] blocks, Alliance a) {
 
         int propPos;
         // for test purposes, return a known value
@@ -398,17 +403,17 @@ public class AutoTest extends ActionOpMode {
         if (blocks.length == 1) {
             if (blocks[0].x < 110) {
                 // Prop is on left
-                propPos = (a == alliance.BLUE) ? 1 : 4;
+                propPos = (a == Alliance.BLUE) ? 1 : 4;
             } else if (blocks[0].x > 210) {
                 // prop is on right
-                propPos = (a == alliance.BLUE) ? 3 : 6;
+                propPos = (a == Alliance.BLUE) ? 3 : 6;
             } else {
                 // prop is on center
-                propPos = (a == alliance.BLUE) ? 2 : 5;
+                propPos = (a == Alliance.BLUE) ? 2 : 5;
             }
         } else {
             // could not recognize; return center
-            propPos = (a == alliance.BLUE) ? 2 : 5;
+            propPos = (a == Alliance.BLUE) ? 2 : 5;
         }
 
         return propPos;
