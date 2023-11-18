@@ -66,11 +66,12 @@ public class AutoTest extends ActionOpMode {
     public static double FIELD_BACKDROP_X = TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
     // Backdrop April Tag Positions
-    public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER + 6);
+//    public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER + 6);
+    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
 //    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
     public static Vector2d vRedBackdrop_Center = new Vector2d(36,-36);
-
-    public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER - 6);
+//    public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER - 6);
+    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
     public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, 1.5 * TILE_CENTER_TO_CENTER - 6);
     public static Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, 1.5 * TILE_CENTER_TO_CENTER);
@@ -298,6 +299,11 @@ public class AutoTest extends ActionOpMode {
 
 //          waitForStart();
 
+
+        // Change recognition mode to AprilTags before the While Loop
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
+        sleep(100);
+
         while (opModeIsActive()) {
 
             runBlocking(trajectory);
@@ -314,20 +320,26 @@ public class AutoTest extends ActionOpMode {
             // 5. Turn left or right just the right amount to align robot with the backdrop using distance sensors
 
 // TODO: Move the AprilTag read and strafe to a separate method
-            huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-            sleep(100);
+
+            int testCounter = 1;
 
             blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
+            telemetry.addData("Found in attempt #", testCounter);
 
-            if (blocks.length == 0) {
-                telemetry.update();
-                continue;   // if no tags recognized, do not proceed; just restart the while loop and re-read blocks
-            }
+//            while (blocks.length == 0) {
+//                blocks = huskyLens.blocks(); // if no tags recognized, do not proceed; just restart the while loop and re-read blocks
+//                testCounter++;
+//                telemetry.addData("Block count", blocks.length);
+//                telemetry.addData("Found in attempt #", testCounter);
+//            }
+
+            telemetry.update();
 
             // poll all block[i] and check if any of their id matches targetPos
             // targetBlock = i
 
+            targetBlockPos = -1;    // This will crash the program if no blocks were seen.
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
 
@@ -336,10 +348,31 @@ public class AutoTest extends ActionOpMode {
 
             telemetry.addData("block of interest is in slot", targetBlockPos);
             telemetry.addData("target tag pose ", targetTagPos);
-            telemetry.update();
 
-            error = blocks[targetBlockPos].x - 160;
-            telemetry.addData("error", error);
+            if(targetBlockPos >= 0) {
+                error = blocks[targetBlockPos].x - 160;
+                telemetry.addData("error", error);
+            }
+            else {
+                if (blocks.length == 0) {
+                    telemetry.addLine("didn't see anything");
+                    if (drive.pose.position.y < vRedBackdrop_Center.y) {    // applicable for RED backdrop
+                        error = -160;
+                    }
+                    else {
+                        error = 160;
+                    }
+                }
+                else {
+                    telemetry.addData("block: ", blocks);
+                    if (blocks[0].id > targetTagPos) {
+                        error = -160;
+                    }
+                    else {
+                        error = 160;
+                    }
+                }
+            }
 
             // which way to strafe?
             if (error < 0)
@@ -357,7 +390,11 @@ public class AutoTest extends ActionOpMode {
                         ),
                         0.0
                 ));
-            } else approached = true;
+            }
+            else {
+                approached = true;
+                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+            }
 
             drive.updatePoseEstimate();
 
@@ -368,15 +405,15 @@ public class AutoTest extends ActionOpMode {
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
 
+
             telemetry.update();
 
-//                // check if aligned
-//                distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
-//                distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
-//                if (Math.abs(distanceLeft - distanceRight) < 10) {
-//                    aligned = true;
-//                }
-//            }
+            // check if aligned
+            distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
+            distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
+            if (Math.abs(distanceLeft - distanceRight) < 10) {
+                aligned = true;
+            }
 
 
             //TODO: anything else here? what would i say?
