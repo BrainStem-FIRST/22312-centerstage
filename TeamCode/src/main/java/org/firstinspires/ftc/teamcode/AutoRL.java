@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
-@Autonomous (name="Robot: Auto Test", group="Robot")
-public class AutoTest extends ActionOpMode {
+@Autonomous (name="Robot: Red-Left Auto", group="Robot")
+public class AutoRL extends ActionOpMode{
     HuskyLens huskyLens;
 
     /********************************************
@@ -32,6 +32,8 @@ public class AutoTest extends ActionOpMode {
     static double TILE_CENTER_TO_CENTER = 23.625;
     static double TILE_CENTER_TO_EDGE = 23.25;
     static double TILE_TEETH = 0.75;
+
+    public boolean isOrientationLEFT, orientationIsSet, isAllianceRed, allianceIsSet, programConfirmation;
 
     static double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
@@ -67,11 +69,11 @@ public class AutoTest extends ActionOpMode {
 
     // Backdrop April Tag Positions
 //    public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER + 6);
-    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
+    public static Vector2d vRedBackdrop_Left = new Vector2d(30, -28);
 //    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(36,-36);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(30,-36);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER - 6);
-    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
+    public static Vector2d vRedBackdrop_Right = new Vector2d(30, -40);
 
     public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, 1.5 * TILE_CENTER_TO_CENTER - 6);
     public static Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, 1.5 * TILE_CENTER_TO_CENTER);
@@ -225,6 +227,7 @@ public class AutoTest extends ActionOpMode {
 
         // Additional variables
         int direction = 1;
+        int angleDirection = 1;
         int error;
 
         double distanceLeft = 0;
@@ -375,26 +378,41 @@ public class AutoTest extends ActionOpMode {
             }
 
             // which way to strafe?
-            if (error < 0)
-                direction = -1;
-            else {
+            if (error > 60) {
                 direction = 1;
+            } else if (error < -60){
+                direction = -1;
+            } else {
+                direction = 0;
+            }
+
+            // check if aligned
+            distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
+            distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
+
+            telemetry.addData("distance right", distanceRight);
+            telemetry.addData("distance left", distanceLeft);
+
+            if (Math.abs(distanceRight - distanceLeft) > 30) {
+                if (distanceRight > distanceLeft) {
+                    angleDirection = 1;
+                } else {
+                    angleDirection = -1;
+                }
+            }
+            else {
+                angleDirection = 0;
             }
 
             // Strafe left or right to approach to the target tag
-            if (!approached && Math.abs(error) > 10) {
-                drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                0.0,
-                                0.2 * direction
-                        ),
-                        0.0
-                ));
-            }
-            else {
-                approached = true;
-                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
-            }
+            drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            0.0,
+                            0.2 * direction
+                    ),
+                    0.2 * angleDirection
+            ));
+
 
             drive.updatePoseEstimate();
 
@@ -407,16 +425,6 @@ public class AutoTest extends ActionOpMode {
 
 
             telemetry.update();
-
-            // check if aligned
-            distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
-            distanceRight = sensorDistanceRight.getDistance(DistanceUnit.MM);
-            if (Math.abs(distanceLeft - distanceRight) < 10) {
-                aligned = true;
-            }
-
-
-            //TODO: anything else here? what would i say?
 
         }
     }
