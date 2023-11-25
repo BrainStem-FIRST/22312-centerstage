@@ -23,19 +23,21 @@ public class BrainSTEMRobot {
 
     public MecanumDrive drive;
     public Arm arm;
+
+    public Hanging hanging;
     private Map stateMap;
     Constants constants = new Constants();
     public BrainSTEMRobot(HardwareMap hardwareMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
         this.stateMap =  stateMap;
 
-//        lift = new Lift(hardwareMap, telemetry, stateMap);
-        hopper = new Hopper(hardwareMap, telemetry, stateMap);
-        intake = new Intake(hardwareMap, telemetry, stateMap, hopper);
-        fulcrum = new Fulcrum(hardwareMap, telemetry, stateMap);
-        drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
-        arm = new Arm(hardwareMap, telemetry, stateMap);
-        lift = new Lift(hardwareMap, telemetry,stateMap);
+//        hopper = new Hopper(hardwareMap, telemetry, stateMap);
+//        intake = new Intake(hardwareMap, telemetry, stateMap, hopper);
+//        fulcrum = new Fulcrum(hardwareMap, telemetry, stateMap);
+//        drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
+//        arm = new Arm(hardwareMap, telemetry, stateMap);
+//        lift = new Lift(hardwareMap, telemetry,stateMap);
+        hanging = new Hanging(hardwareMap, telemetry, stateMap);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
@@ -55,11 +57,12 @@ public class BrainSTEMRobot {
         if(pixelPickup.equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
             pixelPickupFunction();
         } else {
-            hopper.setState();
-            intake.setState();
-            fulcrum.setState();
-            drawbridge.setState();
-            arm.setState();
+//            hopper.setState();
+//            intake.setState();
+//            fulcrum.setState();
+//            drawbridge.setState();
+//            arm.setState();
+            hanging.setState();
 //            lift.setState();
         }
     }
