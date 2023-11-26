@@ -55,4 +55,5 @@ public class AutoConstants {
     public static Pose2d pStartingPose_BlueRight = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2, Math.toRadians(90));
     public static Pose2d pStartingPose_BlueLeft = new Pose2d(0.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2, Math.toRadians(90));
 
+    public static int targetDistance = 100; //in MM
 }

@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -108,4 +114,33 @@ public class Intake {
             }
         }
     }
+
+    // This method is for Auto use only
+    public void spitPixelinAuto() {
+        // Start rotating motor
+        intakeMotor.setPower(0.2);
+    }
+
+    public  void stopIntakeinAuto() {
+        // Stop motor
+        intakeMotor.setPower(0);
+    }
+
+    public Action spitPixel = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    spitPixelinAuto();
+                    return false;
+                }
+            },
+            new SleepAction(1000),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
 }

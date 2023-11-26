@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,6 +21,7 @@ public class BrainSTEMRobot {
     public Fulcrum fulcrum;
     public Intake intake;
     public Drawbridge drawbridge;
+    public HuskyLens huskyLens;
 
     public MecanumDrive drive;
     public Arm arm;
@@ -36,6 +38,7 @@ public class BrainSTEMRobot {
         drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
         arm = new Arm(hardwareMap, telemetry, stateMap);
         lift = new Lift(hardwareMap, telemetry,stateMap);
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
