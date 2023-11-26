@@ -20,7 +20,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.robot.BrainSTEMRobot;
+import org.firstinspires.ftc.teamcode.robot.Constants;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AutoAbstractOpMode extends LinearOpMode{
@@ -33,7 +35,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode{
     public abstract Alliance alliance();
 
     HardwareMap hardwareMap;
-    Map stateMap;
+    Map<String, String> stateMap = new HashMap<String, String>() {{ }};
 
 
     public void runOpMode() {

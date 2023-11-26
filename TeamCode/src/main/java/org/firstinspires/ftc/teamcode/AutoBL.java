@@ -5,18 +5,18 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 import org.firstinspires.ftc.teamcode.robot.BrainSTEMRobot;
 
-public class AutoBR extends AutoAbstractOpMode {
+public class AutoBL extends AutoAbstractOpMode{
 
     AutoConstants constants;
 
     @Override
     public Pose2d startPose() {
-        return constants.pStartingPose_BlueRight;
+        return constants.pStartingPose_BlueLeft;
     }
 
     @Override
     public Action traj_left(MecanumDrive drive, BrainSTEMRobot robot) {
-        return drive.actionBuilder(constants.pStartingPose_BlueRight)
+        return drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
 
@@ -36,12 +36,12 @@ public class AutoBR extends AutoAbstractOpMode {
 
     @Override
     public Action traj_center(MecanumDrive drive, BrainSTEMRobot robot) {
-        return drive.actionBuilder(constants.pStartingPose_BlueRight)
+        return drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueRightSpike_Center.y + constants.robot_length / 2)
+                .lineToY(constants.vBlueLeftSpike_Center.y + constants.robot_length / 4)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -49,14 +49,12 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))      // First clear the trusses
                 .splineTo(constants.vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
-
     @Override
     public Action traj_right(MecanumDrive drive, BrainSTEMRobot robot) {
-        return drive.actionBuilder(constants.pStartingPose_BlueRight)
+        return drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
 
@@ -73,15 +71,13 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))
+                .splineTo(constants.vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
     @Override
     public Alliance alliance() {
-        return Alliance.BLUE;
+        return null;
     }
 }

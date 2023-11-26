@@ -31,14 +31,13 @@ public class BrainSTEMRobot {
         this.telemetry = telemetry;
         this.stateMap =  stateMap;
 
-//        lift = new Lift(hardwareMap, telemetry, stateMap);
-        hopper = new Hopper(hardwareMap, telemetry, stateMap);
-        intake = new Intake(hardwareMap, telemetry, stateMap, hopper);
         fulcrum = new Fulcrum(hardwareMap, telemetry, stateMap);
         drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
         arm = new Arm(hardwareMap, telemetry, stateMap);
         lift = new Lift(hardwareMap, telemetry,stateMap);
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        hopper = new Hopper(hardwareMap, telemetry, stateMap);
+        intake = new Intake(hardwareMap, telemetry, stateMap, hopper);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
@@ -63,7 +62,7 @@ public class BrainSTEMRobot {
             fulcrum.setState();
             drawbridge.setState();
             arm.setState();
-//            lift.setState();
+            lift.setState();
         }
     }
 
