@@ -1,13 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static org.firstinspires.ftc.teamcode.AutoConstants.targetDistance;
-import static org.firstinspires.ftc.teamcode.AutoConstants.vRedBackdrop_Center;
+import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.targetDistance;
+import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.vRedBackdrop_Center;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -17,26 +13,23 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.robot.BrainSTEMRobot;
-import org.firstinspires.ftc.teamcode.robot.Constants;
+import org.firstinspires.ftc.teamcode.ActionOpMode;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AutoAbstractOpMode extends LinearOpMode{
+public abstract class AutoAbstractOpMode extends ActionOpMode {
 
-    public abstract Pose2d startPose();
-    public abstract Action traj_left(MecanumDrive drive, BrainSTEMRobot robot);
-    public abstract Action traj_center(MecanumDrive drive, BrainSTEMRobot robot);
-    public abstract Action traj_right(MecanumDrive drive, BrainSTEMRobot robot);
+    public Pose2d startingPose;
+    public abstract Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot);
+    public abstract Action traj_center(BrainSTEMRobotA robot);
+    public abstract Action traj_right(MecanumDrive drive, BrainSTEMRobotA robot);
 
     public abstract Alliance alliance();
 
-    HardwareMap hardwareMap;
-    Map<String, String> stateMap = new HashMap<String, String>() {{ }};
-
+//    HardwareMap hardwareMap;
 
     public void runOpMode() {
 
@@ -45,20 +38,19 @@ public abstract class AutoAbstractOpMode extends LinearOpMode{
         /******************************************************/
 
         // Huskylens initialization (device and Selection of algorithm
-        BrainSTEMRobot robot = new BrainSTEMRobot(hardwareMap, telemetry, stateMap);
+        BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
         DistanceSensor sensorDistanceLeft, sensorDistanceRight;
-        sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "sensor_distanceLeft");
-        sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "sensor_distanceRight");
+        sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
 
         // TODO: Determine Alliance (RED/BLUE) and Orientation (LEFT/RIGHT)
         // Assume RED-LEFT for now
 
         // Setup possible trajectories
-        Pose2d startingPose = startPose();
         robot.drive.pose = startingPose;
 
         // Additional variables
@@ -69,8 +61,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode{
 
         double distanceLeft = 0;
         double distanceRight = 0;
-        boolean approached = false; // indicator that the robot is close enough to the desired tag
-        boolean aligned = false;
 
         // TODO: Read blocks continuously until Start. Have some feedback to DS to confirm recognition
 
@@ -118,14 +108,14 @@ public abstract class AutoAbstractOpMode extends LinearOpMode{
                 break;
             case 2:
             case 5:
-                trajectory = traj_center(robot.drive, robot);
+                trajectory = traj_center(robot);
                 break;
             case 3:
             case 6:
                 trajectory = traj_right(robot.drive, robot);
                 break;
             default:
-                trajectory = traj_center(robot.drive, robot);
+                trajectory = traj_center(robot);
                 //if we dont see the prop this will default to center5
                 if (alliance() == Alliance.RED) {
                     targetTagPos = 5;
@@ -145,6 +135,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode{
 
             runBlocking(trajectory);
 
+            
 // TODO: Move the AprilTag read and strafe to a separate method
 
             blocks = robot.huskyLens.blocks();
@@ -239,9 +230,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode{
 
 
             robot.drive.updatePoseEstimate();
-
-            telemetry.addData("Approached=", approached);
-            telemetry.addData("Aligned   =", aligned);
 
             telemetry.addData("x", robot.drive.pose.position.x);
             telemetry.addData("y", robot.drive.pose.position.y);

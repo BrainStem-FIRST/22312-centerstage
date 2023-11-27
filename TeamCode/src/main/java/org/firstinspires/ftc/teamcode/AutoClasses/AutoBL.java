@@ -1,21 +1,22 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
-import org.firstinspires.ftc.teamcode.robot.BrainSTEMRobot;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.AutoClasses.BrainSTEMRobotA;
 
-public class AutoBL extends AutoAbstractOpMode{
+public class AutoBL extends AutoAbstractOpMode {
 
     AutoConstants constants;
 
-    @Override
+
     public Pose2d startPose() {
         return constants.pStartingPose_BlueLeft;
     }
 
     @Override
-    public Action traj_left(MecanumDrive drive, BrainSTEMRobot robot) {
+    public Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot) {
         return drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
@@ -35,8 +36,8 @@ public class AutoBL extends AutoAbstractOpMode{
     }
 
     @Override
-    public Action traj_center(MecanumDrive drive, BrainSTEMRobot robot) {
-        return drive.actionBuilder(constants.pStartingPose_BlueLeft)
+    public Action traj_center(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
 
@@ -53,7 +54,7 @@ public class AutoBL extends AutoAbstractOpMode{
                 .build();
     }
     @Override
-    public Action traj_right(MecanumDrive drive, BrainSTEMRobot robot) {
+    public Action traj_right(MecanumDrive drive, BrainSTEMRobotA robot) {
         return drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)

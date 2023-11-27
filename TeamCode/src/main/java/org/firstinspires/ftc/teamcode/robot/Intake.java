@@ -35,7 +35,7 @@ public class Intake {
 
     public ElapsedTime timeBetweenIntakeSpit = new ElapsedTime();
 
-    public Intake(HardwareMap hwMap, Telemetry telemetry, Map stateMap, Hopper hopper){
+    public Intake(HardwareMap hwMap, Telemetry telemetry, Map stateMap, Hopper hopper) {
         this.telemetry = telemetry;
         this.stateMap = stateMap;
         intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
@@ -46,25 +46,25 @@ public class Intake {
         this.hopper = hopper;
     }
 
-    public void setState(){
-        String pixelString = (String)stateMap.get(constants.NUMBER_OF_PIXELS);
+    public void setState() {
+        String pixelString = (String) stateMap.get(constants.NUMBER_OF_PIXELS);
         int numOfPixels;
-        if(pixelString.equalsIgnoreCase(constants.PIXEL_PICKUP_2_PIXELS)){
+        if (pixelString.equalsIgnoreCase(constants.PIXEL_PICKUP_2_PIXELS)) {
             numOfPixels = 2;
-        } else{
+        } else {
             numOfPixels = 1;
         }
         telemetry.addData("Num of pixels", numOfPixels);
-        telemetry.addData("cycle in progress",cycleInProgress());
-        if(cycleInProgress()) {
+        telemetry.addData("cycle in progress", cycleInProgress());
+        if (cycleInProgress()) {
             updatePixelPickupState(numOfPixels);
         }
-        if(cycleInProgress()){
+        if (cycleInProgress()) {
             intakeMotor.setPower(0.8);
-        } else if(((String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_SPITTING)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
-            if(cycleSpitTime.seconds() <= 1.5){
+        } else if (((String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_SPITTING)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)) {
+            if (cycleSpitTime.seconds() <= 1.5) {
                 intakeMotor.setPower(-1.0);
-            } else{
+            } else {
                 stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_COMPLETE);
                 intakeMotor.setPower(0);
             }
@@ -73,74 +73,45 @@ public class Intake {
         }
     }
 
-    private void updatePixelPickupState(int numOfPixels){
-        String hopperState = (String)stateMap.get(hopper.HOPPER_SYSTEM_NAME);
-        if(hopperState.equalsIgnoreCase(hopper.HOPPER_ONE_PIXEL) && numOfPixels == 1){
+    private void updatePixelPickupState(int numOfPixels) {
+        String hopperState = (String) stateMap.get(hopper.HOPPER_SYSTEM_NAME);
+        if (hopperState.equalsIgnoreCase(hopper.HOPPER_ONE_PIXEL) && numOfPixels == 1) {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
             timeBetweenIntakeSpit.reset();
         }
-        if(hopperState.equalsIgnoreCase(hopper.HOPPER_TWO_PIXELS) && numOfPixels == 2) {
+        if (hopperState.equalsIgnoreCase(hopper.HOPPER_TWO_PIXELS) && numOfPixels == 2) {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
             timeBetweenIntakeSpit.reset();
         }
     }
 
-    private boolean cycleInProgress(){
+    private boolean cycleInProgress() {
         String intakeCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
-        if(intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
+        if (intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)) {
             telemetry.addLine("Cycle was true");
         }
         return intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
     }
 
-    private boolean intakeShouldMove(){
-        String intakeState = (String)stateMap.get(INTAKE_SYSTEM_NAME);
+    private boolean intakeShouldMove() {
+        String intakeState = (String) stateMap.get(INTAKE_SYSTEM_NAME);
         String pixelState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
-        if(pixelState.equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS) || intakeState.equals(INTAKE_SPITTING_STATE)){
+        if (pixelState.equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS) || intakeState.equals(INTAKE_SPITTING_STATE)) {
             return true;
         }
         return false;
     }
 
-    private void selectTransition(){
+    private void selectTransition() {
         String state = (String) stateMap.get(INTAKE_SYSTEM_NAME);
         String pixelCycleIntake = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
-        switch(state){
-            case INTAKE_PIXEL_PICKUP_STATE_IN_PROGRESS:{
+        switch (state) {
+            case INTAKE_PIXEL_PICKUP_STATE_IN_PROGRESS: {
                 intakeMotor.setPower(1.0);
             }
-            case INTAKE_SPITTING_STATE:{
+            case INTAKE_SPITTING_STATE: {
                 intakeMotor.setPower(1.0);
             }
         }
     }
-
-    // This method is for Auto use only
-    public void spitPixelinAuto() {
-        // Start rotating motor
-        intakeMotor.setPower(0.2);
-    }
-
-    public  void stopIntakeinAuto() {
-        // Stop motor
-        intakeMotor.setPower(0);
-    }
-
-    public Action spitPixel = new SequentialAction(
-            new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    spitPixelinAuto();
-                    return false;
-                }
-            },
-            new SleepAction(1000),
-            new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    stopIntakeinAuto();
-                    return false;
-                }
-            }
-    );
 }
