@@ -15,7 +15,7 @@ public class AutoRL extends AutoAbstractOpMode {
     AutoConstants constants;
 
     public Pose2d startPose() {
-        return constants.pStartingPose_RedLeft;
+        return new Pose2d(-1.5 * constants.TILE_CENTER_TO_CENTER, -constants.FIELD_BOUNDARY_FROM_CENTER + constants.robot_length / 2, Math.toRadians(-90));
     }
 
     @Override

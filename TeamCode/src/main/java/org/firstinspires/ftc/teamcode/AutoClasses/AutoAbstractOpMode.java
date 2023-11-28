@@ -30,7 +30,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     public abstract Alliance alliance();
 
 //    HardwareMap hardwareMap;
-
+    @Override
     public void runOpMode() {
 
         /************** Hardware Initialization ***************/
@@ -108,14 +108,20 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 break;
             case 2:
             case 5:
+                telemetry.addLine("it did not select the program yet");
                 trajectory = traj_center(robot);
+                telemetry.addLine("it did the thing");
+                telemetry.update();
                 break;
             case 3:
             case 6:
                 trajectory = traj_right(robot.drive, robot);
                 break;
             default:
+                telemetry.addLine("it did not select the program yet");
                 trajectory = traj_center(robot);
+                telemetry.addLine("it did the thing");
+                telemetry.update();
                 //if we dont see the prop this will default to center5
                 if (alliance() == Alliance.RED) {
                     targetTagPos = 5;
@@ -133,9 +139,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         while (opModeIsActive()) {
 
+//            telemetry.addLine("no");
+//            telemetry.update();
             runBlocking(trajectory);
+            telemetry.addLine("yes");
+            telemetry.update();
 
-            
 // TODO: Move the AprilTag read and strafe to a separate method
 
             blocks = robot.huskyLens.blocks();
