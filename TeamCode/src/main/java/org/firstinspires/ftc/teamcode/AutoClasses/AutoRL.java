@@ -96,9 +96,10 @@ public class AutoRL extends ActionOpMode {
         // Assume RED-LEFT for now
 
         // Setup possible trajectories
+        startingPose = startPose();
         robot.drive.pose = startingPose;
 
-        Action traj_center = robot.drive.actionBuilder(startPose())
+        Action traj_center = robot.drive.actionBuilder(startingPose)
                 // go backwards
                 .setReversed(true)
 
