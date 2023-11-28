@@ -34,7 +34,8 @@ public class IntakeA {
     // This method is for Auto use only
     public void spitPixelinAuto() {
         // Start rotating motor
-        intakeMotor.setPower(0.2);
+        intakeMotor.setPower(-0.5);
+
     }
 
     public  void stopIntakeinAuto() {
@@ -50,7 +51,7 @@ public class IntakeA {
                     return false;
                 }
             },
-            new SleepAction(1000),
+            new SleepAction(1.5),
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

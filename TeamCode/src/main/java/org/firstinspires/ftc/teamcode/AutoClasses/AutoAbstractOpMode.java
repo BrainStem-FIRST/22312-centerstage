@@ -22,7 +22,7 @@ import java.util.Map;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
 
-    public Pose2d startingPose;
+    public abstract Pose2d startPose();
     public abstract Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot);
     public abstract Action traj_center(BrainSTEMRobotA robot);
     public abstract Action traj_right(MecanumDrive drive, BrainSTEMRobotA robot);
@@ -51,7 +51,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         // Assume RED-LEFT for now
 
         // Setup possible trajectories
-        robot.drive.pose = startingPose;
+        robot.drive.pose = startPose();
 
         // Additional variables
         int xDirection = 1;
@@ -219,9 +219,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             if (Math.abs(distanceRight - targetDistance) > 10) {
                 if (distanceRight < targetDistance) {
-                    xDirection = -1;
-                } else {
                     xDirection = 1;
+                } else {
+                    xDirection = -1;
                 }
             }
             else {
