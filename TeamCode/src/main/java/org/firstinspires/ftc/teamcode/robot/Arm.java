@@ -23,19 +23,22 @@ public class Arm {
     private Map stateMap;
 
     public AnalogInput armEncoder;
+    private Lift lift;
 
     public AbsoluteAnalogEncoder encoder;
-    private double leftServoLowerPWMLimit = 900;
-    private double  leftServoHigherPWMLimit= 2000;
+    private double leftServoLowerPWMLimit = 930;
+    private double  leftServoHigherPWMLimit= 2520;
 
-    private double rightServoPWMHigherLimit = 2300;
-    private double rightServoPWMLowerLimit = 535;
+    private double rightServoPWMHigherLimit = 2093;
+    private double rightServoPWMLowerLimit = 531;
 
     private double rightDepositPosition = 0;
     private double leftDepositPosition = 1.0;
     private double rightIdlePosition = 1.0;
     private double leftIdlePosition = 0.0;
-    private double encoderOffset = 0;
+    private double encoderOffset = 1.53;
+
+    private int liftMinPosition = 200;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
@@ -53,8 +56,10 @@ public class Arm {
 
     }
 
-    public void setState(){
-        selectTransition();
+    public void setState(Lift lift){
+        if(lift.liftMotor1.getCurrentPosition() > liftMinPosition){
+            selectTransition();
+        }
     }
 
     private void selectTransition(){
@@ -76,14 +81,14 @@ public class Arm {
     private void armToDepositPosition(){
 //        leftArmServo.setPosition(leftIdlePosition);
         telemetry.addData("Arm Position Called", "Deposit");
-//        rightArmServo.setPosition(0.01);
-        leftArmServo.setPosition(0.01);
+//        rightArmServo.setPosition(0.03);
+        leftArmServo.setPosition(0.93);
     }
     private void armToIdlePosition(){
 //        leftArmServo.setPosition(leftDepositPosition);
         telemetry.addData("Arm Position Called", "Idle");
-//        rightArmServo.setPosition(0.99);
-        leftArmServo.setPosition(0.99);
+//        rightArmServo.setPosition(0.95);
+        leftArmServo.setPosition(0.03);
 
     }
 }

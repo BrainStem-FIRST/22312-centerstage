@@ -19,7 +19,7 @@ public class Fulcrum {
     private final double down = 1.0;
     private final double up = 0;
     private double lowerPWMLimit = 352;
-    private double upperPWMLimit = 1070;
+    private double upperPWMLimit = 1400;
     public ElapsedTime fulcrumCycleTime = new ElapsedTime();
 
     private Constants constants = new Constants();

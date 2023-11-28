@@ -3,7 +3,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
@@ -20,7 +19,7 @@ public class AbsoluteAnalogEncoder {
     private double modifier;
 
     private final static double GEAR_RATIO = 1.0;
-
+    private AngleJavaClass Angle = new AngleJavaClass();
 
     public AbsoluteAnalogEncoder(AnalogInput enc){
         this(enc, DEFAULT_RANGE);

@@ -10,7 +10,8 @@ public class Constants {
     public final String PIXEL_CYCLE_STATE_NOT_STARTED = "PIXEL_CYCLE_STATE_NOT_STARTED";
     public final String PIXEL_CYCLE_STATE_IN_PROGRESS = "PIXEL_CYCLE_STATE_IN_PROGRESS";
     public final String PIXEL_CYCLE_STATE_COMPLETE = "PIXEL_CYCLE_STATE_COMPLETE";
-
+    public final String PIXEL_CYCLE_LIFT_DOWN = "PIXEL_CYCLE_LIFT_DOWN";
+    public final String PIXEL_CYCLE_GRABBER = "PIXEL_CYCLE_GRABBER";
     public final String PIXEL_PICKUP_2_PIXELS= "PIXEL_PICKUP_2_PIXELS";
     public final String PIXEL_PICKUP_1_PIXEL = "PIXEL_PICKUP_1_PIXEL";
 
