@@ -73,7 +73,7 @@ public class Lift {
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_ROW5_POSITION);
-        liftController.setOutputBounds(-0.4,1);
+        liftController.setOutputBounds(-0.2,1);
 
         grabber = new Grabber(hwMap, telemetry, stateMap);
     }

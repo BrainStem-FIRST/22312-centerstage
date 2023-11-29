@@ -55,6 +55,9 @@ public class RobotTeleOp extends LinearOpMode {
                 if(gamepad1.right_trigger > 0.5){
                     stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
                 }
+                if(gamepad1.left_trigger > 0.5){
+                    robot.intake.intakeMotor.setPower(gamepad1.left_trigger);
+                }
                 if(gamepad2.a){
                     stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_1_PIXEL);
                 }
@@ -68,6 +71,7 @@ public class RobotTeleOp extends LinearOpMode {
                     }
                 } else {
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_IDLE_STATE);
+                    rightButtonCounter = 0;
                 }
 
                 if(liftIsGoingUp){
@@ -85,6 +89,7 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(robot.grabber.GRABBER_SYSTEM_NAME, robot.grabber.GRABBER_DEPOSIT_2nd_PIXEL);
                     retractionTime.reset();
                     retractionInProgress = true;
+                    rightButtonCounter = 0;
                 }
 
                 if(rightButtonCounter == 1){
@@ -122,6 +127,8 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("Lift encoders", robot.lift.liftMotor1.getCurrentPosition());
                 telemetry.addData("Lift counter for driver 2 height", liftCounter);
                 telemetry.addData("Right button pushes", rightButtonCounter);
+                telemetry.addData("Retraction in progress", retractionInProgress);
+                telemetry.addData("Retraction timing", retractionTime.seconds());
                 telemetry.update();
             }
         }
