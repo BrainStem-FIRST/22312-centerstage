@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
@@ -76,4 +81,15 @@ public class LiftA {
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor1.setPower(power);
     }
+
+    public Action raiseLiftAuto = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    setRawPower(0.5);
+                    raiseHeightTo(LIFT_LOW_STATE_POSITION);
+                    return false;
+                }
+            }
+    );
 }

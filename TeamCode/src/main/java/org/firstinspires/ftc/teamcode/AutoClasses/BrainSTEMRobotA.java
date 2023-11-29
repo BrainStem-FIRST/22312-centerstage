@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -44,4 +49,14 @@ public class BrainSTEMRobotA {
         telemetry.addData("Robot", "is ready");
         telemetry.update();
     }
+
+    public Action depositToBoardinAuto = new SequentialAction(
+        new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                
+                return false;
+            }
+        }
+    );
 }

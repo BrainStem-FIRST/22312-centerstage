@@ -53,7 +53,9 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
+                .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                .stopAndAdd(robot.lift.raiseLiftAuto)
 
                 .build();
     }

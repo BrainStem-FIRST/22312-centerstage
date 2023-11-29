@@ -52,8 +52,8 @@ public class AutoConstants {
     // Backdrop April Tag Positions
 //    public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER + 6);
     public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
-    //    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(36,-36);
+//        public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(30,-40);
     //    public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER - 6);
     public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
@@ -66,8 +66,8 @@ public class AutoConstants {
     public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0);
 
     // Robot dimensions. Will become handy to orient around waypoints
-    static double robot_length = 14;
-    static double robot_width = 12;
+    static double robot_length = 15.75;
+    static double robot_width = 14;
 
     // Starting positions
     public static Pose2d pStartingPose_RedLeft = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2, Math.toRadians(-90));
@@ -75,5 +75,5 @@ public class AutoConstants {
     public static Pose2d pStartingPose_BlueRight = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2, Math.toRadians(90));
     public static Pose2d pStartingPose_BlueLeft = new Pose2d(0.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2, Math.toRadians(90));
 
-    public static int targetDistance = 100; //in MM
+    public static int targetDistance = 200; //in MM
 }

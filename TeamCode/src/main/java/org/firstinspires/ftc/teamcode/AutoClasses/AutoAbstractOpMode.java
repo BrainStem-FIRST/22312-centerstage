@@ -139,11 +139,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         while (opModeIsActive()) {
 
-//            telemetry.addLine("no");
-//            telemetry.update();
-            runBlocking(trajectory);
-            telemetry.addLine("yes");
-            telemetry.update();
+//            runBlocking(trajectory);
 
 // TODO: Move the AprilTag read and strafe to a separate method
 
@@ -206,18 +202,18 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("distance left", distanceLeft);
 
             // direction to turn
-            if (Math.abs(distanceRight - distanceLeft) > 30) {
+            if (Math.abs(distanceRight - distanceLeft) > 60) {
                 if (distanceRight > distanceLeft) {
-                    angleDirection = 1;
-                } else {
                     angleDirection = -1;
+                } else {
+                    angleDirection = 1;
                 }
             }
             else {
                 angleDirection = 0;
             }
 
-            if (Math.abs(distanceRight - targetDistance) > 10) {
+            if (Math.abs(distanceRight - targetDistance) > 60) {
                 if (distanceRight < targetDistance) {
                     xDirection = 1;
                 } else {
