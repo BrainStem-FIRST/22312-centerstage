@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
-import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.targetDistance;
-import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.vRedBackdrop_Center;
+//import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.targetDistance;
+//import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.vRedBackdrop_Center;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
+    AutoConstants constants;
 
     public abstract Pose2d startPose();
     public abstract Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot);
@@ -176,7 +177,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             else {
                 if (blocks.length == 0) {
                     telemetry.addLine("didn't see anything");
-                    if (robot.drive.pose.position.y < vRedBackdrop_Center.y) {    //TODO: abstract backdrop
+                    if (robot.drive.pose.position.y < constants.vRedBackdrop_Center.y) {    //TODO: abstract backdrop
                         error = -160;
                     }
                     else {
@@ -247,8 +248,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // Adjust distance from backdrop
-            if (Math.abs(distanceRight - targetDistance) > 60 && !foundX) {
-                if (distanceRight < targetDistance) {
+            if (Math.abs(distanceRight - constants.targetDistance) > 60 && !foundX) {
+                if (distanceRight < constants.targetDistance) {
                     xDirection = 1;
                     telemetry.addLine("moving away");
                 } else {

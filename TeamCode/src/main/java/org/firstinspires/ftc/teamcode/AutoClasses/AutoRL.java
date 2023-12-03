@@ -25,7 +25,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 .splineTo(constants.vRedLeftSpike_Left, Math.toRadians(90))
-                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2)
+                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -44,19 +44,20 @@ public class AutoRL extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length / 4)
+                // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
+                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 + 3.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
-                .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
-//                .setTangent(0)
                 // Go to backdrop to place your purple pixel
+                .turnTo(Math.toRadians(-180))
+                .setReversed(true)  // re-set reverse after .stopAndAdd or .turn as it loses config
+
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
-                .splineToConstantHeading(constants.vRedBackdrop_Center, Math.toRadians(0))
-                //i set it to right not center thats why wasnt workigngggg adlksjfa;lkdjsa;lkdsf
+                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))
+
 //                .stopAndAdd(robot.lift.raiseLiftAuto)
 
                 .build();
@@ -68,10 +69,11 @@ public class AutoRL extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vRedLeftSpike_Right.y, Math.toRadians(0))
+                // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
+                .lineToYSplineHeading(constants.vRedLeftSpike_Right.y - 3.0, Math.toRadians(0))
                 .endTrajectory()
-                .lineToX(constants.vRedLeftSpike_Right.x - constants.robot_length / 2)
+// probably not needed
+//                .lineToX(constants.vRedLeftSpike_Right.x - constants.robot_length / 2)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -84,6 +86,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
+                .splineTo(constants.vRedBackdrop_Right, Math.toRadians(0))
                 .build();
     }
 
