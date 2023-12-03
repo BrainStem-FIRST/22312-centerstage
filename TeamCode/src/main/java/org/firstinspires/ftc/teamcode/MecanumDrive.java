@@ -60,13 +60,13 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
-        public double inPerTick = 0.000901499871419; //22.28.2023
-        public double lateralInPerTick = 0.0006209311076737712; //22.28.2023
-        public double trackWidthTicks = 12818.891737371408; //22.11.2023
+        public double inPerTick = 0.00090239981952; //2.12.2023
+        public double lateralInPerTick = 0.0006037754907078216; //2.12.2023
+        public double trackWidthTicks = 13233.418729584604; //22.11.2023
 
         // feedforward parameters (in tick units)
-        public double kS = 2.3122357637622426; //22.28.2023
-        public double kV = 0.00013925380527002727; //22.28.2023
+        public double kS = 2.411252615839617; //28.11.2023
+        public double kV = 0.0001471435357190285; //2.12.2023
         public double kA = 0.000029; //22.11.2023
 
         // path profile parameters (in inches)
@@ -195,9 +195,9 @@ public final class MecanumDrive {
         }
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FLAndOdo");
-        leftBack = hardwareMap.get(DcMotorEx.class, "BLAndOdo");
+        leftBack = hardwareMap.get(DcMotorEx.class, "BL");
         rightBack = hardwareMap.get(DcMotorEx.class, "BR");
-        rightFront = hardwareMap.get(DcMotorEx.class, "FR");
+        rightFront = hardwareMap.get(DcMotorEx.class, "FRAndOdo");
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

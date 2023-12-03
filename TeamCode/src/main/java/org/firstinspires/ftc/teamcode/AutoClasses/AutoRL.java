@@ -52,10 +52,12 @@ public class AutoRL extends AutoAbstractOpMode {
                 .endTrajectory()
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
+//                .setTangent(0)
                 // Go to backdrop to place your purple pixel
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
-                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
-                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .splineToConstantHeading(constants.vRedBackdrop_Center, Math.toRadians(0))
+                //i set it to right not center thats why wasnt workigngggg adlksjfa;lkdjsa;lkdsf
+//                .stopAndAdd(robot.lift.raiseLiftAuto)
 
                 .build();
     }
@@ -82,7 +84,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
-                .splineTo(constants.vRedBackdrop_Right, Math.toRadians(0))
                 .build();
     }
 

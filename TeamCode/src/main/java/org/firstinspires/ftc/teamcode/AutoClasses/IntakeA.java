@@ -36,7 +36,7 @@ public class IntakeA {
     // This method is for Auto use only
     public void spitPixelinAuto() {
         // Start rotating motor
-        intakeMotor.setPower(-0.5);
+        intakeMotor.setPower(-0.3);
 
     }
 

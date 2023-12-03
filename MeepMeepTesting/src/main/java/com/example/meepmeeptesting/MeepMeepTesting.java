@@ -60,7 +60,7 @@ public class MeepMeepTesting {
 //    public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER + 6);
     public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
     //        public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(36,-36);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(20,-40);
     //    public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X, -1.5 * TILE_CENTER_TO_CENTER - 6);
     public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
@@ -114,16 +114,20 @@ public class MeepMeepTesting {
                 myBot.getDrive().actionBuilder(pStartingPose_RedLeft)
                         .setReversed(true)
 
-                        // Replace prop with your yellow pixel (just push)
-                        .lineToY(vRedLeftSpike_Center.y + robot_length / 4)
-
+                        // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
+                        .lineToYSplineHeading(vRedLeftSpike_Right.y, Math.toRadians(0))
                         .endTrajectory()
-                        .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
+                        .lineToX(vRedLeftSpike_Right.x - robot_length / 2)
 
-                        // Go to backdrop to place your purple pixel
+                        // Discontinue trajectory
+                        .endTrajectory()
+                        .setReversed(true)
+
+                        // Goto Backdrop to place your purple pixel
+                        .setTangent(Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER, -TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                         .splineTo(vRedClearStageGate, Math.toRadians(0))
-                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
-
+                        .splineTo(vRedBackdrop_Right, Math.toRadians(0))
                         .build();
         myBot.runAction(trajectory);
 

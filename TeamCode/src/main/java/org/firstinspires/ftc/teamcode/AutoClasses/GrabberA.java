@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -18,7 +19,7 @@ public class GrabberA {
 
     private Telemetry telemetry;
 
-    private ServoImplEx grabber;
+    private CRServo grabber;
 
     private int grabberPWMHigherlimit;
     private int grabberPWMLowerLimit;
@@ -26,12 +27,11 @@ public class GrabberA {
     public GrabberA(HardwareMap hwMap, Telemetry telemetry){
         this.telemetry = telemetry;
 
-        grabber = hwMap.get(ServoImplEx.class, "grabber");
-        grabber.setPwmRange(new PwmControl.PwmRange(grabberPWMLowerLimit, grabberPWMHigherlimit));
+        grabber = hwMap.get(CRServo.class, "grabber");
     }
 
-    public void setPosition (double position){
-        grabber.setPosition(position);
+    public void setPower (double power){
+        grabber.setPower(power);
     }
 }
 

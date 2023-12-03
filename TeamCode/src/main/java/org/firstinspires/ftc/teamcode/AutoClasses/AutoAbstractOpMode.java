@@ -10,8 +10,10 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LED;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
@@ -46,7 +48,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
-
         // TODO: Determine Alliance (RED/BLUE) and Orientation (LEFT/RIGHT)
         // Assume RED-LEFT for now
 
@@ -56,6 +57,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         // Additional variables
         int xDirection = 1;
         int yDirection = 1;
+        boolean foundX = false;
+        boolean foundY = false;
+        boolean foundZ = false;
         int angleDirection = 1;
         int error;
 
@@ -137,9 +141,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         sleep(100);
 
-        while (opModeIsActive()) {
+        int loopCounter = 0;
 
-//            runBlocking(trajectory);
+        while (opModeIsActive()) {
+            telemetry.addData("Loop Counter: ", ++loopCounter);
+            telemetry.addData("target tag: ", targetTagPos);
+
+            runBlocking(trajectory);
 
 // TODO: Move the AprilTag read and strafe to a separate method
 
@@ -154,15 +162,16 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
 
-                if (blocks[i].id == targetTagPos) targetBlockPos = i;
+                if (blocks[i].id == targetTagPos) {
+                    targetBlockPos = i;
+                    telemetry.addData("block seen (target): ", blocks[i].id);
+                }
             }
 
             telemetry.addData("block of interest is in slot", targetBlockPos);
-            telemetry.addData("target tag pose ", targetTagPos);
 
             if(targetBlockPos >= 0) {
                 error = blocks[targetBlockPos].x - 160;
-                telemetry.addData("error", error);
             }
             else {
                 if (blocks.length == 0) {
@@ -175,7 +184,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     }
                 }
                 else {
-                    telemetry.addData("block: ", blocks);
+                    telemetry.addData("block seen (not the target): ", blocks[0].id);
                     if (blocks[0].id > targetTagPos) {
                         error = -160;
                     }
@@ -184,15 +193,50 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     }
                 }
             }
+            telemetry.addData("error", error);
+
+
+            // direction to turn
+            if (Math.abs(distanceRight - distanceLeft) > 60 && !foundZ) {
+                if (distanceRight > distanceLeft) {
+                    angleDirection = -1;
+                } else {
+                    angleDirection = 1;
+                }
+                telemetry.addLine("turning");
+            }
+            else {
+                angleDirection = 0;
+                telemetry.addLine("stopped turning");
+                foundZ = true;
+            }
+
 
             // which way to strafe?
-            if (error > 60) {
-                yDirection = 1;
-            } else if (error < -60){
-                yDirection = -1;
-            } else {
-                yDirection = 0;
+            if (Math.abs(error) > 65 && !foundY) {
+                if(error < 0) {
+                    yDirection = -1;
+                    telemetry.addLine("strafing right");
+                }
+                else {
+                    yDirection = 1;
+                    telemetry.addLine("strafing left");
+                }
             }
+            else {
+                yDirection = 0;
+                foundY = true;
+                telemetry.addLine("stopped strafing");
+            }
+
+//            if (error > 15 && !foundY) {
+//                yDirection = 1;
+//            } else if (error < -60 && !foundY) {
+//                yDirection = -1;
+//            } else {
+//                yDirection = 0;
+//                foundY = true;
+//            }
 
             // check if aligned
             distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
@@ -201,51 +245,63 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("distance right", distanceRight);
             telemetry.addData("distance left", distanceLeft);
 
-            // direction to turn
-            if (Math.abs(distanceRight - distanceLeft) > 60) {
-                if (distanceRight > distanceLeft) {
-                    angleDirection = -1;
-                } else {
-                    angleDirection = 1;
-                }
-            }
-            else {
-                angleDirection = 0;
-            }
 
-            if (Math.abs(distanceRight - targetDistance) > 60) {
+            // Adjust distance from backdrop
+            if (Math.abs(distanceRight - targetDistance) > 60 && !foundX) {
                 if (distanceRight < targetDistance) {
                     xDirection = 1;
+                    telemetry.addLine("moving away");
                 } else {
                     xDirection = -1;
+                    telemetry.addLine("moving towards");
                 }
             }
             else {
                 xDirection = 0;
+                foundX = true;
+                telemetry.addLine("stop moving");
             }
 
             // Strafe left or right to approach to the target tag
-            robot.drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            0.2 * xDirection,
-                            0.2 * yDirection
-                    ),
-                    0.2 * angleDirection
-            ));
+            if(!foundX && !foundY && !foundZ) {
+                robot.drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.0,
+                                0.0
+                        ),
+                        0.4 * angleDirection
+                ));
+            } else if (!foundX && !foundY && foundZ) {
+                robot.drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.0,
+                                0.4 * yDirection
+                        ),
+                        0.0
+                ));
+            }
+            if (!foundX && foundY && foundZ) {
+                robot.drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.4 * xDirection,
+                                0.0
+                        ),
+                        0.0
+                ));
+            }
 
 
             robot.drive.updatePoseEstimate();
 
             telemetry.addData("x", robot.drive.pose.position.x);
             telemetry.addData("y", robot.drive.pose.position.y);
-            telemetry.addData("heading", robot.drive.pose.heading);
+            telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.toDouble()));
 
 
             telemetry.update();
 
         }
     }
-
 
     public enum Alliance {
         RED,
