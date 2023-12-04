@@ -62,6 +62,8 @@ public class Intake {
                 stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_COMPLETE);
                 intakeMotor.setPower(0);
             }
+        } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_SPITTING_STATE)) {
+            intakeMotor.setPower(-1.0);
         } else {
             intakeMotor.setPower(0);
         }

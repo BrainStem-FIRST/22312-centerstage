@@ -13,8 +13,13 @@ import java.util.Map;
 public class RobotTeleOp extends LinearOpMode {
     private int liftCounter = 0;
     private int rightButtonCounter = 0;
+    private boolean hangingMode = false;
     private boolean retractionInProgress = false;
     private boolean liftIsGoingUp = false;
+    private boolean deposit1Pixel = false;
+    private boolean deposit2Pixel = false;
+    private ElapsedTime deposit2Pixeltime = new ElapsedTime();
+    private ElapsedTime deposit1PixelTime = new ElapsedTime();
     private ElapsedTime fulcrumMovement = new ElapsedTime();
     private ElapsedTime retractionTime = new ElapsedTime();
     private final String GAMEPAD_1_A_STATE = "GAMEPAD_1_A_STATE";
@@ -37,80 +42,137 @@ public class RobotTeleOp extends LinearOpMode {
         stateMap.put(robot.fulcrum.FULCRUM_SYSTEM_NAME, robot.fulcrum.FULCRUM_DOWN);
         stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
         stateMap.put(robot.arm.ARM_SYSTEM_NAME,robot.arm.ARM_IDLE_STATE);
-        stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_GROUND_STATE);
+        stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_IDLE_STATE);
         stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME,robot.drawbridge.DRAWBRIDGE_UP_STATE);
-        stateMap.put(robot.grabber.GRABBER_SYSTEM_NAME, robot.grabber.GRABBER_MIDDLE_STATE);
-        stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW1_STATE);
-//        stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.SERVO_NOT_RELEASED);
+        stateMap.put(robot.grabberCR.GRABBER_SYSTEM_NAME, robot.grabberCR.GRABBER_IDLE_STATE);
+        stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW3_STATE);
+        stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_NOT_RELEASED);
+        stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_NOT_RELEASED);
         waitForStart();
 
-        while(!isStopRequested()){
-            if(gamepad2.right_bumper && gamepad2.left_bumper){
+        while(!isStopRequested()) {
+            if (gamepad2.right_bumper && gamepad2.left_bumper && !hangingMode) {
                 robot.lift.resetEncoders();
-            } else if(gamepad2.left_trigger > 0.5){
+            } else if (gamepad2.left_trigger > 0.5 && !hangingMode) {
                 robot.lift.liftMotor1.setPower(-1.0);
             } else {
                 setButtons();
                 telemetry.addLine("IN Tele");
-                if(gamepad1.right_trigger > 0.5){
+                if (gamepad1.right_trigger > 0.5) {
                     stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
                 }
-                if(gamepad1.left_trigger > 0.5){
-                    robot.intake.intakeMotor.setPower(gamepad1.left_trigger);
+                if (gamepad1.left_trigger > 0.5) {
+                    stateMap.put(robot.intake.INTAKE_SYSTEM_NAME, robot.intake.INTAKE_SPITTING_STATE);
                 }
-                if(gamepad2.a){
-                    stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_1_PIXEL);
-                }
-                if(toggleMap.get(GAMEPAD_1_A_STATE)){
+                if (toggleMap.get(GAMEPAD_1_A_STATE)) {
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, stateMap.get(constants.DRIVER_2_SELECTED_HEIGHT));
                     stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_DEPOSIT_STATE);
-                    robot.lift.LIFT_IDLE_STATE_POSITION = 160;
+                    robot.lift.LIFT_IDLE_STATE_POSITION = 200;
                     liftIsGoingUp = true;
-                    if(gamepad1.a){
+                    stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
+                    if (gamepad1.a) {
                         fulcrumMovement.reset();
                     }
                 } else {
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_IDLE_STATE);
+                    retractionInProgress = true;
                     rightButtonCounter = 0;
                 }
 
-                if(liftIsGoingUp){
-                    if(fulcrumMovement.milliseconds() > 700){
+
+                if (liftIsGoingUp) {
+                    if (fulcrumMovement.milliseconds() > 700) {
                         stateMap.put(robot.fulcrum.FULCRUM_SYSTEM_NAME, robot.fulcrum.FULCRUM_DOWN);
                         liftIsGoingUp = false;
                     }
                 }
 
                 gamepad1RightButton.update(gamepad1.right_bumper);
-                if(gamepad1RightButton.getState()){
+                if (gamepad1RightButton.getState()) {
                     rightButtonCounter += 1;
                 }
-                if(rightButtonCounter == 2){
-                    stateMap.put(robot.grabber.GRABBER_SYSTEM_NAME, robot.grabber.GRABBER_DEPOSIT_2nd_PIXEL);
+                if (rightButtonCounter == 2) {
+                    stateMap.put(robot.grabberCR.GRABBER_SYSTEM_NAME, robot.grabberCR.GRABBER_DEPOSIT_2nd_PIXEL);
                     retractionTime.reset();
                     retractionInProgress = true;
+                    if(gamepad2.right_bumper){
+                        deposit2Pixel = true;
+                        deposit2Pixeltime.seconds();
+                    }
                     rightButtonCounter = 0;
                 }
 
-                if(rightButtonCounter == 1){
-                    stateMap.put(robot.grabber.GRABBER_SYSTEM_NAME, robot.grabber.GRABBER_DEPOSIT_1st_PIXEL);
+                if (rightButtonCounter == 1) {
+                    stateMap.put(robot.grabberCR.GRABBER_SYSTEM_NAME, robot.grabberCR.GRABBER_DEPOSIT_1st_PIXEL);
+                    if (gamepad1.right_bumper) {
+                        deposit1Pixel = true;
+                        deposit1PixelTime.reset();
+                    }
                 }
 
-                if(retractionInProgress){
-                    if(retractionTime.seconds() > 1){
+                if(deposit2Pixel){
+                    if(deposit2Pixeltime.seconds() < 0.5){
+                        robot.grabberCR.grabber.setPower(-0.25);
+                    } else {
+                        robot.grabberCR.grabber.setPower(0);
+                        deposit2Pixel = false;
+                    }
+                }
+                if (deposit1Pixel) {
+                    if (deposit1PixelTime.seconds() < 0.275) {
+                        robot.grabberCR.grabber.setPower(-0.25);
+                    } else {
+                        robot.grabberCR.grabber.setPower(0);
+                        deposit1Pixel = false;
+                    }
+                }
+
+                if(gamepad2.b){
+                    stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_RELEASED);
+                }
+
+                if(gamepad2.left_bumper && gamepad2.a){
+                    hangingMode = true;
+                }
+
+                if(gamepad2.a){
+                    stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_1_PIXEL);
+                } else{
+                    stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
+                }
+
+                if(gamepad2.right_trigger > 0.2 && hangingMode){
+                    robot.hanging.rightHanging.setPower(-1.0);
+                } else if(gamepad2.right_stick_y > 0.2 && hangingMode){
+                    robot.hanging.rightHanging.setPower(1.0);
+                } else {
+                    robot.hanging.rightHanging.setPower(0);
+                }
+
+                if(gamepad2.left_trigger > 0.2 && hangingMode){
+                    robot.hanging.leftHanging.setPower(-1.0);
+                } else if(gamepad2.left_stick_y > 0.2 && hangingMode){
+                    robot.hanging.leftHanging.setPower(1.0);
+                } else{
+                    robot.hanging.leftHanging.setPower(0);
+                }
+
+                if (retractionInProgress) {
+                    if (retractionTime.seconds() > 1) {
                         stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_IDLE_STATE);
                     }
-                    if(retractionTime.seconds() > 2.0){
+                    if (retractionTime.seconds() > 2.0) {
                         toggleMap.put(GAMEPAD_1_A_STATE, false);
                         retractionInProgress = false;
                     }
                 }
                 gamepad2RightButton.update(gamepad2.right_bumper);
                 gamepad2LeftButton.update(gamepad2.left_bumper);
-                if(gamepad2RightButton.getState()){
+
+                if (gamepad2RightButton.getState() && !hangingMode) {
                     liftCounter += 1;
                 }
-                if(gamepad2LeftButton.getState()){
+                if (gamepad2LeftButton.getState() && !hangingMode) {
                     liftCounter -= 1;
                 }
                 robot.drive.setDrivePowers(new PoseVelocity2d(
@@ -129,10 +191,14 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("Right button pushes", rightButtonCounter);
                 telemetry.addData("Retraction in progress", retractionInProgress);
                 telemetry.addData("Retraction timing", retractionTime.seconds());
+                telemetry.addData("Hanging mode boolean", hangingMode);
+                telemetry.addData("Robot left hanging power", robot.hanging.leftHanging.getPower());
+                telemetry.addData("Robot right hanging power", robot.hanging.rightHanging.getPower());
+                telemetry.addData("Grabber cr power", robot.grabberCR.grabber.getPower());
                 telemetry.update();
             }
         }
-    }
+        }
     private void setButtons() {
         toggleButton(GAMEPAD_1_A_STATE, GAMEPAD_1_A_IS_PRESSED, gamepad1.a);
     }

@@ -1,69 +1,90 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
+import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.Map;
 
 public class Hanging {
 
-    public final String HANGING_SYSTEM_NAME = "HOPPER_SYSTEM_NAME";
+    public final String HANGING_SYSTEM_NAME = "HANGING_SYSTEM_NAME";
 
-    public final String SERVO_NOT_RELEASED = "SERVO_NOT_RELEASED";
+    public final String HANGING_NOT_RELEASED = "HANGING_NOT_RELEASED";
 
-    public final String SERVO_RELEASED = "SERVO_RELEASED";
+    public final String HANGING_RELEASED = "HANGING_RELEASED";
 
     private Telemetry telemetry;
 
     private Map stateMap;
 
-    private ServoImplEx hangingServo;
-    public DcMotorEx hangingMotor;
+    public DcMotorEx leftHanging;
+    public DcMotorEx rightHanging;
 
-    private double servoNotReleasedPosition = 0;
-    private double servoReleasedPosition = 1;
+    private int lefthangingEncoder = 11141;
+    private int rightHangingEncoderTicks = 10931;
 
-    private int lowerPWMLimitServo = 591;
-    private int higherPWMLimitServo = 1600;
+    public Encoder rightHangingEncoder;
     public Hanging(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
         this.stateMap = stateMap;
 
-        hangingMotor = hwMap.get(DcMotorEx.class, "hangingMotor");
-        hangingServo = hwMap.get(ServoImplEx.class, "hangingServo");
+        leftHanging = hwMap.get(DcMotorEx.class, "leftHanging");
+        rightHanging = hwMap.get(DcMotorEx.class, "rightHanging");
 
-        hangingServo.setPwmRange(new PwmControl.PwmRange(lowerPWMLimitServo, higherPWMLimitServo));
+        leftHanging.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftHanging.setDirection(DcMotor.Direction.REVERSE);
+        leftHanging.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightHanging.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightHanging.setDirection(DcMotor.Direction.REVERSE);
+        rightHanging.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void setState(){
         String servoState = (String) stateMap.get(HANGING_SYSTEM_NAME);
 
         switch(servoState){
-            case SERVO_NOT_RELEASED:{
-                toNotReleased();
+            case HANGING_NOT_RELEASED:{
                 break;
             }
-            case SERVO_RELEASED:{
-                toReleased();
+            case HANGING_RELEASED:{
                 break;
             }
         }
     }
 
-    private void toNotReleased(){
-        hangingServo.setPosition(servoNotReleasedPosition);
+    private void toDeployPosition(){
+        leftHanging.setTargetPosition(lefthangingEncoder);
+        leftHanging.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftHanging.setPower(1.0);
+
+//        rightHanging.setTargetPosition(rightHangingEncoderTicks);
+//        rightHanging.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        rightHanging.setPower(1.0);
     }
 
-    private void toReleased(){
-        hangingServo.setPosition(servoReleasedPosition);
+    private void notReleased(){
+        leftHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftHanging.setPower(0);
+//        rightHanging.setPower(0);
+    }
+
+    public void setRawPower(double power){
+        leftHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftHanging.setPower(power);
+        rightHanging.setPower(power);
     }
 }

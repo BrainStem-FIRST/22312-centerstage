@@ -4,6 +4,7 @@ import android.text.style.IconMarginSpan;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -48,8 +49,8 @@ public class Lift {
     private int LIFT_ROW5_POSITION = 1044;
 
     //PID values
-    private double kP = 0.01;
-    private double kI = 0.001;
+    private double kP = 0.0125;
+    private double kI = 0;
     private double kD = 0;
     private double kS = 0.025;
 
@@ -59,7 +60,7 @@ public class Lift {
 
     private int cycleTolerance = 5;
 
-    Grabber grabber;
+    GrabberCR grabberCR;
     public ElapsedTime liftCycleTime = new ElapsedTime();
     private Constants constants = new Constants();
     public Lift(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
@@ -69,13 +70,14 @@ public class Lift {
         liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
 
         liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_ROW5_POSITION);
-        liftController.setOutputBounds(-0.2,1);
+        liftController.setOutputBounds(-0.1,0.75);
 
-        grabber = new Grabber(hwMap, telemetry, stateMap);
+        grabberCR = new GrabberCR(hwMap, telemetry, stateMap);
     }
 
     public void setState(Arm arm){
@@ -105,7 +107,7 @@ public class Lift {
         if(isCycleInProgress()){
             if(inCycleTolerance(liftMotor1.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 500){
                 stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
-                grabber.grabberCycleDelay.reset();
+                grabberCR.grabberCycleDelay.reset();
             }
         }
     }

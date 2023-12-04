@@ -81,13 +81,13 @@ public class Arm {
     private void armToDepositPosition(){
 //        leftArmServo.setPosition(leftIdlePosition);
         telemetry.addData("Arm Position Called", "Deposit");
-//        rightArmServo.setPosition(0.03);
+        rightArmServo.setPosition(0.03);
         leftArmServo.setPosition(0.9);
     }
     private void armToIdlePosition(){
 //        leftArmServo.setPosition(leftDepositPosition);
         telemetry.addData("Arm Position Called", "Idle");
-//        rightArmServo.setPosition(0.95);
+        rightArmServo.setPosition(0.9);
         leftArmServo.setPosition(0.03);
 
     }

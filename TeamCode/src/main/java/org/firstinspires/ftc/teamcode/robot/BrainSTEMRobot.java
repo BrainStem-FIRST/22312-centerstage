@@ -24,8 +24,11 @@ public class BrainSTEMRobot {
 
     public MecanumDrive drive;
     public Arm arm;
-    public Grabber grabber;
+//    public Grabber grabber;
     public Hanging hanging;
+    public GrabberCR grabberCR;
+
+    public Drone drone;
     private Map stateMap;
     Constants constants = new Constants();
     public BrainSTEMRobot(HardwareMap hardwareMap, Telemetry telemetry, Map stateMap){
@@ -38,8 +41,9 @@ public class BrainSTEMRobot {
         drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
         arm = new Arm(hardwareMap, telemetry, stateMap);
         lift = new Lift(hardwareMap, telemetry, stateMap);
-//        hanging = new Hanging(hardwareMap, telemetry, stateMap);
-        grabber = new Grabber(hardwareMap, telemetry, stateMap);
+        hanging = new Hanging(hardwareMap, telemetry, stateMap);
+        grabberCR = new GrabberCR(hardwareMap, telemetry, stateMap);
+        drone = new Drone(hardwareMap, telemetry, stateMap);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
@@ -65,9 +69,11 @@ public class BrainSTEMRobot {
             fulcrum.setState();
             drawbridge.setState();
             arm.setState(lift);
-//            hanging.setState();
+            hanging.setState();
             lift.setState(arm);
-            grabber.setState();
+//            grabber.setState();
+            grabberCR.setState();
+            drone.setState();
         }
     }
 
@@ -86,7 +92,7 @@ public class BrainSTEMRobot {
             lift.liftCycleTime.startTime();
             stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
         } else if(startGrabber()){
-            grabber.grabberCycleTime.reset();
+            grabberCR.grabberCycleTime.reset();
             stateMap.put(constants.PIXEL_CYCLE_GRABBER, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
         } else if(isConeCycleComplete()){
             telemetry.addData("Pixel cycle", "Complete");
@@ -125,7 +131,7 @@ public class BrainSTEMRobot {
     private boolean startGrabber(){
         String liftDownPixelState = (String) stateMap.get(constants.PIXEL_CYCLE_LIFT_DOWN);
         String grabberPixelState = (String) stateMap.get(constants.PIXEL_CYCLE_GRABBER);
-        if(liftDownPixelState.equals(constants.PIXEL_CYCLE_STATE_COMPLETE) && grabberPixelState.equals(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && lift.grabber.grabberCycleDelay.milliseconds() > 600){
+        if(liftDownPixelState.equals(constants.PIXEL_CYCLE_STATE_COMPLETE) && grabberPixelState.equals(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && lift.grabberCR.grabberCycleDelay.milliseconds() > 600){
             return true;
         }
         return false;
@@ -153,7 +159,7 @@ public class BrainSTEMRobot {
         hopper.setState();
         fulcrum.setState();
         lift.setState(arm);
-        grabber.setState();
+        grabberCR.setState();
     }
     private boolean startIntake(){
         String pixelCycleState = (String)(stateMap.get(constants.PIXEL_CYCLE));

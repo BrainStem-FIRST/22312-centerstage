@@ -18,8 +18,8 @@ public class Fulcrum {
     private ServoImplEx fulcrumServo;
     private final double down = 1.0;
     private final double up = 0;
-    private double lowerPWMLimit = 352;
-    private double upperPWMLimit = 1400;
+    private double lowerPWMLimit = 620;
+    private double upperPWMLimit = 1430;
     public ElapsedTime fulcrumCycleTime = new ElapsedTime();
 
     private Constants constants = new Constants();

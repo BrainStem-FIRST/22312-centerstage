@@ -176,9 +176,9 @@ public final class MecanumDrive {
         }
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FLAndOdo");
-        leftBack = hardwareMap.get(DcMotorEx.class, "BLAndOdo");
+        leftBack = hardwareMap.get(DcMotorEx.class, "BLAndHangingEncoder");
         rightBack = hardwareMap.get(DcMotorEx.class, "BR");
-        rightFront = hardwareMap.get(DcMotorEx.class, "FR");
+        rightFront = hardwareMap.get(DcMotorEx.class, "FRAndOdo");
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
