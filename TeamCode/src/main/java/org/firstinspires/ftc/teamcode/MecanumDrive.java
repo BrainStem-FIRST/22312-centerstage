@@ -61,12 +61,12 @@ public final class MecanumDrive {
 
         // drive model parameters
         public double inPerTick = 0.00090239981952; //2.12.2023
-        public double lateralInPerTick = 0.0006037754907078216; //2.12.2023
-        public double trackWidthTicks = 13233.418729584604; //22.11.2023
+        public double lateralInPerTick = 0.0005903237628480074; //3.12.2023
+        public double trackWidthTicks = 13597.214312402655; //3.12.2023
 
         // feedforward parameters (in tick units)
-        public double kS = 2.411252615839617; //28.11.2023
-        public double kV = 0.0001471435357190285; //2.12.2023
+        public double kS = 2.1249985277525574; //3.12.2023
+        public double kV = 0.0001445402339022142; //3.12.2023
         public double kA = 0.000029; //22.11.2023
 
         // path profile parameters (in inches)
@@ -80,8 +80,8 @@ public final class MecanumDrive {
 
         // path controller gains
         public double axialGain = 0.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 0.0; // shared with turn
+        public double lateralGain = 5.15; // 3.12.2023
+        public double headingGain = 6.0; // 3.12.2023
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -195,7 +195,7 @@ public final class MecanumDrive {
         }
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FLAndOdo");
-        leftBack = hardwareMap.get(DcMotorEx.class, "BL");
+        leftBack = hardwareMap.get(DcMotorEx.class, "BLAndHangingEncoder");
         rightBack = hardwareMap.get(DcMotorEx.class, "BR");
         rightFront = hardwareMap.get(DcMotorEx.class, "FRAndOdo");
 

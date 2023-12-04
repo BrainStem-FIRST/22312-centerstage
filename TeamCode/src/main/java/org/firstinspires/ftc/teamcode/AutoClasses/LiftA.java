@@ -21,12 +21,12 @@ public class LiftA {
     private PIDController liftController;
 
     // Encoder Positions for Lift heights
-    private final int LIFT_GROUND_STATE_POSITION = 0;
-    private final int LIFT_LOW_STATE_POSITION = 300;
-    private final int LIFT_MIDDLE_STATE_POSITION = 550;
-    private final int LIFT_HIGH_STATE_POSITION = 700;
+    public final int LIFT_GROUND_STATE_POSITION = 0;
+    public final int LIFT_LOW_STATE_POSITION = 300;
+    public final int LIFT_MIDDLE_STATE_POSITION = 550;
+    public final int LIFT_HIGH_STATE_POSITION = 700;
 
-    private final int LIFT_IDLE_STATE_POSITION = 140;
+    public final int LIFT_IDLE_STATE_POSITION = 140;
 
 
     //Other important variables
@@ -47,10 +47,24 @@ public class LiftA {
 //        liftController.setOutputBounds(0,1);
     }
 
-    private void raiseHeightTo(int desiredTickPosition){
+    public void raiseHeightTo(int desiredTickPosition){
         liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor1.setTargetPosition(desiredTickPosition);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor1.setPower(0.5);
+    }
+
+    public boolean inHeightTolerance(int statePosition){
+        int currentPosition = liftMotor1.getCurrentPosition();
+        telemetry.addData("Current Position=",currentPosition);
+        if((statePosition - heightTolerance) <= currentPosition && currentPosition <=  (statePosition + heightTolerance)){
+            telemetry.addLine("Lift arrived");
+            telemetry.update();
+            return true;
+        }
+        telemetry.addLine("Lift not there yet");
+        telemetry.update();
+        return false;
     }
     private void moveToPID(int desiredTickPosition){
         int currentPosition = liftMotor1.getCurrentPosition();
@@ -78,7 +92,7 @@ public class LiftA {
     }
 
     public void setRawPower(double power) {
-        liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor1.setPower(power);
     }
 

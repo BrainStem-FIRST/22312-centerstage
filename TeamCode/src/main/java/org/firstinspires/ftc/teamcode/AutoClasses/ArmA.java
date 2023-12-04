@@ -51,11 +51,11 @@ public class ArmA {
         encoder = new AbsoluteAnalogEncoder(armEncoder, 3.3).zero(encoderOffset).setInverted(false);
 
     }
-    private void armToDepositPosition(){
+    public void armToDepositPosition(){
         telemetry.addData("Arm Position Called", "Deposit");
         leftArmServo.setPosition(0.01);
     }
-    private void armToIdlePosition(){
+    public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
         leftArmServo.setPosition(0.99);
 

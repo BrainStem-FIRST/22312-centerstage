@@ -4,8 +4,13 @@ import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 //import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.targetDistance;
 //import static org.firstinspires.ftc.teamcode.AutoClasses.AutoConstants.vRedBackdrop_Center;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -56,12 +61,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         robot.drive.pose = startPose();
 
         // Additional variables
-        int xDirection = 1;
-        int yDirection = 1;
+        int xDirection = 0;
+        int yDirection = 0;
         boolean foundX = false;
         boolean foundY = false;
         boolean foundZ = false;
-        int angleDirection = 1;
+        int zDirection = 0;
         int error;
 
         double distanceLeft = 0;
@@ -148,7 +153,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("Loop Counter: ", ++loopCounter);
             telemetry.addData("target tag: ", targetTagPos);
 
-            runBlocking(trajectory);
+//            runBlocking(trajectory);
 
 // TODO: Move the AprilTag read and strafe to a separate method
 
@@ -198,23 +203,24 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // direction to turn
-            if (Math.abs(distanceRight - distanceLeft) > 60 && !foundZ) {
+            if (Math.abs(distanceRight - distanceLeft) > 5 && distanceLeft < 500 && !foundZ) {
                 if (distanceRight > distanceLeft) {
-                    angleDirection = -1;
+                    zDirection = -1;
                 } else {
-                    angleDirection = 1;
+                    zDirection = 1;
                 }
                 telemetry.addLine("turning");
+                telemetry.addData("distance error", Math.abs(distanceLeft-distanceRight));
             }
             else {
-                angleDirection = 0;
+                zDirection = 0;
                 telemetry.addLine("stopped turning");
+                telemetry.addData("distance error", Math.abs(distanceLeft-distanceRight));
                 foundZ = true;
             }
 
-
             // which way to strafe?
-            if (Math.abs(error) > 65 && !foundY) {
+            if (Math.abs(error) > 10 && !foundY) {
                 if(error < 0) {
                     yDirection = -1;
                     telemetry.addLine("strafing right");
@@ -225,19 +231,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 }
             }
             else {
-                yDirection = 0;
-                foundY = true;
-                telemetry.addLine("stopped strafing");
+                if (foundZ) {
+                    yDirection = 0;
+                    foundY = true;
+                    telemetry.addLine("stopped strafing");
+                }
             }
-
-//            if (error > 15 && !foundY) {
-//                yDirection = 1;
-//            } else if (error < -60 && !foundY) {
-//                yDirection = -1;
-//            } else {
-//                yDirection = 0;
-//                foundY = true;
-//            }
 
             // check if aligned
             distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
@@ -246,9 +245,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("distance right", distanceRight);
             telemetry.addData("distance left", distanceLeft);
 
-
+/*
             // Adjust distance from backdrop
-            if (Math.abs(distanceRight - constants.targetDistance) > 60 && !foundX) {
+            // Only approach to the backdrop if both Y and Z axes were found.
+            if (Math.abs(distanceRight - constants.targetDistance) > 10 && !foundX && foundY && foundZ) {
                 if (distanceRight < constants.targetDistance) {
                     xDirection = 1;
                     telemetry.addLine("moving away");
@@ -258,49 +258,69 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 }
             }
             else {
-                xDirection = 0;
-                foundX = true;
-                telemetry.addLine("stop moving");
+                if (foundZ && foundY) {
+                    xDirection = 0;
+                    foundX = true;
+                    telemetry.addLine("stop moving");
+                }
             }
+*/
 
+/*
             // Strafe left or right to approach to the target tag
-            if(!foundX && !foundY && !foundZ) {
-                robot.drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                0.0,
-                                0.0
-                        ),
-                        0.4 * angleDirection
-                ));
-            } else if (!foundX && !foundY && foundZ) {
-                robot.drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                0.0,
-                                0.4 * yDirection
-                        ),
-                        0.0
-                ));
-            }
-            if (!foundX && foundY && foundZ) {
-                robot.drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                0.4 * xDirection,
-                                0.0
-                        ),
-                        0.0
-                ));
-            }
-
-
+            robot.drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            0.0, //0.4 * xDirection,
+                            0.35 * yDirection
+                    ),
+                    0.65 * zDirection
+            ));
+*/
             robot.drive.updatePoseEstimate();
 
             telemetry.addData("x", robot.drive.pose.position.x);
             telemetry.addData("y", robot.drive.pose.position.y);
             telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.toDouble()));
 
-
             telemetry.update();
 
+
+            runBlocking(new SequentialAction(
+//                    new Action() {
+//                        @Override
+//                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                            robot.grabber.setPower(0.8);
+//                            return false;
+//                        }
+//                    },
+//                    new SleepAction(0.2),
+                    new Action() {
+                        @Override
+                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                            robot.lift.raiseHeightTo(robot.lift.LIFT_LOW_STATE_POSITION);
+
+                            // This action will be repeatedly called as long as it returns True.
+                            // Return False once the lift is in desired position.
+                            return !robot.lift.inHeightTolerance(robot.lift.LIFT_LOW_STATE_POSITION);
+                        }
+                    }
+//                    new SleepAction(0.5),
+//                    new Action() {
+//                        @Override
+//                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                            robot.arm.armToDepositPosition();
+//                            return false;
+//                        }
+//                    },
+//                    new SleepAction(0.5),
+//                    new Action() {
+//                        @Override
+//                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                            robot.grabber.setPower(-0.8);
+//                            return false;
+//                        }
+//                    }
+            ));
         }
     }
 

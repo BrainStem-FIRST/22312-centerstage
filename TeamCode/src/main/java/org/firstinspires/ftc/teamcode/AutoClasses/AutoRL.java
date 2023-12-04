@@ -58,8 +58,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))
 
-//                .stopAndAdd(robot.lift.raiseLiftAuto)
-
                 .build();
     }
 

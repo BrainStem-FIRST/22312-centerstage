@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
@@ -21,9 +26,6 @@ public class GrabberA {
 
     private CRServo grabber;
 
-    private int grabberPWMHigherlimit;
-    private int grabberPWMLowerLimit;
-
     public GrabberA(HardwareMap hwMap, Telemetry telemetry){
         this.telemetry = telemetry;
 
@@ -33,5 +35,15 @@ public class GrabberA {
     public void setPower (double power){
         grabber.setPower(power);
     }
+
+    public Action grabPixel = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    setPower(0.8);
+                    return false;
+                }
+            }
+    );
 }
 

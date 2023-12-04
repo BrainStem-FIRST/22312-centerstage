@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -51,12 +54,36 @@ public class BrainSTEMRobotA {
     }
 
     public Action depositToBoardinAuto = new SequentialAction(
-        new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                
-                return false;
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    grabber.setPower(0.8);
+                    return false;
+                }
+            },
+            new SleepAction(0.5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    lift.raiseHeightTo(lift.LIFT_GROUND_STATE_POSITION);
+                    return false;
+                }
+            },
+            new SleepAction(0.5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    arm.armToDepositPosition();
+                    return false;
+                }
+            },
+            new SleepAction(0.5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    grabber.setPower(-0.8);
+                    return false;
+                }
             }
-        }
     );
 }

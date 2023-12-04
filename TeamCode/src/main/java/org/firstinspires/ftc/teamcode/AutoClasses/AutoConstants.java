@@ -6,6 +6,10 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 public class AutoConstants {
 
+    // Robot dimensions. Will become handy to orient around waypoints
+    static double robot_length = 15.75;
+    static double robot_width = 14;
+
     static double IN_TO_MM = 25.4;  // conversion multiplier from inch to millimeter
     static double DISTANCE_BETWEEN_DISTSENSORS = 10;    // distance between two sensors in inches
 
@@ -63,9 +67,9 @@ public class AutoConstants {
     public static double MAX_DISTANCE_BEFORE_CRASH = 8.0;   // inches.  Adjust this value to determine robot's position before backdrop
 
     public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_LEFT_Y);
-//    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_CENTER_Y);
-//    public static Vector2d vRedBackdrop_Center = new Vector2d(36,-40);
+    //    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 3.0, FIELD_RED_BACKDROP_CENTER_Y - 3.0);
+    //    public static Vector2d vRedBackdrop_Center = new Vector2d(36, -40);
     public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_RIGHT_Y);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
@@ -77,10 +81,6 @@ public class AutoConstants {
     public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, -TILE_CENTER_TO_CENTER / 2.0);
     public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0);
 
-    // Robot dimensions. Will become handy to orient around waypoints
-    static double robot_length = 15.75;
-    static double robot_width = 14;
-
     // Starting positions
     public static Pose2d pStartingPose_RedLeft  = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2.0, Math.toRadians(-90));
     public static Pose2d pStartingPose_RedRight = new Pose2d(0.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2.0, Math.toRadians(-90));
@@ -89,5 +89,5 @@ public class AutoConstants {
 
     // This distance is for fine tuning. Start with the trajectory ending position, but it can be adjusted independently for fine tuning.
     // For instance, trajectory brings the robot close enough using MAX_DISTANCE_BEFORE_CRASH, and target distance slowly moves the robot a little more to the backdrop.
-    public static int targetDistance = (int) (MAX_DISTANCE_BEFORE_CRASH * IN_TO_MM); // in MM (empirical value was 200mm)
+    public static int targetDistance = (int) (300); // in MM (empirical value was 200mm)
 }
