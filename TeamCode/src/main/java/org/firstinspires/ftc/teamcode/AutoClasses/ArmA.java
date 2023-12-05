@@ -25,8 +25,8 @@ public class ArmA {
     public AnalogInput armEncoder;
 
     public AbsoluteAnalogEncoder encoder;
-    private final double leftServoLowerPWMLimit = 900;
-    private final double  leftServoHigherPWMLimit= 2000;
+    private final double leftServoLowerPWMLimit = 930;
+    private final double  leftServoHigherPWMLimit= 2520;
 
     private final double rightServoPWMHigherLimit = 2300;
     private final double rightServoPWMLowerLimit = 535;
@@ -53,11 +53,11 @@ public class ArmA {
     }
     public void armToDepositPosition(){
         telemetry.addData("Arm Position Called", "Deposit");
-        leftArmServo.setPosition(0.01);
+        leftArmServo.setPosition(0.9);
     }
     public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
-        leftArmServo.setPosition(0.99);
+        leftArmServo.setPosition(0.03);
 
     }
 }

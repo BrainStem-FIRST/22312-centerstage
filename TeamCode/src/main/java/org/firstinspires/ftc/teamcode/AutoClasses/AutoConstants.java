@@ -68,7 +68,7 @@ public class AutoConstants {
 
     public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_LEFT_Y);
     //    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 3.0, FIELD_RED_BACKDROP_CENTER_Y - 3.0);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_CENTER_Y - 3.0);
     //    public static Vector2d vRedBackdrop_Center = new Vector2d(36, -40);
     public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_RIGHT_Y);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);

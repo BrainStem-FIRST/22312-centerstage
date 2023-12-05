@@ -153,7 +153,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("Loop Counter: ", ++loopCounter);
             telemetry.addData("target tag: ", targetTagPos);
 
-//            runBlocking(trajectory);
+            runBlocking(trajectory);
 
 // TODO: Move the AprilTag read and strafe to a separate method
 
@@ -220,7 +220,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             }
 
             // which way to strafe?
-            if (Math.abs(error) > 10 && !foundY) {
+            if (Math.abs(error) > 20 && !foundY) {
                 if(error < 0) {
                     yDirection = -1;
                     telemetry.addLine("strafing right");
@@ -231,12 +231,14 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 }
             }
             else {
-                if (foundZ) {
+//                if (foundZ) {
                     yDirection = 0;
                     foundY = true;
                     telemetry.addLine("stopped strafing");
-                }
+//                }
             }
+
+
 
             // check if aligned
             distanceLeft = sensorDistanceLeft.getDistance(DistanceUnit.MM);
@@ -245,7 +247,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("distance right", distanceRight);
             telemetry.addData("distance left", distanceLeft);
 
-/*
+
             // Adjust distance from backdrop
             // Only approach to the backdrop if both Y and Z axes were found.
             if (Math.abs(distanceRight - constants.targetDistance) > 10 && !foundX && foundY && foundZ) {
@@ -264,36 +266,46 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     telemetry.addLine("stop moving");
                 }
             }
-*/
 
-/*
+
             // Strafe left or right to approach to the target tag
-            robot.drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            0.0, //0.4 * xDirection,
-                            0.35 * yDirection
-                    ),
-                    0.65 * zDirection
-            ));
-*/
+//            robot.drive.setDrivePowers(new PoseVelocity2d(
+//                    new Vector2d(
+//                            0.4 * xDirection,
+//                            0.35 * yDirection
+//                    ),
+//                    0.65 * zDirection
+//            ));
+
+            if (foundZ) {
+                robot.drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.4 * xDirection,
+                                0.4 * yDirection
+                        ),
+                        0.0
+                ));
+            }
+
             robot.drive.updatePoseEstimate();
 
             telemetry.addData("x", robot.drive.pose.position.x);
             telemetry.addData("y", robot.drive.pose.position.y);
             telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.toDouble()));
 
+            telemetry.addData("lift encoder ticks", robot.lift.liftMotor1.getCurrentPosition());
+
             telemetry.update();
 
-
             runBlocking(new SequentialAction(
-//                    new Action() {
-//                        @Override
-//                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                            robot.grabber.setPower(0.8);
-//                            return false;
-//                        }
-//                    },
-//                    new SleepAction(0.2),
+                    new Action() {
+                        @Override
+                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                            robot.grabber.setPower(0.8);
+                            return false;
+                        }
+                    },
+                    new SleepAction(0.2),
                     new Action() {
                         @Override
                         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -301,25 +313,32 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
                             // This action will be repeatedly called as long as it returns True.
                             // Return False once the lift is in desired position.
-                            return !robot.lift.inHeightTolerance(robot.lift.LIFT_LOW_STATE_POSITION);
+                            return false;
+                        }
+                    },
+                    new Action() {
+                        @Override
+                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                            robot.grabber.setPower(0.0);
+                            return false;
+                        }
+                    },
+                    new SleepAction(0.5),
+                    new Action() {
+                        @Override
+                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                            robot.arm.armToDepositPosition();
+                            return false;
+                        }
+                    },
+                    new SleepAction(0.5),
+                    new Action() {
+                        @Override
+                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                            robot.grabber.setPower(-1.0);
+                            return false;
                         }
                     }
-//                    new SleepAction(0.5),
-//                    new Action() {
-//                        @Override
-//                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                            robot.arm.armToDepositPosition();
-//                            return false;
-//                        }
-//                    },
-//                    new SleepAction(0.5),
-//                    new Action() {
-//                        @Override
-//                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                            robot.grabber.setPower(-0.8);
-//                            return false;
-//                        }
-//                    }
             ));
         }
     }

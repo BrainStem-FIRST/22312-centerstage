@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -19,6 +20,7 @@ public class LiftA {
     private Telemetry telemetry;
     public DcMotorEx liftMotor1;
     private PIDController liftController;
+
 
     // Encoder Positions for Lift heights
     public final int LIFT_GROUND_STATE_POSITION = 0;
@@ -42,16 +44,21 @@ public class LiftA {
         liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
 
 //        liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_HIGH_STATE_POSITION);
 //        liftController.setOutputBounds(0,1);
     }
 
     public void raiseHeightTo(int desiredTickPosition){
-        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor1.setTargetPosition(desiredTickPosition);
         liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor1.setPower(0.5);
+        liftMotor1.setPower(1.0);
+        int currentPosition = liftMotor1.getCurrentPosition();
+        telemetry.addData("Current Position=",currentPosition);
+        telemetry.addData("target position", desiredTickPosition);
+        telemetry.update();
     }
 
     public boolean inHeightTolerance(int statePosition){

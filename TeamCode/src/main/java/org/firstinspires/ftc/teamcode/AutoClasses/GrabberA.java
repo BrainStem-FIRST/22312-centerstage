@@ -24,7 +24,7 @@ public class GrabberA {
 
     private Telemetry telemetry;
 
-    private CRServo grabber;
+    public CRServo grabber;
 
     public GrabberA(HardwareMap hwMap, Telemetry telemetry){
         this.telemetry = telemetry;
@@ -34,6 +34,7 @@ public class GrabberA {
 
     public void setPower (double power){
         grabber.setPower(power);
+        telemetry.addData("grabber power", grabber.getPower());
     }
 
     public Action grabPixel = new SequentialAction(
