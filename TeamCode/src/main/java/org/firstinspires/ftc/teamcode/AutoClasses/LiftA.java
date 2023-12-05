@@ -24,7 +24,7 @@ public class LiftA {
 
     // Encoder Positions for Lift heights
     public final int LIFT_GROUND_STATE_POSITION = 0;
-    public final int LIFT_LOW_STATE_POSITION = 300;
+    public final int LIFT_LOW_STATE_POSITION = 200;
     public final int LIFT_MIDDLE_STATE_POSITION = 550;
     public final int LIFT_HIGH_STATE_POSITION = 700;
 
