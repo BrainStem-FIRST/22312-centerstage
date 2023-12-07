@@ -2,21 +2,22 @@ package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.AutoClasses.BrainSTEMRobotA;
 
 public class AutoBR extends AutoAbstractOpMode {
 
     AutoConstants constants;
 
+    @Override
     public Pose2d startPose() {
         return constants.pStartingPose_BlueRight;
     }
 
     @Override
-    public Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot) {
-        return drive.actionBuilder(constants.pStartingPose_BlueRight)
+    public Action traj_left(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
 
@@ -55,8 +56,8 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_right(MecanumDrive drive, BrainSTEMRobotA robot) {
-        return drive.actionBuilder(constants.pStartingPose_BlueRight)
+    public Action traj_right(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
 
@@ -77,6 +78,13 @@ public class AutoBR extends AutoAbstractOpMode {
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                 .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))
+                .build();
+    }
+
+    @Override
+    public Action parking_traj(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(startPose())
+                .splineTo(new Vector2d(46, -12), Math.toRadians(-60))
                 .build();
     }
 

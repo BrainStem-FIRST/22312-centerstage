@@ -2,21 +2,22 @@ package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.AutoClasses.BrainSTEMRobotA;
 
 public class AutoRR extends AutoAbstractOpMode {
 
     AutoConstants constants;
 
+    @Override
     public Pose2d startPose() {
         return constants.pStartingPose_RedRight;
     }
 
     @Override
-    public Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot) {
-        return drive.actionBuilder(constants.pStartingPose_RedRight)
+    public Action traj_left(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_RedRight)
                 // go backwards
                 .setReversed(true)
 
@@ -53,8 +54,8 @@ public class AutoRR extends AutoAbstractOpMode {
                 .build();
     }
     @Override
-    public Action traj_right(MecanumDrive drive, BrainSTEMRobotA robot) {
-        return drive.actionBuilder(constants.pStartingPose_RedRight)
+    public Action traj_right(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_RedRight)
                 // go backwards
                 .setReversed(true)
 
@@ -77,7 +78,14 @@ public class AutoRR extends AutoAbstractOpMode {
     }
 
     @Override
+    public Action parking_traj(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(startPose())
+                .splineTo(new Vector2d(46, -12), Math.toRadians(-60))
+                .build();
+    }
+
+    @Override
     public Alliance alliance() {
-        return null;
+        return Alliance.RED;
     }
 }

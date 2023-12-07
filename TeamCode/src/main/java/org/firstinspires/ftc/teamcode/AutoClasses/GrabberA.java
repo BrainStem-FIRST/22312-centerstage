@@ -19,32 +19,40 @@ public class GrabberA {
     private double grabberOpenPosition;
     private double grabberPick1PixelPosition;
     private double grabberPick2PixelPosition;
-    private double grabberDeposit1Pixel;
+    private double grabberDeposit1Pixel = 0.6;
+    private double grabberGrabPixel = 1.0;
     private double grabberDeposit2Pixel;
+    public int grabberPWMLowerLimit = 600;
+    public int grabberPWMHigherLimit = 1166;
+
 
     private Telemetry telemetry;
 
-    public CRServo grabber;
+    public ServoImplEx grabber;
 
     public GrabberA(HardwareMap hwMap, Telemetry telemetry){
         this.telemetry = telemetry;
 
-        grabber = hwMap.get(CRServo.class, "grabber");
+        grabber = hwMap.get(ServoImplEx.class, "grabber");
+        grabber.setPwmRange(new PwmControl.PwmRange(grabberPWMLowerLimit, grabberPWMHigherLimit));
     }
 
-    public void setPower (double power){
-        grabber.setPower(power);
-        telemetry.addData("grabber power", grabber.getPower());
+    public void grabPixel () {
+        grabber.setPosition(grabberGrabPixel);
     }
 
-    public Action grabPixel = new SequentialAction(
-            new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    setPower(0.8);
-                    return false;
-                }
-            }
-    );
+    public void depositPixel () {
+        grabber.setPosition(grabberDeposit1Pixel);
+    }
+
+//    public Action grabPixel = new SequentialAction(
+//            new Action() {
+//                @Override
+//                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                    setPower(0.8);
+//                    return false;
+//                }
+//            }
+//    );
 }
 

@@ -57,7 +57,7 @@ public class BrainSTEMRobotA {
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    grabber.setPower(0.8);
+                    grabber.grabPixel();
                     return false;
                 }
             },
@@ -81,7 +81,7 @@ public class BrainSTEMRobotA {
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    grabber.setPower(-0.8);
+                    grabber.depositPixel();
                     return false;
                 }
             }

@@ -89,5 +89,5 @@ public class AutoConstants {
 
     // This distance is for fine tuning. Start with the trajectory ending position, but it can be adjusted independently for fine tuning.
     // For instance, trajectory brings the robot close enough using MAX_DISTANCE_BEFORE_CRASH, and target distance slowly moves the robot a little more to the backdrop.
-    public static int targetDistance = (int) (165); // in MM (empirical value was 200mm)
+    public static double targetDistance = 150.00; // in MM (empirical value was 200mm)
 }

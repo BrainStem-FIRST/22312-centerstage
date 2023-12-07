@@ -19,8 +19,8 @@ public class AutoRL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left(MecanumDrive drive, BrainSTEMRobotA robot) {
-        return drive.actionBuilder(constants.pStartingPose_RedLeft)
+    public Action traj_left(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
 
@@ -62,8 +62,8 @@ public class AutoRL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_right(MecanumDrive drive, BrainSTEMRobotA robot) {
-        return drive.actionBuilder(constants.pStartingPose_RedLeft)
+    public Action traj_right(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
 
@@ -85,6 +85,14 @@ public class AutoRL extends AutoAbstractOpMode {
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vRedBackdrop_Right, Math.toRadians(0))
+                .build();
+    }
+
+    @Override
+    public Action parking_traj(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setTangent(90)
+                .splineToLinearHeading(new Pose2d(46, -12, Math.toRadians(135)), Math.toRadians(135))
                 .build();
     }
 

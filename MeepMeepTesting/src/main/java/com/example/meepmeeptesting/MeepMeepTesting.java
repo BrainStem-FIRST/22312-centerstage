@@ -140,6 +140,10 @@ public class MeepMeepTesting {
                         // Goto Backdrop to place your purple pixel
                         .splineTo(vRedClearStageGate, Math.toRadians(0))
                         .splineTo(vRedBackdrop_Left, Math.toRadians(0))
+                        .endTrajectory()
+                        .setTangent(90)
+                        .splineToLinearHeading(new Pose2d(46, -12, Math.toRadians(135)), Math.toRadians(135))
+
                         .build();
 
         myBot.runAction(trajectory);
