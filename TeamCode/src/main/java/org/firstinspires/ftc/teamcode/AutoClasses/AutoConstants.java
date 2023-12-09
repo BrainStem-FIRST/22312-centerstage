@@ -68,7 +68,7 @@ public class AutoConstants {
 
     public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_LEFT_Y);
     //    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_CENTER_Y - 3.0);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 2.0, FIELD_RED_BACKDROP_CENTER_Y - 3.0);
     //    public static Vector2d vRedBackdrop_Center = new Vector2d(36, -40);
     public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_RIGHT_Y);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
@@ -89,5 +89,5 @@ public class AutoConstants {
 
     // This distance is for fine tuning. Start with the trajectory ending position, but it can be adjusted independently for fine tuning.
     // For instance, trajectory brings the robot close enough using MAX_DISTANCE_BEFORE_CRASH, and target distance slowly moves the robot a little more to the backdrop.
-    public static double targetDistance = 150.00; // in MM (empirical value was 200mm)
+    public static double targetDistance = 180.00; // in MM (empirical value was 200mm)
 }

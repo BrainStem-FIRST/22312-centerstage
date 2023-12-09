@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
     AutoConstants constants;
@@ -142,6 +143,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addLine("Started trajectory");
             telemetry.update();
 
+//            runBlocking(new Action() {
+//                @Override
+//                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                    robot.grabber.grabber.setPosition(0.9);
+//                    return false;
+//                }
+//            });
             runBlocking(trajectory);
 
             telemetry.addLine("Finished trajectory");
@@ -199,8 +207,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // direction to turn
-            if (distanceLeft < 200.00 || distanceRight < 200.00) { // don't bother turning if at least one sensor doesn't see the board
-                if (Math.abs(distanceRight - distanceLeft) > 10.00 && !foundZ) {
+            if (distanceLeft < 250.00 && distanceRight < 250.00) { // don't bother turning if at least one sensor doesn't see the board
+                if (Math.abs(distanceRight - distanceLeft) > 50.00 && !foundZ) {
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
                     } else {
@@ -229,21 +237,21 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 yDirection = 0;
                 telemetry.addLine("stopped strafing");
 
-                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
+//                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
                     foundY = true;
                     telemetry.addLine("stopped strafing");
-                }
+//                }
             }
 
             // Adjust distance from backdrop
             // Only approach to the backdrop if both Y and Z axes were found.
-            if (foundY && foundZ) {
-                if (Math.abs(distanceRight - constants.targetDistance) > 18.00 && !foundX) {
+            if (foundY) { //foundY && foundZ) {
+                if (Math.abs(distanceRight - constants.targetDistance) > 12.00 && !foundX) {
                     if (distanceRight < constants.targetDistance) {
-                        xDirection = -1;
+                        xDirection = 1;
                         telemetry.addLine("moving away");
                     } else {
-                        xDirection = 1;
+                        xDirection = -1;
                         telemetry.addLine("moving towards");
                     }
                 } else {
@@ -257,10 +265,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            0.3 * xDirection,
+                            0.35 * xDirection,
                             0.3 * yDirection
                     ),
-                    0.45 * zDirection
+                    0.3 * zDirection
             ));
 
 
@@ -298,7 +306,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         return false;
                     }
                 },
-                new SleepAction(0.85),
+                new SleepAction(1.05),
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -306,9 +314,18 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         return false;
                     }
                 },
-                new SleepAction(0.5),
+                new SleepAction(1.5),
 
-                parking_traj(robot)
+                parking_traj(robot),
+
+                new SleepAction(1.5),
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.arm.armToIdlePosition();
+                        return false;
+                    }
+                }
         ));
 
     }

@@ -19,7 +19,7 @@ public class GrabberA {
     private double grabberOpenPosition;
     private double grabberPick1PixelPosition;
     private double grabberPick2PixelPosition;
-    private double grabberDeposit1Pixel = 0.6;
+    private double grabberDeposit1Pixel = 0.0;
     private double grabberGrabPixel = 1.0;
     private double grabberDeposit2Pixel;
     public int grabberPWMLowerLimit = 600;

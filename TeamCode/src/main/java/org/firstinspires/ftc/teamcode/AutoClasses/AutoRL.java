@@ -91,8 +91,9 @@ public class AutoRL extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
+                .lineToX(37)
                 .setTangent(90)
-                .splineToLinearHeading(new Pose2d(46, -12, Math.toRadians(135)), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(46, -28, Math.toRadians(180)), Math.toRadians(180))
                 .build();
     }
 
