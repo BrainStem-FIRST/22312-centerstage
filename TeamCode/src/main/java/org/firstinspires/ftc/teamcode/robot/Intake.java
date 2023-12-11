@@ -27,6 +27,7 @@ public class Intake {
     public ElapsedTime cycleSpitTime = new ElapsedTime();
     private Hopper hopper;
 
+
     public ElapsedTime timeBetweenIntakeSpit = new ElapsedTime();
 
     public Intake(HardwareMap hwMap, Telemetry telemetry, Map stateMap, Hopper hopper){

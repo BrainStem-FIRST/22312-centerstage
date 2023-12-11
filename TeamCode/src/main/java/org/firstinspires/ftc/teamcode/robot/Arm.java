@@ -26,16 +26,16 @@ public class Arm {
     private Lift lift;
 
     public AbsoluteAnalogEncoder encoder;
-    private double leftServoLowerPWMLimit = 930;
-    private double  leftServoHigherPWMLimit= 2520;
+    private double leftServoLowerPWMLimit = 750;
+    private double  leftServoHigherPWMLimit= 2476;
 
-    private double rightServoPWMHigherLimit = 2093;
-    private double rightServoPWMLowerLimit = 531;
+    private double rightServoPWMHigherLimit = 2120;
+    private double rightServoPWMLowerLimit = 500;
 
-    private double rightDepositPosition = 0;
-    private double leftDepositPosition = 1.0;
+    private double rightDepositPosition = 0.01;
+    private double leftDepositPosition = 0.99;
     private double rightIdlePosition = 1.0;
-    private double leftIdlePosition = 0.0;
+    private double leftIdlePosition = 0.01;
     private double encoderOffset = 1.53;
 
     private int liftMinPosition = 200;
@@ -82,13 +82,13 @@ public class Arm {
 //        leftArmServo.setPosition(leftIdlePosition);
         telemetry.addData("Arm Position Called", "Deposit");
         rightArmServo.setPosition(0.03);
-        leftArmServo.setPosition(0.9);
+        leftArmServo.setPosition(0.98);
     }
     private void armToIdlePosition(){
 //        leftArmServo.setPosition(leftDepositPosition);
         telemetry.addData("Arm Position Called", "Idle");
-        rightArmServo.setPosition(0.9);
-        leftArmServo.setPosition(0.03);
+        rightArmServo.setPosition(0.97);
+        leftArmServo.setPosition(0.01);
 
     }
 }

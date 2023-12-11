@@ -20,6 +20,8 @@ public class Hanging {
 
     public final String HANGING_RELEASED = "HANGING_RELEASED";
 
+    public final String HANGING_DRIVER_INPUT = "HANGING_DRIVER_INPUT";
+
     private Telemetry telemetry;
 
     private Map stateMap;
@@ -27,8 +29,8 @@ public class Hanging {
     public DcMotorEx leftHanging;
     public DcMotorEx rightHanging;
 
-    private int lefthangingEncoder = 11141;
-    private int rightHangingEncoderTicks = 10931;
+    public int lefthangingEncoder = 10550;
+    public int rightHangingEncoderTicks = 10886;
 
     public Encoder rightHangingEncoder;
     public Hanging(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
@@ -50,6 +52,14 @@ public class Hanging {
     }
 
     public void setState(){
+        if(rightHanging.getCurrentPosition() == rightHangingEncoderTicks && leftHanging.getCurrentPosition() == lefthangingEncoder){
+            setRawPower(0);
+        } else{
+            selectTransition();
+        }
+    }
+
+    private void selectTransition(){
         String servoState = (String) stateMap.get(HANGING_SYSTEM_NAME);
 
         switch(servoState){
@@ -57,19 +67,22 @@ public class Hanging {
                 break;
             }
             case HANGING_RELEASED:{
+                toDeployPosition();
+                break;
+            }
+            case HANGING_DRIVER_INPUT:{
                 break;
             }
         }
     }
-
     private void toDeployPosition(){
         leftHanging.setTargetPosition(lefthangingEncoder);
         leftHanging.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftHanging.setPower(1.0);
 
-//        rightHanging.setTargetPosition(rightHangingEncoderTicks);
-//        rightHanging.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        rightHanging.setPower(1.0);
+        rightHanging.setTargetPosition(rightHangingEncoderTicks);
+        rightHanging.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightHanging.setPower(1.0);
     }
 
     private void notReleased(){
@@ -85,6 +98,16 @@ public class Hanging {
         rightHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftHanging.setPower(power);
+        rightHanging.setPower(power);
+    }
+
+    public void setLeftHangingPower(double power){
+        leftHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftHanging.setPower(power);
+    }
+
+    public void setRightHangingPower(double power){
+        rightHanging.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightHanging.setPower(power);
     }
 }

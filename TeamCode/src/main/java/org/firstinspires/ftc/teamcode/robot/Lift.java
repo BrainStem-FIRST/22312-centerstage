@@ -60,7 +60,7 @@ public class Lift {
 
     private int cycleTolerance = 5;
 
-    GrabberCR grabberCR;
+    Grabber grabber;
     public ElapsedTime liftCycleTime = new ElapsedTime();
     private Constants constants = new Constants();
     public Lift(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
@@ -77,7 +77,7 @@ public class Lift {
         liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_ROW5_POSITION);
         liftController.setOutputBounds(-0.1,0.75);
 
-        grabberCR = new GrabberCR(hwMap, telemetry, stateMap);
+        grabber = new Grabber(hwMap, telemetry, stateMap);
     }
 
     public void setState(Arm arm){
@@ -105,9 +105,9 @@ public class Lift {
 
     private void updatePixelCycleState(){
         if(isCycleInProgress()){
-            if(inCycleTolerance(liftMotor1.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 500){
+            if(inCycleTolerance(liftMotor1.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 200){
                 stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
-                grabberCR.grabberCycleDelay.reset();
+                grabber.grabberCycleDelay.reset();
             }
         }
     }
