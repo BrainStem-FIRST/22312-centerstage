@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+@Config
+@Autonomous(name="Robot: Red-Right Auto", group="Robot")
 public class AutoRR extends AutoAbstractOpMode {
 
     AutoConstants constants;
@@ -73,14 +77,16 @@ public class AutoRR extends AutoAbstractOpMode {
 
                 // Goto Backdrop to place your purple pixel
                 .splineTo(constants.vRedBackdrop_Right, Math.toRadians(0))
-                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+//                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(startPose())
-                .splineTo(new Vector2d(46, -12), Math.toRadians(-60))
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .lineToX(37)
+                .setTangent(90)
+                .splineToLinearHeading(new Pose2d(46, -28, Math.toRadians(180)), Math.toRadians(180))
                 .build();
     }
 

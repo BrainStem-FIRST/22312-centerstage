@@ -45,13 +45,17 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
-                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 + 3.0)
+//                .splineToLinearHeading(new Pose2d(-45, -19, Math.toRadians(0)), Math.toRadians(0))
+                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 3.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
-
                 .endTrajectory()
+//                .setReversed(true)
+                .setTangent(90)
+                .lineToY(-12)
 
                 // Go to backdrop to place your purple pixel
+//                .setTangent(Math.toRadians(-180))
                 .turnTo(Math.toRadians(-180))
                 .setReversed(true)  // re-set reverse after .stopAndAdd or .turn as it loses config
 

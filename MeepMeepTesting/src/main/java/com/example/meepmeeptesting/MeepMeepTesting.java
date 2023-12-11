@@ -82,7 +82,7 @@ public class MeepMeepTesting {
     public static Vector2d vBlueBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_BLUE_BACKDROP_RIGHT_Y);
 
     // Important waypoints on the field
-    public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0 +6.0, -TILE_CENTER_TO_CENTER / 2.0);
+    public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0 +6.0, -TILE_CENTER_TO_CENTER / 2.0 - 6.0);
     public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0);
 
     // Starting positions
@@ -122,30 +122,18 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_RedLeft)
-                        // go backwards
+                myBot.getDrive().actionBuilder(pStartingPose_RedRight)
                         .setReversed(true)
 
                         // Replace prop with your yellow pixel (just push)
-                        .splineTo(vRedLeftSpike_Left, Math.toRadians(90))
-                        .lineToY(vRedLeftSpike_Left.y + robot_length / 2.0)
+                        .lineToY(-12) //constants.vRedRightSpike_Center.y + constants.robot_length / 4)
 
-                        // Drop yellow pixel in position
-//                        .stopAndAdd(robot.intake.spitPixel)
-
-                        // Discontinue trajectory
                         .endTrajectory()
-                        .setReversed(true)
+                        .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
-                        // Goto Backdrop to place your purple pixel
-                        .splineTo(vRedClearStageGate, Math.toRadians(0))
-                        .splineTo(vRedBackdrop_Left, Math.toRadians(0))
-                        .endTrajectory()
-                        .setTangent(90)
-                        .splineToLinearHeading(new Pose2d(46, -12, Math.toRadians(135)), Math.toRadians(135))
-
+                        // Go to backdrop to place your purple pixel
+                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                         .build();
-
         myBot.runAction(trajectory);
 
 

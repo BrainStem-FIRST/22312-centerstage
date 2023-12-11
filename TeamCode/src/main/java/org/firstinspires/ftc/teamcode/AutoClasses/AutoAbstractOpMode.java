@@ -143,13 +143,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addLine("Started trajectory");
             telemetry.update();
 
-//            runBlocking(new Action() {
-//                @Override
-//                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                    robot.grabber.grabber.setPosition(0.9);
-//                    return false;
-//                }
-//            });
+            runBlocking(new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    robot.grabber.grabber.setPosition(0.0);
+                    return false;
+                }
+            });
             runBlocking(trajectory);
 
             telemetry.addLine("Finished trajectory");
@@ -225,7 +225,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             }
 
             // which way to strafe?
-            if (Math.abs(position_error) > 20 && !foundY) {
+            if (Math.abs(position_error) > 10 && !foundY) {
                 if (position_error < 0) {
                     yDirection = -1;
                     telemetry.addLine("strafing left");
@@ -246,7 +246,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             // Adjust distance from backdrop
             // Only approach to the backdrop if both Y and Z axes were found.
             if (foundY) { //foundY && foundZ) {
-                if (Math.abs(distanceRight - constants.targetDistance) > 12.00 && !foundX) {
+                if (Math.abs(distanceRight - constants.targetDistance) > 9.00 && !foundX) {
                     if (distanceRight < constants.targetDistance) {
                         xDirection = 1;
                         telemetry.addLine("moving away");
@@ -265,7 +265,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            0.35 * xDirection,
+                            0.3 * xDirection,
                             0.3 * yDirection
                     ),
                     0.3 * zDirection
