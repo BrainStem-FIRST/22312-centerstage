@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Map;
 
-public class Grabber {
+public class GrabberCR {
     public final String GRABBER_SYSTEM_NAME = "GRABBER_SYSTEM_NAME";
     public final String GRABBER_OPEN_STATE = "GRABBER_OPEN_STATE";
     public final String GRABBER_PICK_1_PIXEL = "GRABBER_PICK_1_PIXEL";
@@ -23,7 +24,7 @@ public class Grabber {
     private double grabberOpenPosition;
     private double grabberPick1PixelPosition;
     private double grabberPick2PixelPosition = 1;
-    private double grabberDeposit1Pixel = 0.6;
+    private double grabberDeposit1Pixel = 0.9;
     private double grabberDeposit2Pixel = 0;
 
     private double grabberMiddlePosition = 0;
@@ -32,20 +33,20 @@ public class Grabber {
     private Telemetry telemetry;
     private Map stateMap;
 
-    private ServoImplEx grabber;
+    public CRServo grabber;
 
     public ElapsedTime grabberCycleTime = new ElapsedTime();
-    private int grabberPWMHigherlimit = 1166;
-    private int grabberPWMLowerLimit = 600;
+    private int grabberPWMHigherlimit = 2300;
+    private int grabberPWMLowerLimit = 1000;
 
     Constants constants = new Constants();
 
-    public Grabber(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
+    public GrabberCR(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
         this.stateMap = stateMap;
 
-        grabber = hwMap.get(ServoImplEx.class, "grabber");
-        grabber.setPwmRange(new PwmControl.PwmRange(grabberPWMLowerLimit, grabberPWMHigherlimit));
+        grabber = hwMap.get(CRServo.class, "grabber");
+
     }
 
     public void setState(){
@@ -69,37 +70,21 @@ public class Grabber {
     private void selectTransition(){
         String desiredState = (String) stateMap.get(GRABBER_SYSTEM_NAME);
         switch (desiredState){
-            case GRABBER_OPEN_STATE:{
-                setPosition(grabberOpenPosition);
-                break;
-            }
-            case GRABBER_PICK_1_PIXEL:{
-                setPosition(grabberPick1PixelPosition);
-                break;
-            }
             case GRABBER_PICK_2_PIXEL:{
-                setPosition(grabberPick2PixelPosition);
-                break;
-            }
-            case GRABBER_DEPOSIT_1st_PIXEL:{
-                setPosition(grabberDeposit1Pixel);
-                break;
-            }
-            case GRABBER_DEPOSIT_2nd_PIXEL:{
-                setPosition(grabberDeposit2Pixel);
+                grabber.setPower(0.1);
                 break;
             }
             case GRABBER_IDLE_STATE:{
+                grabber.setPower(0.0);
                 break;
             }
-            case GRABBER_MIDDLE_STATE:{
-                setPosition(grabberMiddlePosition);
+            case GRABBER_DEPOSIT_1st_PIXEL:{
+                break;
+            }
+            case GRABBER_DEPOSIT_2nd_PIXEL:{
                 break;
             }
         }
     }
 
-    private void setPosition(double position){
-        grabber.setPosition(position);
-    }
 }

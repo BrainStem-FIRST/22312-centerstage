@@ -54,7 +54,7 @@ public class Hopper {
         }
 
         if(stateMap.get(constants.HOPPER_2_PIXELS_TIME) !=  null){
-            long hopperEndTime = (long) stateMap.get(constants.HOPPER_2_PIXELS_TIME) + 250;
+            long hopperEndTime = (long) stateMap.get(constants.HOPPER_2_PIXELS_TIME) + 300;
             telemetry.addData("Current time", System.currentTimeMillis());
             telemetry.addData("End time", hopperEndTime);
             if(System.currentTimeMillis() > hopperEndTime && pixelSensor2){
