@@ -1,14 +1,10 @@
-package com.example.meepmeeptesting;
+package org.firstinspires.ftc.teamcode.AutoClasses;
 
-import com.acmerobotics.roadrunner.Action;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.noahbres.meepmeep.MeepMeep;
-import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
-import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-
-public class MeepMeepTesting {
+public class AutoConstants {
 
     // Robot dimensions. Will become handy to orient around waypoints
     static double robot_length = 15.75;
@@ -72,8 +68,8 @@ public class MeepMeepTesting {
 
     public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_LEFT_Y);
     //    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_CENTER_Y);
-    //    public static Vector2d vRedBackdrop_Center = new Vector2d(36,-40);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 2.0, FIELD_RED_BACKDROP_CENTER_Y - 7.0);
+    //    public static Vector2d vRedBackdrop_Center = new Vector2d(36, -40);
     public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_RIGHT_Y);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
@@ -82,7 +78,7 @@ public class MeepMeepTesting {
     public static Vector2d vBlueBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_BLUE_BACKDROP_RIGHT_Y);
 
     // Important waypoints on the field
-    public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0 +6.0, -TILE_CENTER_TO_CENTER / 2.0 - 6.0);
+    public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, -TILE_CENTER_TO_CENTER / 2.0 - 6.0);
     public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0);
 
     // Starting positions
@@ -93,54 +89,5 @@ public class MeepMeepTesting {
 
     // This distance is for fine tuning. Start with the trajectory ending position, but it can be adjusted independently for fine tuning.
     // For instance, trajectory brings the robot close enough using MAX_DISTANCE_BEFORE_CRASH, and target distance slowly moves the robot a little more to the backdrop.
-    public static int targetDistance = (int) (MAX_DISTANCE_BEFORE_CRASH * IN_TO_MM); // in MM (empirical value was 200mm)
-
-
-
-    public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
-
-        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 12)
-                .setDimensions(robot_width, robot_length)
-                .build();
-
-
-
-/********* Example **********
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0, 0))
-                .lineToX(20)
-                .turn(Math.toRadians(90))
-                .lineToY(30)
-                .turn(Math.toRadians(90))
-                .lineToX(0)
-                .turn(Math.toRadians(90))
-                .lineToY(0)
-                .turn(Math.toRadians(90))
-                .build());
-*******************************/
-
-        Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_RedRight)
-                        .setReversed(true)
-
-                        // Replace prop with your yellow pixel (just push)
-                        .lineToY(-12) //constants.vRedRightSpike_Center.y + constants.robot_length / 4)
-
-                        .endTrajectory()
-                        .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
-
-                        // Go to backdrop to place your purple pixel
-                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
-                        .build();
-        myBot.runAction(trajectory);
-
-
-        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_OFFICIAL)
-                .setDarkMode(true)
-                .setBackgroundAlpha(0.95f)
-                .addEntity(myBot)
-                .start();
-    }
+    public static double targetDistance = 180.00; // in MM (empirical value was 200mm)
 }
