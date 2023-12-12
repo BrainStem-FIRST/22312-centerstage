@@ -29,9 +29,10 @@ public class Hanging {
     public DcMotorEx leftHanging;
     public DcMotorEx rightHanging;
 
-    public int lefthangingEncoder = 10550;
-    public int rightHangingEncoderTicks = 10886;
-
+        public int lefthangingEncoder = 12500;
+    //10247
+    public int rightHangingEncoderTicks = 11000;
+    ///8724
     public Encoder rightHangingEncoder;
     public Hanging(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;

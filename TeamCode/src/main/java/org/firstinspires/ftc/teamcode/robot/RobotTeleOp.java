@@ -13,7 +13,7 @@ import java.util.Map;
 public class RobotTeleOp extends LinearOpMode {
     private int liftCounter = 0;
     private int rightButtonCounter = 0;
-    private int drawbridgeCounter = 1;
+    private int drawbridgeCounter = 0;
     private boolean hangingMode = false;
     private boolean retractionInProgress = false;
     private boolean liftIsGoingUp = false;
@@ -116,9 +116,6 @@ public class RobotTeleOp extends LinearOpMode {
                     rightButtonCounter = 0;
                 }
 
-                if(gamepad2.b){
-                    stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_RELEASED);
-                }
 
                 if(gamepad2.left_bumper && gamepad2.b){
                     hangingMode = true;
@@ -130,38 +127,41 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
                 }
 
-//                if(gamepad2.right_trigger > 0.2 && hangingMode){
-//                    robot.hanging.rightHanging.setPower(-1.0);
-//                } else if(gamepad2.right_stick_y > 0.2 && hangingMode){
-//                    robot.hanging.rightHanging.setPower(1.0);
-//                } else {
-//                    robot.hanging.rightHanging.setPower(0);
-//                }
-//
-//                if(gamepad2.left_trigger > 0.2 && hangingMode){
-//                    robot.hanging.leftHanging.setPower(-1.0);
-//                } else if(gamepad2.left_stick_y > 0.2 && hangingMode){
-//                    robot.hanging.leftHanging.setPower(1.0);
-//                } else{
-//                    robot.hanging.leftHanging.setPower(0);
-//                }
+                if(gamepad2.right_trigger > 0.2 && hangingMode){
+                    robot.hanging.rightHanging.setPower(-1.0);
+                } else if(gamepad2.right_stick_y > 0.2 && hangingMode){
+                    robot.hanging.rightHanging.setPower(1.0);
+                } else {
+                    robot.hanging.rightHanging.setPower(0);
+                }
 
                 if(gamepad2.left_trigger > 0.2 && hangingMode){
-                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
-                    robot.hanging.setLeftHangingPower(-gamepad2.left_trigger);
-                } else if(gamepad2.right_trigger > 0.2 && hangingMode){
-                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
-                    robot.hanging.setRightHangingPower(-gamepad2.right_trigger);
-                } else if(gamepad2.right_trigger > 0.2 && gamepad2.left_trigger > 0.2  && hangingMode){
-                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
-                    robot.hanging.setRawPower(-gamepad2.right_trigger);
-                } else if(!(((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED))){
-                    robot.hanging.setRawPower(0);
+                    robot.hanging.leftHanging.setPower(-1.0);
+                } else if(gamepad2.left_stick_y > 0.2 && hangingMode){
+                    robot.hanging.leftHanging.setPower(1.0);
+                } else{
+                    robot.hanging.leftHanging.setPower(0);
                 }
 
-                if(gamepad2.a && hangingMode){
-                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_RELEASED);
+                if(gamepad2.y){
+                    stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_RELEASED);
                 }
+//                if(gamepad2.right_trigger > 0.2 && gamepad2.left_trigger > 0.2  && hangingMode){
+//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
+//                    robot.hanging.setRawPower(-gamepad2.right_trigger);
+//                } else if(gamepad2.left_trigger > 0.2 && hangingMode){
+//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
+//                    robot.hanging.setLeftHangingPower(-gamepad2.left_trigger);
+//                } else if(gamepad2.right_trigger > 0.2 && hangingMode){
+//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
+//                    robot.hanging.setRightHangingPower(-gamepad2.right_trigger);
+//                } else if(!(((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED))){
+//                    robot.hanging.setRawPower(0);
+//                }
+
+//                if(gamepad2.a && hangingMode){
+//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_RELEASED);
+//                }
 
                 if (retractionInProgress) {
                     if (retractionTime.seconds() > 1) {
@@ -195,13 +195,13 @@ public class RobotTeleOp extends LinearOpMode {
                     }
                 }
 
-                if(gamepad2RightButton.getState() && hangingMode &&((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED) ){
-                    robot.hanging.rightHangingEncoderTicks += 500;
-                }
-
-                if(gamepad2LeftButton.getState() && hangingMode &&((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED) ){
-                    robot.hanging.lefthangingEncoder += 500;
-                }
+//                if(gamepad2RightButton.getState() && hangingMode &&((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED) ){
+//                    robot.hanging.rightHangingEncoderTicks += 500;
+//                }
+//
+//                if(gamepad2LeftButton.getState() && hangingMode &&((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED) ){
+//                    robot.hanging.lefthangingEncoder += 500;
+//                }
 
                 robot.drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
@@ -213,19 +213,13 @@ public class RobotTeleOp extends LinearOpMode {
                 robot.drive.updatePoseEstimate();
                 robot.updateSystems();
                 updateLift(stateMap, robot);
-//                telemetry.addData("Retraction in progress", retractionInProgress);
-//                telemetry.addData("Lift encoders", robot.lift.liftMotor1.getCurrentPosition());
-//                telemetry.addData("Lift counter for driver 2 height", liftCounter);
-//                telemetry.addData("Right button pushes", rightButtonCounter);
-//                telemetry.addData("Retraction in progress", retractionInProgress);
-//                telemetry.addData("Retraction timing", retractionTime.seconds());
-//                telemetry.addData("Hanging mode boolean", hangingMode);
-//                telemetry.addData("Robot left hanging power", robot.hanging.leftHanging.getPower());
-//                telemetry.addData("Robot right hanging power", robot.hanging.rightHanging.getPower());
+                telemetry.addData("Robot left hanging power", robot.hanging.leftHanging.getPower());
+                telemetry.addData("Robot right hanging power", robot.hanging.rightHanging.getPower());
                 telemetry.addData("Left Hanging Position", robot.hanging.leftHanging.getCurrentPosition());
                 telemetry.addData("Right hanging Position", robot.hanging.rightHanging.getCurrentPosition());
                 telemetry.addData("drawbridge position", drawbridgeCounter);
                 telemetry.addData("Lift intake automation", robot.startLiftDown());
+                telemetry.addData("Drawbridge commanded position", robot.drawbridge.drawBridge.getPosition());
                 telemetry.update();
             }
         }

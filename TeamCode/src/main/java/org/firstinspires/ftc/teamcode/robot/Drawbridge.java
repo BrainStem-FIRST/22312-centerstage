@@ -18,28 +18,30 @@ public class Drawbridge {
     public final String DRAWBRIDGE_3_PIXEL_HEIGHT = "DRAWBRIDGE_3_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_4_PIXEL_HEIGHT = "DRAWBRIDGE_4_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_5_PIXEL_HEIGHT = "DRAWBRIDGE_5_PIXEL_HEIGHT";
-    private int drawbridgePWMLowerLimit = 1230;
-    private int drawbridgePWMHigherLimit = 1950;
+    private int drawbridgePWMLowerLimit = 600;
+    private int drawbridgePWMHigherLimit = 1300;
 
-    private int hardstopPWMLowerLimit = 550;
-    private int hardstopPWMHigherLimit = 2500;
+    private int hardstopPWMLowerLimit = 807;
+    private int hardstopPWMHigherLimit = 2420;
     private double firstPixelPosition = 0.99;
     private double secondPixelPosition = 0.95;
     private double thirdPixelPosition = 0.7;
     private double fourthPixelPosition = 0.22;
     private double fifthPixelPosition = 0.01;
+    private double drawBridge5thPixelPosition;
+    private double drawBridge4thPixelPosition;
 
-    // 550 is 5th pixel pwm
-    // 2420 is 1st pixel pwm
-    // 2180 for 2nd pixel pwm
-    // 1520 for 3rd pixel
-    //960 for 4th pixel
+    // 120 is 5th pixel pwm
+    // 2320 is 1st pixel pwm
+    // 1790 for 2nd pixel pwm
+    // 1283 for 3rd pixel
+    //667 for 4th pixel
 
     private Telemetry telemetry;
 
     private Map stateMap;
 
-    private ServoImplEx drawBridge;
+    public ServoImplEx drawBridge;
 
     private ServoImplEx hardStop;
 
@@ -69,7 +71,7 @@ public class Drawbridge {
         switch(state){
             case DRAWBRIDGE_UP_STATE:{
                 setDrawBridgeUp();
-                setHardstopPosition(fifthPixelPosition);
+                setHardstopPosition(firstPixelPosition);
                 break;
             }
             case DRAWBRIDGE_DOWN_STATE:{
@@ -78,7 +80,7 @@ public class Drawbridge {
             }
             case DRAWBRIDGE_1_PIXEL_HEIGHT:{
                 setDrawBridgeDown();
-                setHardstopPosition(fifthPixelPosition);
+                setHardstopPosition(firstPixelPosition);
                 break;
             }
             case DRAWBRIDGE_2_PIXEL_HEIGHT:{
@@ -106,7 +108,7 @@ public class Drawbridge {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(1);
+        drawBridge.setPosition(0.99);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");
