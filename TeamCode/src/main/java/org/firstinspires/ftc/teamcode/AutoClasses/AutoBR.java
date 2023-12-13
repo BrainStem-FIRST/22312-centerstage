@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+@Config
+@Autonomous(name="Robot: Blue-Right Auto", group="Robot")
 public class AutoBR extends AutoAbstractOpMode {
 
     AutoConstants constants;
@@ -84,7 +88,7 @@ public class AutoBR extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(startPose())
-                .splineTo(new Vector2d(46, -12), Math.toRadians(-60))
+                .splineTo(new Vector2d(46, 12), Math.toRadians(-90))
                 .build();
     }
 

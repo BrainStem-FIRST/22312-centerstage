@@ -122,17 +122,18 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_RedRight)
+                myBot.getDrive().actionBuilder(pStartingPose_BlueRight)
                         .setReversed(true)
 
                         // Replace prop with your yellow pixel (just push)
-                        .lineToY(-12) //constants.vRedRightSpike_Center.y + constants.robot_length / 4)
+                        .lineToY(vBlueRightSpike_Center.y + robot_length / 2)
 
                         .endTrajectory()
                         .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                         // Go to backdrop to place your purple pixel
-                        .splineTo(vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                        .splineTo(vBlueClearStageGate, Math.toRadians(0))      // First clear the trusses
+                        .splineTo(vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                         .build();
         myBot.runAction(trajectory);
 

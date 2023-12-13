@@ -75,7 +75,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .lineToYSplineHeading(constants.vRedLeftSpike_Right.y - 3.0, Math.toRadians(0))
                 .endTrajectory()
 // probably not needed
-//                .lineToX(constants.vRedLeftSpike_Right.x - constants.robot_length / 2)
+                .lineToX(constants.vRedLeftSpike_Right.x - constants.robot_length / 2)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)

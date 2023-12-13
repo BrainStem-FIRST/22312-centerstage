@@ -208,7 +208,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             // direction to turn
             if (distanceLeft < 250.00 && distanceRight < 250.00) { // don't bother turning if at least one sensor doesn't see the board
-                if (Math.abs(distanceRight - distanceLeft) > 50.00 && !foundZ) {
+                if (Math.abs(distanceRight - distanceLeft) > 20.00 && !foundZ) {
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
                     } else {
@@ -239,14 +239,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 //                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
                     foundY = true;
-                    telemetry.addLine("stopped strafing");
 //                }
             }
 
             // Adjust distance from backdrop
             // Only approach to the backdrop if both Y and Z axes were found.
             if (foundY) { //foundY && foundZ) {
-                if (Math.abs(distanceRight - constants.targetDistance) > 9.00 && !foundX) {
+                if (Math.abs(distanceRight - constants.targetDistance) > 8.00 && !foundX) {
                     if (distanceRight < constants.targetDistance) {
                         xDirection = 1;
                         telemetry.addLine("moving away");
@@ -265,10 +264,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            0.3 * xDirection,
+                            0.25 * xDirection,
                             0.3 * yDirection
                     ),
-                    0.3 * zDirection
+                    0.25 * zDirection
             ));
 
 
