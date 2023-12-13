@@ -220,6 +220,7 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("drawbridge position", drawbridgeCounter);
                 telemetry.addData("Lift intake automation", robot.startLiftDown());
                 telemetry.addData("Drawbridge commanded position", robot.drawbridge.drawBridge.getPosition());
+                telemetry.addData("Hardstop commanded position", robot.drawbridge.hardStop.getPosition());
                 telemetry.update();
             }
         }
@@ -265,7 +266,7 @@ public class RobotTeleOp extends LinearOpMode {
     }
 
     private void updateDrawbridge(Map stateMap, BrainSTEMRobot robot){
-        if(drawbridgeCounter == 6){
+        if(drawbridgeCounter == 4){
             drawbridgeCounter = 1;
         }
         if(drawbridgeCounter == 1){
@@ -276,12 +277,6 @@ public class RobotTeleOp extends LinearOpMode {
         }
         if(drawbridgeCounter == 3){
             stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_3_PIXEL_HEIGHT);
-        }
-        if(drawbridgeCounter == 4){
-            stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_4_PIXEL_HEIGHT);
-        }
-        if(drawbridgeCounter == 5){
-            stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_5_PIXEL_HEIGHT);
         }
     }
 }
