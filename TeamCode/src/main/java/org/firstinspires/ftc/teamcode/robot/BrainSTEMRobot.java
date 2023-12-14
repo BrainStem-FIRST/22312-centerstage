@@ -173,6 +173,7 @@ public class BrainSTEMRobot {
         fulcrum.setState(lift);
         lift.setState(arm);
         grabber.setState();
+        drawbridge.setState();;
     }
     private boolean startIntake(){
         String fulcrumMoveDown = (String) stateMap.get(constants.PIXEL_CYCLE_FULCRUM_MOVE_DOWN);

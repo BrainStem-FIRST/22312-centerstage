@@ -17,7 +17,7 @@ public class Drone {
     private Map stateMap;
     private ServoImplEx droneServo;
     private int lowerPWM = 1000;
-    private int higherPWM = 1740;
+    private int higherPWM = 1690;
     private double servoNotReleasedPosition = 1.0;
     private double servoReleasedPosition = 0;
     public Drone(HardwareMap hwMap, Telemetry telemetry, Map stateMap){

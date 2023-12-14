@@ -18,24 +18,27 @@ public class Drawbridge {
     public final String DRAWBRIDGE_3_PIXEL_HEIGHT = "DRAWBRIDGE_3_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_4_PIXEL_HEIGHT = "DRAWBRIDGE_4_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_5_PIXEL_HEIGHT = "DRAWBRIDGE_5_PIXEL_HEIGHT";
-    private int drawbridgePWMLowerLimit = 630;
+    private int drawbridgePWMLowerLimit = 670;
     private int drawbridgePWMHigherLimit = 1300;
 
-    private int hardstopPWMLowerLimit = 600;
-    private int hardstopPWMHigherLimit = 2320;
+    private int hardstopPWMLowerLimit = 1050;
+    private int hardstopPWMHigherLimit = 2470;
     private double firstPixelPosition = 0.99;
     private double secondPixelPosition = 0.5;
     private double thirdPixelPosition = 0.01;
 //    private double fourthPixelPosition = 0.22;
 //    private double fifthPixelPosition = 0.01;
-    private double drawBridge5thPixelPosition;
-    private double drawBridge4thPixelPosition;
+    private double drawBridge5thPixelPosition = 0.16
+        ;
+    private double drawBridge4thPixelPosition = 0.117;
 
     // 120 is 5th pixel pwm
-    // 2320 is 1st pixel pwm
-    // 1390 for 2nd pixel pwm
-    // 1283 for 3rd pixel
+    // 2470 is 1st pixel pwm
+    // 1889 for 2nd pixel pwm
+    // 1143 for 3rd pixel
     //667 for 4th pixel
+    //745 for 4th drawbridge pwm
+    //760 for 5th drawbridge pwm
 
     private Telemetry telemetry;
 
@@ -79,26 +82,26 @@ public class Drawbridge {
                 break;
             }
             case DRAWBRIDGE_1_PIXEL_HEIGHT:{
-//                setDrawBridgeDown();
+                setDrawBridgeDown();
                 setHardstopPosition(firstPixelPosition);
                 break;
             }
             case DRAWBRIDGE_2_PIXEL_HEIGHT:{
-//                setDrawBridgeDown();
+                setDrawBridgeDown();
                 setHardstopPosition(secondPixelPosition);
                 break;
             }
             case DRAWBRIDGE_3_PIXEL_HEIGHT:{
-//                setDrawBridgeDown();
+                setDrawBridgeDown();
                 setHardstopPosition(thirdPixelPosition);
                 break;
             }
             case DRAWBRIDGE_4_PIXEL_HEIGHT:{
-                setDrawBridgeDown();
+                setDrawbridgePosition(drawBridge4thPixelPosition);
                 break;
             }
             case DRAWBRIDGE_5_PIXEL_HEIGHT:{
-                setDrawBridgeDown();
+                setDrawbridgePosition(drawBridge5thPixelPosition);
                 break;
             }
         }
@@ -115,5 +118,9 @@ public class Drawbridge {
 
     public void setHardstopPosition(double position){
         hardStop.setPosition(position);
+    }
+
+    public void setDrawbridgePosition(double position){
+        drawBridge.setPosition(position);
     }
 }
