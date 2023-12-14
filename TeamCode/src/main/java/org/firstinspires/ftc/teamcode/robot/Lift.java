@@ -230,7 +230,7 @@ public class Lift {
         }
     }
 
-    private void raiseHeightPID(int desiredTickPosition){
+    public void raiseHeightPID(int desiredTickPosition){
         liftController.setTarget(desiredTickPosition);
         double error = desiredTickPosition - liftMotor1.getCurrentPosition();
         telemetry.addData("Error for lift", error);

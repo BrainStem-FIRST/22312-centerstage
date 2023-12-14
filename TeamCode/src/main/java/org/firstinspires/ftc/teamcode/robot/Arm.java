@@ -36,7 +36,7 @@ public class Arm {
     private double leftDepositPosition = 0.99;
     private double rightIdlePosition = 1.0;
     private double leftIdlePosition = 0.01;
-    private double encoderOffset = 1.53;
+    private double encoderOffset = 0;
 
     private int liftMinPosition = 200;
 
@@ -60,6 +60,7 @@ public class Arm {
         if(lift.liftMotor1.getCurrentPosition() > liftMinPosition){
             selectTransition();
         }
+//        selectTransition();
     }
 
     private void selectTransition(){
@@ -84,7 +85,7 @@ public class Arm {
         rightArmServo.setPosition(0.03);
         leftArmServo.setPosition(0.98);
     }
-    private void armToIdlePosition(){
+    public void armToIdlePosition(){
 //        leftArmServo.setPosition(leftDepositPosition);
         telemetry.addData("Arm Position Called", "Idle");
         rightArmServo.setPosition(0.97);
