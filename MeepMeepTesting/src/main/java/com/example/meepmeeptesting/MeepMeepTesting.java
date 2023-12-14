@@ -46,9 +46,9 @@ public class MeepMeepTesting {
     public static Vector2d vRedRightSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5);
     public static Vector2d vRedRightSpike_Right = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 6.0);
 
-    public static Vector2d vBlueRightSpike_Left = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueRightSpike_Left = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 3.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
     public static Vector2d vBlueRightSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 - 11.0);
-    public static Vector2d vBlueRightSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueRightSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 20.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 - 6.0); // + 6.0);
 
     public static Vector2d vBlueLeftSpike_Left = new Vector2d(TILE_TEETH / 2.0 + 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
     public static Vector2d vBlueLeftSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5);
@@ -77,7 +77,7 @@ public class MeepMeepTesting {
     public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_RIGHT_Y-7.0);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
-    public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_BLUE_BACKDROP_LEFT_Y);
+    public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 + 5.0, FIELD_BLUE_BACKDROP_LEFT_Y);
     public static Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 1.0, FIELD_BLUE_BACKDROP_CENTER_Y - 5.0);
     public static Vector2d vBlueBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_BLUE_BACKDROP_RIGHT_Y);
 
@@ -125,23 +125,16 @@ public class MeepMeepTesting {
                 myBot.getDrive().actionBuilder(pStartingPose_BlueRight)
                         .setReversed(true)
 
-                        // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                        .lineToYSplineHeading(vBlueRightSpike_Left.y - 3.0, Math.toRadians(0))
-                        .endTrajectory()
-                        // probably not needed
-                        .lineToX(vBlueRightSpike_Left.x - robot_length / 2)
+                        .splineTo(vBlueRightSpike_Right, Math.toRadians(-90))
+                        .lineToY(vBlueRightSpike_Right.y + robot_length / 2.0)
 
-                        // Drop yellow pixel in position
-
-                        // Discontinue trajectory
                         .endTrajectory()
                         .setReversed(true)
 
-                        // Goto Backdrop to place your purple pixel
-                        .setTangent(Math.toRadians(135))
-                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
-                        .splineTo(vBlueClearStageGate, Math.toRadians(0))
-                        .splineTo(vBlueBackdrop_Left, Math.toRadians(0))
+                        // Go to backdrop to place your purple pixel
+                        .setTangent(-90)
+                        .splineTo(new Vector2d(vBlueClearStageGate.x, vBlueClearStageGate.y + 3.0), Math.toRadians(0))
+                        .splineTo(vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                         .build();
         myBot.runAction(trajectory);
 

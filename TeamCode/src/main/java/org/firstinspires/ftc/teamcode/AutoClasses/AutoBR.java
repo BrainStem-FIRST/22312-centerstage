@@ -26,20 +26,22 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y, Math.toRadians(0))
+                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y + 8.0, Math.toRadians(0))
                 .endTrajectory()
-// probably not needed
-                .lineToX(constants.vBlueRightSpike_Left.x - constants.robot_length / 2)
+                // probably not needed
+//                .setReversed(true)
+//                .lineToX(constants.vBlueRightSpike_Left.x - constants.robot_length / 2 - 1.0)
 
                 // Drop yellow pixel in position
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
+                .setTangent(Math.toRadians(-150))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0 - 5.0, Math.toRadians(-180.00001)), Math.toRadians(0))
                 .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vBlueBackdrop_Left, Math.toRadians(0))
                 .build();
@@ -52,7 +54,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueRightSpike_Center.y + constants.robot_length / 2)
+                .lineToY(constants.vBlueRightSpike_Center.y + constants.robot_length / 2 - 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -71,23 +73,17 @@ public class AutoBR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueLeftSpike_Right.y, Math.toRadians(0))
-                .endTrajectory()
-                .lineToX(constants.vBlueLeftSpike_Right.x - constants.robot_length / 2)
+                .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(90))
+                .lineToY(constants.vBlueRightSpike_Right.y + constants.robot_length / 2.0)
 
-                // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
 
-                // Discontinue trajectory
                 .endTrajectory()
                 .setReversed(true)
 
-                // Goto Backdrop to place your purple pixel
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
-                .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))
+                // Go to backdrop to place your purple pixel
+                .splineTo(new Vector2d(constants.vBlueClearStageGate.x, constants.vBlueClearStageGate.y + 3.0), Math.toRadians(0))
+                .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
 
     }
@@ -97,7 +93,7 @@ public class AutoBR extends AutoAbstractOpMode {
         return robot.drive.actionBuilder(robot.drive.pose)
                 .lineToX(37)
                 .setTangent(90)
-                .splineToLinearHeading(new Pose2d(60, 12, Math.toRadians(180)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(75, 12, Math.toRadians(180)), Math.toRadians(180))
                 .build();
     }
 
