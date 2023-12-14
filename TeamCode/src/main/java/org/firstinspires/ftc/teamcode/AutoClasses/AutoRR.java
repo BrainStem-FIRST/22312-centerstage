@@ -94,4 +94,9 @@ public class AutoRR extends AutoAbstractOpMode {
     public Alliance alliance() {
         return Alliance.RED;
     }
+
+    @Override
+    public Orientation orientation() {
+        return Orientation.RIGHT;
+    }
 }

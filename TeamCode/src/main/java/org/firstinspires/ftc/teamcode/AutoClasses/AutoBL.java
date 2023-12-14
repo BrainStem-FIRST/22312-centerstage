@@ -88,4 +88,9 @@ public class AutoBL extends AutoAbstractOpMode {
     public Alliance alliance() {
         return Alliance.BLUE;
     }
+
+    @Override
+    public Orientation orientation() {
+        return Orientation.LEFT;
+    }
 }

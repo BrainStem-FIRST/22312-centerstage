@@ -28,13 +28,16 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     public abstract Action parking_traj(BrainSTEMRobotA robot);
 
     public abstract Alliance alliance();
+    public abstract Orientation orientation();
+
+    private boolean timeDelayIsSet = false;
+    private boolean programConfirmation = false;
+    private int     autoTimeDelay = 0;
 
     @Override
     public void runOpMode() {
 
         /************** Hardware Initialization ***************/
-        /**    TODO: Can be moved to brainSTEMRobot class    **/
-        /******************************************************/
 
         // Huskylens initialization (device and Selection of algorithm
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
@@ -61,7 +64,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         double distanceLeft = 0;
         double distanceRight = 0;
 
-        // TODO: Read blocks continuously until Start. Have some feedback to DS to confirm recognition
+        /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
+        while (!programConfirmation && !isStopRequested()) {
+            setTimeDelay();
+        }
+
+        /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
         // Determine the prop position
         int targetTagPos = -1;
@@ -96,8 +104,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         ////////////// Start is given ///////////////
 
+        /********* CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION ***********/
+        
         Action trajectory;
-        Action parkTrajectory;
 
         switch (targetTagPos) {
             case 1:
@@ -117,7 +126,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 trajectory = traj_center(robot);
                 telemetry.addLine("running default: Center");
                 telemetry.update();
-                //if we don't see the prop this will default to center5
+                //if we don't see the prop this will default to center
                 if (alliance() == Alliance.RED) {
                     targetTagPos = 5;
                 }
@@ -127,14 +136,14 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 break;
         }
 
+        // not necessary to call this - start is already given
+        // waitForStart();
 
         // Change recognition mode to AprilTags before the While Loop
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         sleep(100);
 
         int loopCounter = 0;
-
-        waitForStart();
 
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
 
@@ -150,7 +159,15 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     return false;
                 }
             });
-            runBlocking(trajectory);
+
+
+            //////////////////////////////////////////////////////////
+            //                GO TO BACKDROP
+            //////////////////////////////////////////////////////////
+            runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
+                    new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+                    trajectory
+            ));
 
             telemetry.addLine("Finished trajectory");
             telemetry.update();
@@ -280,7 +297,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.update();
         }
 
-        // Arrived at position. Place pixel
+        // Arrived at position. Place pixel and park
         runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
                     @Override
@@ -315,6 +332,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 },
                 new SleepAction(1.5),
 
+                // GO TO PARK
+                // TODO: In future revisions, add time check to park within 30 seconds
                 parking_traj(robot),
 
                 new SleepAction(1.5),
@@ -332,6 +351,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     public enum Alliance {
         RED,
         BLUE
+    }
+
+    public enum Orientation {
+        LEFT,
+        RIGHT
     }
 
 
@@ -361,6 +385,60 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         }
 
         return propPos;
+    }
+
+    private void setTimeDelay() {
+        timeDelayIsSet = false;
+
+        telemetry.clearAll();
+        telemetry.addLine("Set Time Delay: Driver 1-> DPad UP/DOWN=Increase/Decrease, X=SET.");
+        telemetry.update();
+        while (!timeDelayIsSet && !isStopRequested()) {
+            if (gamepad1.dpad_up) {
+                autoTimeDelay++;
+            } else if (gamepad1.dpad_down) {
+                autoTimeDelay--;
+                if(autoTimeDelay<0) autoTimeDelay=0;
+            } else if(gamepad1.x) {
+                timeDelayIsSet = true;
+            }
+        }
+
+        telemetry.clearAll();
+        telemetry.addData("Time Delay is Set: ", autoTimeDelay);
+        telemetry.update();
+
+        sleep(500);
+
+        telemetry.clearAll();
+        telemetry.addLine("Confirm Program:");
+        telemetry.addData("Time Delay is Set:", autoTimeDelay);
+        telemetry.addData("Alliance:", alliance());
+        telemetry.addData("Orientation:", orientation());
+        telemetry.addLine("Driver 2-> A To Confirm. B to Restart.");
+        telemetry.update();
+
+        boolean confirmation = false;
+        while (!confirmation && !isStopRequested()) {
+            telemetry.clearAll();
+            if (gamepad2.a) {
+                telemetry.clearAll();
+                telemetry.addLine("Program Confirmed");
+                telemetry.update();
+                programConfirmation = true;
+                confirmation = true;
+            } else if (gamepad2.b) {
+                telemetry.clearAll();
+                telemetry.addLine("Program Rejected");
+                telemetry.update();
+                programConfirmation = false;
+                timeDelayIsSet = false;
+                confirmation = true;
+            }
+        }
+
+        sleep(500);
+        telemetry.clearAll();
     }
 
 }
