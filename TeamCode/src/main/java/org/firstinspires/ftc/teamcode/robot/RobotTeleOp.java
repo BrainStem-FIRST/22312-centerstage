@@ -37,6 +37,7 @@ public class RobotTeleOp extends LinearOpMode {
         }};
     @Override
     public void runOpMode() {
+        ElapsedTime initTimer = new ElapsedTime();
         Constants constants = new Constants();
         Map<String, String> stateMap = new HashMap<String, String>() {{ }};
         BrainSTEMRobot robot = new BrainSTEMRobot(hardwareMap, telemetry, stateMap);
@@ -51,6 +52,7 @@ public class RobotTeleOp extends LinearOpMode {
         stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW3_STATE);
         stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_NOT_RELEASED);
         stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_NOT_RELEASED);
+        robot.updateSystems();
         waitForStart();
 
         while(!isStopRequested()) {
@@ -65,18 +67,17 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_UP_STATE);
                 }
 
-//                if (gamepad1.left_trigger > 0.5) {
-//                    stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
-//                    stateMap.put(constants.PIXEL_CYCLE_FULCRUM_MOVE_UP, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
-//                    stateMap.put(constants.PIXEL_CYCLE_FULCRUM_MOVE_DOWN, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
-//                    stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
-//                    stateMap.put(constants.PIXEL_CYCLE_GRABBER, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
-//                    stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_PICKUP_2_PIXELS);
-//
-//                    robot.intake.intakeMotor.setPower(-1.0);
-//                } else if(!((String) stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
-//                    robot.intake.intakeMotor.setPower(0.0);
-//                }
+                if (gamepad1.left_trigger > 0.5) {
+                    stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+                    stateMap.put(constants.PIXEL_CYCLE_FULCRUM_MOVE_UP, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+                    stateMap.put(constants.PIXEL_CYCLE_FULCRUM_MOVE_DOWN, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+                    stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+                    stateMap.put(constants.PIXEL_CYCLE_GRABBER, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+                    stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_PICKUP_2_PIXELS);
+                    stateMap.put(robot.intake.INTAKE_SYSTEM_NAME, robot.intake.INTAKE_DRIVER_INPUT);
+                } else if(!((String) stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
+                    stateMap.put(robot.intake.INTAKE_SYSTEM_NAME, robot.intake.INTAKE_IDLE_STATE);
+                }
                 if (toggleMap.get(GAMEPAD_1_A_STATE)) {
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, stateMap.get(constants.DRIVER_2_SELECTED_HEIGHT));
                     stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_DEPOSIT_STATE);
@@ -230,6 +231,7 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("Lift intake automation", robot.startLiftDown());
                 telemetry.addData("Drawbridge commanded position", robot.drawbridge.drawBridge.getPosition());
                 telemetry.addData("Hardstop commanded position", robot.drawbridge.hardStop.getPosition());
+                telemetry.addData("Arm angle", robot.arm.encoder.getCurrentPositionOriginal());
                 telemetry.update();
             }
         }

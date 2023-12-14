@@ -27,6 +27,7 @@ public class Intake {
     public final String INTAKE_PIXEL_PICKUP_CYCLE = "INTAKE_PIXEL_PICKUP_CYCLE";
     public final String INTAKE_PIXEL_PICKUP_STATE_NOT_STARTED = "INTAKE_PIXEL_PICKUP_STATE_NOT_STARTED";
     public final String INTAKE_IDLE_STATE = "INTAKE_IDLE_STATE";
+    public final String INTAKE_DRIVER_INPUT = "INTAKE_DRIVER_INPUT";
     public final String INTAKE_PIXEL_PICKUP_STATE_IN_PROGRESS = "INTAKE_PIXEL_PICKUP_STATE_IN_PROGRESS";
     public final String INTAKE_PIXEL_PICKUP_STATE_COMPLETED = "INTAKE_PIXEL_PICKUP_STATE_COMPLETED";
 
@@ -71,7 +72,9 @@ public class Intake {
             }
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_SPITTING_STATE)) {
             intakeMotor.setPower(-1.0);
-        } else {
+        } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_DRIVER_INPUT)) {
+            intakeMotor.setPower(-1.0);
+        } else{
             intakeMotor.setPower(0);
         }
     }
