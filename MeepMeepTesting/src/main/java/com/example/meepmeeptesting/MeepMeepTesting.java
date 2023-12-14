@@ -50,7 +50,7 @@ public class MeepMeepTesting {
     public static Vector2d vBlueRightSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 - 11.0);
     public static Vector2d vBlueRightSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 20.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 - 6.0); // + 6.0);
 
-    public static Vector2d vBlueLeftSpike_Left = new Vector2d(TILE_TEETH / 2.0 + 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueLeftSpike_Left = new Vector2d(TILE_TEETH / 2.0 + 24.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
     public static Vector2d vBlueLeftSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5);
     public static Vector2d vBlueLeftSpike_Right = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
 
@@ -122,19 +122,27 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_BlueRight)
+                myBot.getDrive().actionBuilder(pStartingPose_BlueLeft)
                         .setReversed(true)
 
-                        .splineTo(vBlueRightSpike_Right, Math.toRadians(-90))
-                        .lineToY(vBlueRightSpike_Right.y + robot_length / 2.0)
+                        // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
+                        .lineToYSplineHeading(vBlueLeftSpike_Left.y, Math.toRadians(0))
+                        .endTrajectory()
+//                        .lineToX(vBlueLeftSpike_Left.x - robot_length / 2)
 
+                        // Drop yellow pixel in position
+
+                        // Discontinue trajectory
                         .endTrajectory()
                         .setReversed(true)
 
-                        // Go to backdrop to place your purple pixel
-                        .setTangent(-90)
-                        .splineTo(new Vector2d(vBlueClearStageGate.x, vBlueClearStageGate.y + 3.0), Math.toRadians(0))
-                        .splineTo(vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
+                        // Goto Backdrop to place your purple pixel
+                        .setTangent(90)
+                        .splineToSplineHeading(new Pose2d(vBlueBackdrop_Left.x,vBlueBackdrop_Left.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+//                        .splineTo(vBlueBackdrop_Left, Math.toRadians(0))     // Then, go to designated tag position
+
+                        .setTangent(180)
+                        .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
                         .build();
         myBot.runAction(trajectory);
 
