@@ -57,17 +57,21 @@ public class Arm {
     }
 
     public void setState(Lift lift){
-        if(lift.liftMotor1.getCurrentPosition() > liftMinPosition){
-            selectTransition();
-        }
-//        selectTransition();
+//        if(lift.liftMotor1.getCurrentPosition() > liftMinPosition){
+//            selectTransition();
+//        }
+        selectTransition(lift);
     }
 
-    private void selectTransition(){
+    private void selectTransition(Lift lift){
         String desiredState = (String) stateMap.get(ARM_SYSTEM_NAME);
         switch (desiredState){
             case ARM_DEPOSIT_STATE:{
-                armToDepositPosition();
+                if(lift.liftMotor1.getCurrentPosition() < liftMinPosition){
+                    armToIdlePosition();
+                } else {
+                    armToDepositPosition();
+                }
                 break;
             }
 

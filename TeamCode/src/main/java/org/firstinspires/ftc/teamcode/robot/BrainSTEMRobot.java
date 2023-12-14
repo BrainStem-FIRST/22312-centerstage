@@ -144,7 +144,7 @@ public class BrainSTEMRobot {
     private boolean startGrabber(){
         String liftDownPixelState = (String) stateMap.get(constants.PIXEL_CYCLE_LIFT_DOWN);
         String grabberPixelState = (String) stateMap.get(constants.PIXEL_CYCLE_GRABBER);
-        if(liftDownPixelState.equals(constants.PIXEL_CYCLE_STATE_COMPLETE) && grabberPixelState.equals(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && lift.grabber.grabberCycleDelay.milliseconds() > 600){
+        if(liftDownPixelState.equals(constants.PIXEL_CYCLE_STATE_COMPLETE) && grabberPixelState.equals(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && lift.grabber.grabberCycleDelay.milliseconds() > 300){
             return true;
         }
         return false;
@@ -152,7 +152,7 @@ public class BrainSTEMRobot {
     private boolean startIntakeSpit(){
         String pixelCycleIntakeState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
         String pixelCycleSpittingState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_SPITTING);
-        if(pixelCycleIntakeState.equals(constants.PIXEL_CYCLE_STATE_COMPLETE) && pixelCycleSpittingState.equals(constants.PIXEL_CYCLE_STATE_NOT_STARTED)){
+        if(pixelCycleIntakeState.equals(constants.PIXEL_CYCLE_STATE_COMPLETE) && pixelCycleSpittingState.equals(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && intake.timeBetweenIntakeSpit.milliseconds() > 250){
             return true;
         }
         return false;

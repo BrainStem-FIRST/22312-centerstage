@@ -72,6 +72,7 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.PIXEL_CYCLE_FULCRUM_MOVE_UP, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(constants.PIXEL_CYCLE_FULCRUM_MOVE_DOWN, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+                    stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(constants.PIXEL_CYCLE_GRABBER, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_PICKUP_2_PIXELS);
                     stateMap.put(robot.intake.INTAKE_SYSTEM_NAME, robot.intake.INTAKE_DRIVER_INPUT);
@@ -156,22 +157,6 @@ public class RobotTeleOp extends LinearOpMode {
                 if(gamepad2.y){
                     stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_RELEASED);
                 }
-//                if(gamepad2.right_trigger > 0.2 && gamepad2.left_trigger > 0.2  && hangingMode){
-//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
-//                    robot.hanging.setRawPower(-gamepad2.right_trigger);
-//                } else if(gamepad2.left_trigger > 0.2 && hangingMode){
-//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
-//                    robot.hanging.setLeftHangingPower(-gamepad2.left_trigger);
-//                } else if(gamepad2.right_trigger > 0.2 && hangingMode){
-//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_DRIVER_INPUT);
-//                    robot.hanging.setRightHangingPower(-gamepad2.right_trigger);
-//                } else if(!(((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED))){
-//                    robot.hanging.setRawPower(0);
-//                }
-
-//                if(gamepad2.a && hangingMode){
-//                    stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_RELEASED);
-//                }
 
                 if (retractionInProgress) {
                     if (retractionTime.seconds() > 1) {
@@ -205,21 +190,21 @@ public class RobotTeleOp extends LinearOpMode {
                     }
                 }
 
-//                if(gamepad2RightButton.getState() && hangingMode &&((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED) ){
-//                    robot.hanging.rightHangingEncoderTicks += 500;
-//                }
-//
-//                if(gamepad2LeftButton.getState() && hangingMode &&((String)stateMap.get(robot.hanging.HANGING_SYSTEM_NAME)).equals(robot.hanging.HANGING_RELEASED) ){
-//                    robot.hanging.lefthangingEncoder += 500;
-//                }
-
-                robot.drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                -gamepad1.left_stick_y,
-                                -gamepad1.left_stick_x
-                        ),
-                        -gamepad1.right_stick_x * 0.75));
-
+                if(robot.lift.liftMotor1.getCurrentPosition() > 200){
+                    robot.drive.setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(
+                                    -gamepad1.left_stick_y,
+                                    -gamepad1.left_stick_x
+                            ),
+                            (0.25 * -gamepad1.right_stick_x)));
+                } else {
+                    robot.drive.setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(
+                                    -gamepad1.left_stick_y,
+                                    -gamepad1.left_stick_x
+                            ),
+                            -gamepad1.right_stick_x));
+                }
                 robot.drive.updatePoseEstimate();
                 robot.updateSystems();
                 updateLift(stateMap, robot);

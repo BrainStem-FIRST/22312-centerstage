@@ -64,7 +64,7 @@ public class Intake {
         if (cycleInProgress()) {
             intakeMotor.setPower(0.8);
         } else if (((String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_SPITTING)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)) {
-            if (cycleSpitTime.seconds() <= 1.5) {
+            if (cycleSpitTime.milliseconds() <= 750) {
                 intakeMotor.setPower(-1.0);
             } else {
                 stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_COMPLETE);

@@ -28,7 +28,7 @@ public class Drawbridge {
     private double thirdPixelPosition = 0.01;
 //    private double fourthPixelPosition = 0.22;
 //    private double fifthPixelPosition = 0.01;
-    private double drawBridge5thPixelPosition = 0.16
+    private double drawBridge5thPixelPosition = 0.14
         ;
     private double drawBridge4thPixelPosition = 0.117;
 

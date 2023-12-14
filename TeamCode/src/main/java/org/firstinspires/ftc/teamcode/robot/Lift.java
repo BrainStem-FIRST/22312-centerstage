@@ -42,9 +42,9 @@ public class Lift {
     //lift row 5: 1044
     private int LIFT_GROUND_STATE_POSITION = 0;
     public int LIFT_IDLE_STATE_POSITION = 200;
-    private int LIFT_ROW1_POSITION = 273;
-    private int LIFT_ROW2_POSITION = 514;
-    private int LIFT_ROW3_POSITION = 755;
+    private int LIFT_ROW1_POSITION = 310;
+    private int LIFT_ROW2_POSITION = 544;
+    private int LIFT_ROW3_POSITION = 750;
     private int LIFT_ROW4_POSITION = 996;
     private int LIFT_ROW5_POSITION = 1044;
 
@@ -105,7 +105,7 @@ public class Lift {
 
     private void updatePixelCycleState(){
         if(isCycleInProgress()){
-            if(inCycleTolerance(liftMotor1.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 200){
+            if(inCycleTolerance(liftMotor1.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
                 stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
                 grabber.grabberCycleDelay.reset();
             }
