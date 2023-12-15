@@ -150,32 +150,39 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         int loopCounter = 0;
 
+
+        /***************   INITIAL TRAJECTORY RUN  *****************/
+        /* This was moved outside of the While loop                */
+        /***********************************************************/
+
+        telemetry.addData("target tag: ", targetTagPos);
+        telemetry.addLine("Started trajectory");
+        telemetry.update();
+
+// Disabled to test if it had a negative impact on placing pixels at the board
+//        runBlocking(new Action() {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                robot.grabber.grabber.setPosition(0.0);
+//                return false;
+//            }
+//        });
+
+
+        //////////////////////////////////////////////////////////
+        //                GO TO BACKDROP
+        //////////////////////////////////////////////////////////
+        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
+                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+                trajectory
+        ));
+
+        telemetry.addLine("Finished trajectory");
+        telemetry.update();
+
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
 
             telemetry.addData("Loop Counter: ", ++loopCounter);
-            telemetry.addData("target tag: ", targetTagPos);
-            telemetry.addLine("Started trajectory");
-            telemetry.update();
-
-            runBlocking(new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    robot.grabber.grabber.setPosition(0.0);
-                    return false;
-                }
-            });
-
-
-            //////////////////////////////////////////////////////////
-            //                GO TO BACKDROP
-            //////////////////////////////////////////////////////////
-            runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
-                    new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-                    trajectory
-            ));
-
-            telemetry.addLine("Finished trajectory");
-            telemetry.update();
 
 // TODO: Move the AprilTag read and strafe to a separate method
 
@@ -229,7 +236,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // direction to turn
-            if (distanceLeft < 250.00 && distanceRight < 250.00) { // don't bother turning if at least one sensor doesn't see the board
+            if (distanceLeft < 500.00 && distanceRight < 500.00) { // don't bother turning if at least one sensor doesn't see the board
                 if (Math.abs(distanceRight - distanceLeft) > 20.00 && !foundZ) {
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
@@ -245,6 +252,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
                 }
             }
+            else {
+                zDirection = 0;
+                foundZ = false;
+                telemetry.addLine("turning paused due to OOR sensor");
+                telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
+            }
 
             // which way to strafe?
             if (Math.abs(position_error) > 10 && !foundY) {
@@ -259,9 +272,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 yDirection = 0;
                 telemetry.addLine("stopped strafing");
 
-//                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
+                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
                     foundY = true;
-//                }
+                }
             }
 
             // Adjust distance from backdrop
@@ -335,7 +348,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         return false;
                     }
                 },
-                new SleepAction(1.5),
+                new SleepAction(0.8),
 
                 // GO TO PARK
                 // TODO: In future revisions, add time check to park within 30 seconds
