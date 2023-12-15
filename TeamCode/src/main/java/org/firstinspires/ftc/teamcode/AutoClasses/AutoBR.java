@@ -62,8 +62,9 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))      // First clear the trusses
-                .splineTo(constants.vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(new Vector2d(constants.vBlueClearStageGate.x, constants.vBlueClearStageGate.y - 3.0), Math.toRadians(0))
+//                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))      // First clear the trusses
+                .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x + 10.0, constants.vBlueBackdrop_Center.y), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
@@ -91,9 +92,9 @@ public class AutoBR extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .lineToX(37)
-                .setTangent(90)
-                .splineToLinearHeading(new Pose2d(75, 12, Math.toRadians(180)), Math.toRadians(180))
+//                .lineToX(37)
+                .setTangent(180)
+                .splineToConstantHeading(new Vector2d(65, 12), Math.toRadians(0))
                 .build();
     }
 

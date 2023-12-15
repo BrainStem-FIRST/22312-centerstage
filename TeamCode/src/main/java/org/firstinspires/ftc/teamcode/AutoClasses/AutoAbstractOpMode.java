@@ -14,6 +14,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
+import org.firstinspires.ftc.teamcode.robot.StickyButton;
+
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
@@ -33,6 +35,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     private boolean timeDelayIsSet = false;
     private boolean programConfirmation = false;
     private int     autoTimeDelay = 0;
+
+    private StickyButton gamepad1dpadUp = new StickyButton();
+    private StickyButton gamepad1dpadDown = new StickyButton();
 
     @Override
     public void runOpMode() {
@@ -105,7 +110,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         ////////////// Start is given ///////////////
 
         /********* CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION ***********/
-        
+
         Action trajectory;
 
         switch (targetTagPos) {
@@ -281,7 +286,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            0.25 * xDirection,
+                            0.2 * xDirection,
                             0.3 * yDirection
                     ),
                     0.25 * zDirection
@@ -390,18 +395,26 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     private void setTimeDelay() {
         timeDelayIsSet = false;
 
+
         telemetry.clearAll();
-        telemetry.addLine("Set Time Delay: Driver 1-> DPad UP/DOWN=Increase/Decrease, X=SET.");
-        telemetry.update();
         while (!timeDelayIsSet && !isStopRequested()) {
-            if (gamepad1.dpad_up) {
+
+            gamepad1dpadUp.update(gamepad1.dpad_up);
+            gamepad1dpadDown.update(gamepad1.dpad_down);
+
+            telemetry.addLine("Set Time Delay: Driver 1-> DPad UP/DOWN=Increase/Decrease, X=SET.");
+            if (gamepad1dpadUp.getState()) {
+                telemetry.addLine("dpadUp");
+                telemetry.update();
                 autoTimeDelay++;
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad1dpadDown.getState()) {
                 autoTimeDelay--;
                 if(autoTimeDelay<0) autoTimeDelay=0;
             } else if(gamepad1.x) {
                 timeDelayIsSet = true;
             }
+            telemetry.addData("delay: ", (int) autoTimeDelay);
+            telemetry.update();
         }
 
         telemetry.clearAll();
@@ -412,11 +425,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         telemetry.clearAll();
         telemetry.addLine("Confirm Program:");
-        telemetry.addData("Time Delay is Set:", autoTimeDelay);
+        telemetry.addData("Time Delay is Set:", (int) autoTimeDelay);
         telemetry.addData("Alliance:", alliance());
         telemetry.addData("Orientation:", orientation());
         telemetry.addLine("Driver 2-> A To Confirm. B to Restart.");
         telemetry.update();
+
 
         boolean confirmation = false;
         while (!confirmation && !isStopRequested()) {

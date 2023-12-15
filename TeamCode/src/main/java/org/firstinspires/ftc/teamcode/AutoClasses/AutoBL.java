@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+@Config
+@Autonomous(name="Robot: Blue-Left Auto", group="Robot")
 public class AutoBL extends AutoAbstractOpMode {
 
     AutoConstants constants;
@@ -26,6 +30,7 @@ public class AutoBL extends AutoAbstractOpMode {
 //                        .lineToX(vBlueLeftSpike_Left.x - robot_length / 2)
 
                 // Drop yellow pixel in position
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()
@@ -45,12 +50,15 @@ public class AutoBL extends AutoAbstractOpMode {
 
                 // Replace prop with your yellow pixel (just push)
                 .lineToY(constants.vBlueLeftSpike_Center.y - 13.0 + constants.robot_length / 4)
+                .endTrajectory()
+
+                .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y + 4.0), Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y + 7.0), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
     @Override
@@ -65,6 +73,7 @@ public class AutoBL extends AutoAbstractOpMode {
 //                        .lineToX(vBlueLeftSpike_Left.x - robot_length / 2)
 
                 // Drop yellow pixel in position
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()
@@ -80,7 +89,7 @@ public class AutoBL extends AutoAbstractOpMode {
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(startPose())
                 .setTangent(180)
-                .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(65, 12), Math.toRadians(0))
                 .build();
     }
 
