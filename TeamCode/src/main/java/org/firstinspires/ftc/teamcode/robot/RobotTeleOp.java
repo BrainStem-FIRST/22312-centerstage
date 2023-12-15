@@ -31,6 +31,9 @@ public class RobotTeleOp extends LinearOpMode {
     private StickyButton gamepad1rightbutton = new StickyButton();
     private StickyButton dpadUp = new StickyButton();
     private StickyButton dpadDown = new StickyButton();
+
+    private boolean isReset = false;
+
     Map<String, Boolean> toggleMap = new HashMap<String, Boolean>() {{
             put(GAMEPAD_1_A_STATE, false);
             put(GAMEPAD_1_A_IS_PRESSED, false);
@@ -54,6 +57,13 @@ public class RobotTeleOp extends LinearOpMode {
         stateMap.put(robot.hanging.HANGING_SYSTEM_NAME, robot.hanging.HANGING_NOT_RELEASED);
         robot.updateSystems();
         waitForStart();
+
+        robot.lift.raiseHeightTo(400);
+        sleep(200);
+        robot.arm.armToIdlePosition();
+        sleep(200);
+        robot.lift.raiseHeightTo(0);
+        isReset = true;
 
         while(!isStopRequested()) {
             if (gamepad2.right_bumper && gamepad2.left_bumper && !hangingMode) {

@@ -69,7 +69,7 @@ public class Lift {
 
         liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
 
-        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -213,7 +213,7 @@ public class Lift {
         return target;
     }
 
-    private void raiseHeightTo(int desiredTickPosition){
+    public void raiseHeightTo(int desiredTickPosition){
         liftMotor1.setTargetPosition(desiredTickPosition);
         liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor1.setPower(0.5);
