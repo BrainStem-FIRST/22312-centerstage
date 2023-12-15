@@ -26,11 +26,8 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y + 8.0, Math.toRadians(0))
+                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y + 3.0, Math.toRadians(0))
                 .endTrajectory()
-                // probably not needed
-//                .setReversed(true)
-//                .lineToX(constants.vBlueRightSpike_Left.x - constants.robot_length / 2 - 1.0)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -40,8 +37,8 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(Math.toRadians(-150))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0 - 5.0, Math.toRadians(-180.00001)), Math.toRadians(0))
+                .setTangent(Math.toRadians(-135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(-180.00001)), Math.toRadians(0))
                 .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vBlueBackdrop_Left, Math.toRadians(0))
                 .build();
@@ -54,7 +51,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueRightSpike_Center.y + constants.robot_length / 2 - 2.0)
+                .lineToY(constants.vBlueRightSpike_Center.y - constants.robot_length / 2.0 - 3.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -62,9 +59,9 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(new Vector2d(constants.vBlueClearStageGate.x, constants.vBlueClearStageGate.y - 3.0), Math.toRadians(0))
-//                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))      // First clear the trusses
-                .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x + 5.0, constants.vBlueBackdrop_Center.y), Math.toRadians(0))     // Then, go to designated tag position
+                .lineToY(constants.vBlueRightSpike_Center.y-12)
+                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
+                .splineTo(constants.vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
@@ -74,8 +71,8 @@ public class AutoBR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(90))
-                .lineToY(constants.vBlueRightSpike_Right.y + constants.robot_length / 2.0)
+                .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(-90))
+                .lineToY(constants.vBlueRightSpike_Right.y - constants.robot_length / 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -83,7 +80,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(new Vector2d(constants.vBlueClearStageGate.x, constants.vBlueClearStageGate.y + 3.0), Math.toRadians(0))
+                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
 
@@ -92,9 +89,9 @@ public class AutoBR extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .lineToX(37)
-                .setTangent(180)
-                .splineToConstantHeading(new Vector2d(65, 12), Math.toRadians(0))
+//                .lineToX(37)
+                .setTangent(-135)
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, 12, Math.toRadians(180)), Math.toRadians(-45))
                 .build();
     }
 

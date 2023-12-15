@@ -45,22 +45,16 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
-//                .splineToLinearHeading(new Pose2d(-45, -19, Math.toRadians(0)), Math.toRadians(0))
                 .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 3.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
                 .endTrajectory()
-//                .setReversed(true)
-                .setTangent(90)
-                .lineToY(-12)
+                .setReversed(true)
 
-                // Go to backdrop to place your purple pixel
-//                .setTangent(Math.toRadians(-180))
-                .turnTo(Math.toRadians(-180))
-                .setReversed(true)  // re-set reverse after .stopAndAdd or .turn as it loses config
-
-                .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
-                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))
+                .setTangent(-45)
+                .lineToY(constants.vBlueLeftSpike_Center.y - 12)    // Move away from the pixel to avoid de-scoring
+                .setTangent(0)
+                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y, Math.toRadians(180.0001)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }
@@ -95,9 +89,9 @@ public class AutoRL extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .lineToX(37)
-                .setTangent(90)
-                .splineToLinearHeading(new Pose2d(46, -28, Math.toRadians(180)), Math.toRadians(180))
+//                .lineToX(37)  /// Add if needed
+                .setTangent(135)
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X,-12, Math.toRadians(180)), Math.toRadians(45))
                 .build();
     }
 

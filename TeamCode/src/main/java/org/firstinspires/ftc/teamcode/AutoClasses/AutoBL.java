@@ -49,8 +49,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueLeftSpike_Center.y - 13.0 + constants.robot_length / 4)
-                .endTrajectory()
+                .lineToY(constants.vBlueLeftSpike_Center.y - constants.robot_length/2.0 - 3.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -59,7 +58,9 @@ public class AutoBL extends AutoAbstractOpMode {
 
                 // Go to backdrop to place your purple pixel
                 .setTangent(-45)
-                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y + 4.0, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .lineToY(constants.vBlueLeftSpike_Center.y - 12)    // Move away from the pixel to avoid de-scoring
+                .setTangent(0)
+                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
@@ -70,9 +71,9 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueLeftSpike_Right.y, Math.toRadians(180))
+                .lineToYSplineHeading(constants.vBlueLeftSpike_Right.y + 3.0, Math.toRadians(180))
                 .endTrajectory()
-                .lineToX(constants.vBlueLeftSpike_Right.x - constants.robot_length / 2 - 1.5)
+                .lineToX(constants.vBlueLeftSpike_Right.x + constants.robot_length / 2.0 - 1.5)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -82,8 +83,6 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(0)
-//                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Right.x,constants.vBlueBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
                 .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
@@ -91,8 +90,8 @@ public class AutoBL extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .setTangent(180)
-                .splineToConstantHeading(new Vector2d(65, 12), Math.toRadians(0))
+                .setTangent(135)
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, 56, Math.toRadians(180)), Math.toRadians(45))
                 .build();
     }
 

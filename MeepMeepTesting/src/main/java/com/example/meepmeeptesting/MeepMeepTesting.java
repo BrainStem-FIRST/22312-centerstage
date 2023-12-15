@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
+import com.sun.tools.javac.util.Convert;
 
 
 public class MeepMeepTesting {
@@ -24,8 +25,6 @@ public class MeepMeepTesting {
     static double TILE_CENTER_TO_EDGE = 23.25;
     static double TILE_TEETH = 0.75;
 
-    public boolean isOrientationLEFT, orientationIsSet, isAllianceRed, allianceIsSet, programConfirmation;
-
     static double FIELD_BOUNDARY_FROM_CENTER = 2.0 * TILE_CENTER_TO_CENTER + TILE_CENTER_TO_EDGE;
 
     // White Pixel Stack positions
@@ -38,21 +37,21 @@ public class MeepMeepTesting {
     public static Vector2d vBlueStack_Outer = new Vector2d(-FIELD_BOUNDARY_FROM_CENTER + 1.5, FIELD_BOUNDARY_FROM_CENTER - 58.75);
 
     // Spike positions
-    public static Vector2d vRedLeftSpike_Left = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 0.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 10.0);
+    public static Vector2d vRedLeftSpike_Left = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 0.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 6.0);  /// was 10.0
     public static Vector2d vRedLeftSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5);
-    public static Vector2d vRedLeftSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 + 2.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 + 1.0);
+    public static Vector2d vRedLeftSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 6.0);
 
     public static Vector2d vRedRightSpike_Left = new Vector2d(TILE_TEETH / 2.0 + 0.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 6.0);
     public static Vector2d vRedRightSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5);
     public static Vector2d vRedRightSpike_Right = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, -TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 6.0);
 
-    public static Vector2d vBlueRightSpike_Left = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 3.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
-    public static Vector2d vBlueRightSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 - 11.0);
-    public static Vector2d vBlueRightSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 20.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 - 6.0); // + 6.0);
+    public static Vector2d vBlueRightSpike_Left = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_TEETH/2.0 - 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueRightSpike_Center = new Vector2d(-1.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5);
+    public static Vector2d vBlueRightSpike_Right = new Vector2d(-TILE_CENTER_TO_CENTER - TILE_CENTER_TO_EDGE + 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
 
-    public static Vector2d vBlueLeftSpike_Left = new Vector2d(TILE_TEETH / 2.0 + 24.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueLeftSpike_Left = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
     public static Vector2d vBlueLeftSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5);
-    public static Vector2d vBlueLeftSpike_Right = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueLeftSpike_Right = new Vector2d(TILE_TEETH / 2.0 + 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
 
     // Backstage X Positions
     public static double FIELD_BACKSTAGE_X = 2.0 * TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5;
@@ -69,21 +68,23 @@ public class MeepMeepTesting {
 
     // Trajectory ending positions (takes into account the distance of robot from the backdrop)
     public static double MAX_DISTANCE_BEFORE_CRASH = 8.0;   // inches.  Adjust this value to determine robot's position before backdrop
+    public static double BACKDROP_X_WITH_FOV = FIELD_BACKDROP_X - 12 - robot_length/2.0;    // Adjust value between backdrop and front of robot where it can still see AprilTags
 
-    public static Vector2d vRedBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_LEFT_Y - 7.0);
+    public static Vector2d vRedBackdrop_Left = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_RED_BACKDROP_LEFT_Y);
     //    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
-    public static Vector2d vRedBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 2.0, FIELD_RED_BACKDROP_CENTER_Y - 7.0);
+    public static Vector2d vRedBackdrop_Center = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_RED_BACKDROP_CENTER_Y);
     //    public static Vector2d vRedBackdrop_Center = new Vector2d(36, -40);
-    public static Vector2d vRedBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_RED_BACKDROP_RIGHT_Y-7.0);
+    public static Vector2d vRedBackdrop_Right = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_RED_BACKDROP_RIGHT_Y);
 //    public static Vector2d vRedBackdrop_Right = new Vector2d(36, -40);
 
-    public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 + 5.0, FIELD_BLUE_BACKDROP_LEFT_Y);
-    public static Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 1.0, FIELD_BLUE_BACKDROP_CENTER_Y - 5.0);
-    public static Vector2d vBlueBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_BLUE_BACKDROP_RIGHT_Y);
+    public static Vector2d vBlueBackdrop_Left = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_BLUE_BACKDROP_LEFT_Y);
+    public static Vector2d vBlueBackdrop_Center = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_BLUE_BACKDROP_CENTER_Y);
+    public static Vector2d vBlueBackdrop_Right = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_BLUE_BACKDROP_RIGHT_Y);
+
 
     // Important waypoints on the field
-    public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, -TILE_CENTER_TO_CENTER / 2.0 - 6.0);
-    public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0 - 6.0);
+    public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, -TILE_CENTER_TO_CENTER / 2.0 );
+    public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0 );
 
     // Starting positions
     public static Pose2d pStartingPose_RedLeft  = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2.0, Math.toRadians(-90));
@@ -126,23 +127,31 @@ public class MeepMeepTesting {
                         .setReversed(true)
 
                         // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                        .lineToYSplineHeading(vBlueLeftSpike_Left.y, Math.toRadians(0))
+                        .lineToY(vBlueLeftSpike_Center.y - robot_length/2.0 - 3.0)
+
+//                        .stopAndAdd(robot.intake.spitPixel)
+
                         .endTrajectory()
-//                        .lineToX(vBlueLeftSpike_Left.x - robot_length / 2)
+                        .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
-                        // Drop yellow pixel in position
+                        // Go to backdrop to place your purple pixel
+                        .setTangent(-45)
+                        .lineToY(vBlueLeftSpike_Center.y - 12)    // Move away from the pixel to avoid de-scoring
+                        .setTangent(0)
+                        .splineToSplineHeading(new Pose2d(vBlueBackdrop_Center.x, vBlueBackdrop_Center.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
-                        // Discontinue trajectory
+
+
+                        // Final Approach to the targetdistance
                         .endTrajectory()
-                        .setReversed(true)
+                        .lineToX(FIELD_BACKDROP_X- 7.0) // 180mm = 7in
 
-                        // Goto Backdrop to place your purple pixel
-                        .setTangent(90)
-                        .splineToSplineHeading(new Pose2d(vBlueBackdrop_Left.x,vBlueBackdrop_Left.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
-//                        .splineTo(vBlueBackdrop_Left, Math.toRadians(0))     // Then, go to designated tag position
+                        .endTrajectory()
 
-                        .setTangent(180)
-                        .splineToConstantHeading(new Vector2d(50, 12), Math.toRadians(0))
+                        // PARKING
+//                        .lineToX(37)
+                        .setTangent(135)
+                        .splineToLinearHeading(new Pose2d(FIELD_BACKSTAGE_X, 56, Math.toRadians(180)), Math.toRadians(45))
                         .build();
         myBot.runAction(trajectory);
 
