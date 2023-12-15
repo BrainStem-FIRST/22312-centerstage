@@ -56,7 +56,7 @@ public class IntakeA {
                     return false;
                 }
             },
-            new SleepAction(1.25),
+            new SleepAction(1.0),
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

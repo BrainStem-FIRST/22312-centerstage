@@ -48,7 +48,7 @@ public class AutoConstants {
 
     public static Vector2d vBlueLeftSpike_Left = new Vector2d(TILE_TEETH / 2.0 + 24.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
     public static Vector2d vBlueLeftSpike_Center = new Vector2d(0.5 * TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 5.0);
-    public static Vector2d vBlueLeftSpike_Right = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 0.5, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 6.0);
+    public static Vector2d vBlueLeftSpike_Right = new Vector2d(TILE_CENTER_TO_CENTER - TILE_TEETH / 2.0 - 9.0, TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 2.0);
 
     // Backstage X Positions
     public static double FIELD_BACKSTAGE_X = 2.0 * TILE_CENTER_TO_CENTER + TILE_TEETH / 2.0 + 0.5;
@@ -75,7 +75,8 @@ public class AutoConstants {
 
     public static Vector2d vBlueBackdrop_Left = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 + 5.0, FIELD_BLUE_BACKDROP_LEFT_Y);
     public static Vector2d vBlueBackdrop_Center = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 1.0, FIELD_BLUE_BACKDROP_CENTER_Y - 5.0);
-    public static Vector2d vBlueBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0, FIELD_BLUE_BACKDROP_RIGHT_Y);
+    public static Vector2d vBlueBackdrop_Right = new Vector2d(FIELD_BACKDROP_X - MAX_DISTANCE_BEFORE_CRASH - robot_length/2.0 - 9.0, FIELD_BLUE_BACKDROP_RIGHT_Y - 4.0);
+
 
     // Important waypoints on the field
     public static Vector2d vRedClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, -TILE_CENTER_TO_CENTER / 2.0 - 6.0);

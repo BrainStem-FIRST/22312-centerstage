@@ -62,6 +62,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y + 4.0, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
+
     @Override
     public Action traj_right(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
@@ -71,7 +72,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
                 .lineToYSplineHeading(constants.vBlueLeftSpike_Right.y, Math.toRadians(180))
                 .endTrajectory()
-//                        .lineToX(vBlueLeftSpike_Left.x - robot_length / 2)
+                .lineToX(constants.vBlueLeftSpike_Right.x - constants.robot_length / 2 - 1.5)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -81,8 +82,9 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(90)
-                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Right.x,constants.vBlueBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .setTangent(0)
+//                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Right.x,constants.vBlueBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 

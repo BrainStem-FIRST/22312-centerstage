@@ -287,7 +287,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
                             0.2 * xDirection,
-                            0.35 * yDirection
+                            0.3 * yDirection
                     ),
                     0.25 * zDirection
             ));
