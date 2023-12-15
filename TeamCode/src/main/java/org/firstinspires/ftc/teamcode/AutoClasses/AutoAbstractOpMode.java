@@ -287,7 +287,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
                             0.2 * xDirection,
-                            0.3 * yDirection
+                            0.35 * yDirection
                     ),
                     0.25 * zDirection
             ));
@@ -341,7 +341,16 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 // TODO: In future revisions, add time check to park within 30 seconds
                 parking_traj(robot),
 
-                new SleepAction(1.5),
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.lift.raiseHeightTo(robot.lift.LIFT_MIDDLE_STATE_POSITION);
+                        return false;
+                    }
+                },
+
+//                new SleepAction(1.0),
+
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {

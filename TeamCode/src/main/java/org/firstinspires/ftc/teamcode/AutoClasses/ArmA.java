@@ -60,6 +60,5 @@ public class ArmA {
         rightArmServo.setPosition(0.97);
         leftArmServo.setPosition(0.01);
 
-
     }
 }
