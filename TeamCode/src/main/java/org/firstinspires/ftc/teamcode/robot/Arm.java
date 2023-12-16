@@ -92,8 +92,8 @@ public class Arm {
     public void armToIdlePosition(){
 //        leftArmServo.setPosition(leftDepositPosition);
         telemetry.addData("Arm Position Called", "Idle");
-        rightArmServo.setPosition(0.97);
-        leftArmServo.setPosition(0.01);
+        rightArmServo.setPosition(0.925);
+        leftArmServo.setPosition(0.123);
 
     }
 }

@@ -23,7 +23,7 @@ public class Grabber {
     private double grabberOpenPosition;
     private double grabberPick1PixelPosition;
     private double grabberPick2PixelPosition = 1;
-    private double grabberDeposit1Pixel = 0.6;
+    private double grabberDeposit1Pixel = 0.55;
     private double grabberDeposit2Pixel = 0;
 
     private double grabberMiddlePosition = 0;
