@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.ActionOpMode;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
     AutoConstants constants;
@@ -38,6 +39,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
     private StickyButton gamepad1dpadUp = new StickyButton();
     private StickyButton gamepad1dpadDown = new StickyButton();
+
+    private ElapsedTime turnTimer = new ElapsedTime();
+    private boolean firstTimeVisiting = true;
 
     @Override
     public void runOpMode() {
@@ -160,13 +164,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         telemetry.update();
 
 // Disabled to test if it had a negative impact on placing pixels at the board
-//        runBlocking(new Action() {
-//            @Override
-//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                robot.grabber.grabber.setPosition(0.0);
-//                return false;
-//            }
-//        });
+        runBlocking(new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                robot.grabber.grabber.setPosition(1.0);
+                return false;
+            }
+        });
 
 
         //////////////////////////////////////////////////////////
@@ -236,8 +240,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // direction to turn
-            if (distanceLeft < 500.00 && distanceRight < 500.00) { // don't bother turning if at least one sensor doesn't see the board
-                if (Math.abs(distanceRight - distanceLeft) > 20.00 && !foundZ) {
+            if (distanceLeft < 1000.00 && distanceRight < 1000.00 && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
+                if (Math.abs(distanceRight - distanceLeft) > 20.00 ) {
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
                     } else {
@@ -254,13 +258,25 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             }
             else {
                 zDirection = 0;
-                foundZ = false;
                 telemetry.addLine("turning paused due to OOR sensor");
                 telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
+
+                // Give up after 2 seconds
+                if(firstTimeVisiting) {
+                    turnTimer.reset();
+                    telemetry.addLine("Turning time started!");
+                    firstTimeVisiting = false;
+                }
+                
+                if (turnTimer.seconds() > 2.0) {
+                    foundZ = true;
+                    zDirection = 0;
+                    telemetry.addLine("Turning timed out");
+                }
             }
 
             // which way to strafe?
-            if (Math.abs(position_error) > 10 && !foundY) {
+            if (Math.abs(position_error) > 12 && !foundY) {
                 if (position_error < 0) {
                     yDirection = -1;
                     telemetry.addLine("strafing left");
@@ -268,18 +284,21 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     yDirection = 1;
                     telemetry.addLine("strafing right");
                 }
+
+                // TODO: if position_error is 160 or -160 more than x seconds, do something
             } else {
                 yDirection = 0;
-                telemetry.addLine("stopped strafing");
+                telemetry.addLine("stopped strafing temporarily");
 
                 if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
                     foundY = true;
+                    telemetry.addLine("stopped strafing permanently");
                 }
             }
 
             // Adjust distance from backdrop
             // Only approach to the backdrop if both Y and Z axes were found.
-            if (foundY) { //foundY && foundZ) {
+            if (foundY) { //foundY also means foundZ
                 if (Math.abs(distanceRight - constants.targetDistance) > 8.00 && !foundX) {
                     if (distanceRight < constants.targetDistance) {
                         xDirection = 1;
@@ -299,10 +318,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            0.2 * xDirection,
-                            0.3 * yDirection
+                            0.27 * xDirection,
+                            0.32 * yDirection
                     ),
-                    0.25 * zDirection
+                    0.27 * zDirection
             ));
 
 

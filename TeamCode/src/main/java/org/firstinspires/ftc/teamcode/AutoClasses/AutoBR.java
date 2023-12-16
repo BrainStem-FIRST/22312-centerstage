@@ -51,7 +51,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueRightSpike_Center.y - constants.robot_length / 2.0 - 3.0)
+                .lineToY(constants.vBlueRightSpike_Center.y - constants.robot_length / 2.0 + 4.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -59,8 +59,12 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
-                .lineToY(constants.vBlueRightSpike_Center.y-12)
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
+//                .lineToY(constants.vBlueRightSpike_Center.y-12)
+                .setTangent(Math.toRadians(-135))
+                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+
+//                .setTangent(Math.toRadians(-45))
+//                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineTo(constants.vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
@@ -72,7 +76,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(-90))
-                .lineToY(constants.vBlueRightSpike_Right.y - constants.robot_length / 2.0)
+                .lineToY(constants.vBlueRightSpike_Right.y - constants.robot_length / 2.0 + 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -80,7 +84,8 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+//                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
 
