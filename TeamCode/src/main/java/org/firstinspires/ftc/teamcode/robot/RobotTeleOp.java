@@ -29,6 +29,7 @@ public class RobotTeleOp extends LinearOpMode {
     private StickyButton gamepad2RightButton = new StickyButton();
     private StickyButton gamepad2LeftButton = new StickyButton();
     private StickyButton gamepad1rightbutton = new StickyButton();
+    private StickyButton gamepad1xbutton = new StickyButton();
     private StickyButton dpadUp = new StickyButton();
     private StickyButton dpadDown = new StickyButton();
 
@@ -58,12 +59,12 @@ public class RobotTeleOp extends LinearOpMode {
         robot.updateSystems();
         waitForStart();
 
-        robot.lift.raiseHeightTo(400);
-        sleep(200);
-        robot.arm.armToIdlePosition();
-        sleep(200);
-        robot.lift.raiseHeightTo(0);
-        isReset = true;
+//        robot.lift.raiseHeightTo(800);
+//        sleep(500);
+//        robot.arm.armToIdlePosition();
+//        sleep(200);
+//        robot.lift.raiseHeightTo(0);
+//        isReset = true;
 
         while(!isStopRequested()) {
             if (gamepad2.right_bumper && gamepad2.left_bumper && !hangingMode) {
@@ -84,7 +85,7 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(constants.PIXEL_CYCLE_GRABBER, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
-                    stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_PICKUP_2_PIXELS);
+                    stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
                     stateMap.put(robot.intake.INTAKE_SYSTEM_NAME, robot.intake.INTAKE_DRIVER_INPUT);
                 } else if(!((String) stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
                     stateMap.put(robot.intake.INTAKE_SYSTEM_NAME, robot.intake.INTAKE_IDLE_STATE);
@@ -181,6 +182,7 @@ public class RobotTeleOp extends LinearOpMode {
                 gamepad2LeftButton.update(gamepad2.left_bumper);
                 dpadDown.update(gamepad2.dpad_down);
                 dpadUp.update(gamepad2.dpad_up);
+                gamepad1xbutton.update(gamepad1.x);
                 if(dpadDown.getState()){
                     if(drawbridgeCounter != 1){
                         drawbridgeCounter -= 1;
@@ -199,14 +201,17 @@ public class RobotTeleOp extends LinearOpMode {
                         liftCounter -= 1;
                     }
                 }
+                if(gamepad1xbutton.getState() && ((String)stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
+                    stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
+                }
 
-                if(robot.lift.liftMotor1.getCurrentPosition() > 200){
+                if(robot.lift.liftMotor1.getCurrentPosition() > 230){
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(
-                                    -gamepad1.left_stick_y,
-                                    -gamepad1.left_stick_x
+                                    (0.6 * -gamepad1.left_stick_y),
+                                    (0.6 * -gamepad1.left_stick_x)
                             ),
-                            (0.25 * -gamepad1.right_stick_x)));
+                            (0.2 * -gamepad1.right_stick_x)));
                 } else {
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(

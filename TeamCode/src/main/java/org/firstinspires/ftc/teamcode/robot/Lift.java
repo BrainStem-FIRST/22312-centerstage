@@ -42,7 +42,7 @@ public class Lift {
     //lift row 5: 1044
     private int LIFT_GROUND_STATE_POSITION = 0;
     public int LIFT_IDLE_STATE_POSITION = 200;
-    private int LIFT_ROW1_POSITION = 310;
+    private int LIFT_ROW1_POSITION = 330;
     private int LIFT_ROW2_POSITION = 544;
     private int LIFT_ROW3_POSITION = 750;
     private int LIFT_ROW4_POSITION = 996;
@@ -69,7 +69,7 @@ public class Lift {
 
         liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
 
-//        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
