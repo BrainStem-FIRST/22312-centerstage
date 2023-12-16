@@ -25,8 +25,9 @@ public class AutoRR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                .splineTo(constants.vRedRightSpike_Left, Math.toRadians(90))
-                .lineToY(constants.vRedRightSpike_Left.y + constants.robot_length / 2)
+                .lineToYSplineHeading(constants.vRedRightSpike_Left.y - 3.0, Math.toRadians(180))
+                .endTrajectory()
+                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 - 1.5)    // Adjust delta accordingly
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -34,8 +35,8 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(constants.vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
-                .splineTo(constants.vRedBackdrop_Left, Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(constants.vRedBackdrop_Left, Math.toRadians(0))
+
                 .build();
     }
 
@@ -46,7 +47,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vRedRightSpike_Center.y + constants.robot_length / 4)
+                .lineToY(constants.vRedRightSpike_Center.y + constants.robot_length/2.0 + 3.0)  // Adjust delta to fine tune pixel drop off position
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -54,7 +55,11 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                .setTangent(45)
+                .lineToY(constants.vRedRightSpike_Center.y + 12)    // Move away from the pixel to avoid de-scoring
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Right.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+
                 .build();
     }
     @Override
@@ -66,7 +71,9 @@ public class AutoRR extends AutoAbstractOpMode {
                 // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
                 .lineToYSplineHeading(constants.vRedRightSpike_Right.y, Math.toRadians(0))
                 .endTrajectory()
-                .lineToX(constants.vRedRightSpike_Right.x - constants.robot_length / 2)
+
+                // Add small movement if needed
+//                .lineToX(constants.vRedRightSpike_Right.x - constants.robot_length / 2)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -76,17 +83,20 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .splineTo(constants.vRedBackdrop_Right, Math.toRadians(0))
-//                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                .setTangent(45)
+                .lineToX(constants.vRedRightSpike_Right.x-15)   // Move away from the pixel. Adjust distance if needed.
+                .setTangent(225)
+                .splineToSplineHeading(new Pose2d(constants.vRedBackdrop_Right.x,constants.vRedBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+
                 .build();
     }
 
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .lineToX(37)
-                .setTangent(90)
-                .splineToLinearHeading(new Pose2d(46, -28, Math.toRadians(180)), Math.toRadians(180))
+//                .lineToX(37)
+                .setTangent(-135)
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, -56, Math.toRadians(180)), Math.toRadians(-45))
                 .build();
     }
 

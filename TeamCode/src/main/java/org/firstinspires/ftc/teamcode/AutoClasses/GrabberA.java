@@ -42,7 +42,7 @@ public class GrabberA {
     }
 
     public void depositPixel () {
-        grabber.setPosition(grabberDeposit1Pixel);
+        grabber.setPosition(grabberDeposit2Pixel);
     }
 
 //    public Action grabPixel = new SequentialAction(
