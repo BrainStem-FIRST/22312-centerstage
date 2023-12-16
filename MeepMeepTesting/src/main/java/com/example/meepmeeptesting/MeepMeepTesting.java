@@ -123,22 +123,22 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_BlueRight)
+                myBot.getDrive().actionBuilder(pStartingPose_BlueLeft)
                         .setReversed(true)
 
-                        // Replace prop with your yellow pixel (just push)
-                        .lineToY(vBlueRightSpike_Center.y - robot_length / 2.0 + 4.0)
-
+                        // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
+                        .lineToYSplineHeading(vBlueLeftSpike_Right.y + 3.0, Math.toRadians(180))
                         .endTrajectory()
-                        .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
+                        .lineToX(vBlueLeftSpike_Right.x + robot_length / 2.0 - 1.5)
 
-                        // Go to backdrop to place your purple pixel
-                        .lineToY(vBlueRightSpike_Center.y-12)
+                        // Drop yellow pixel in position
 
-                        .setTangent(Math.toRadians(-135))
-                        .splineToLinearHeading(new Pose2d(vBlueClearStageGate.x + 5.0, vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                        .splineTo(vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                        // Discontinue trajectory
+                        .endTrajectory()
+                        .setReversed(true)
 
+                        // Goto Backdrop to place your purple pixel
+                        .splineTo(vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
 
                         // Final Approach to the targetdistance
                         .endTrajectory()

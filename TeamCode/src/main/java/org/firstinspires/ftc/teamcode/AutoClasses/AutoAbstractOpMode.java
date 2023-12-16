@@ -176,10 +176,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         //////////////////////////////////////////////////////////
         //                GO TO BACKDROP
         //////////////////////////////////////////////////////////
-        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
-                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-                trajectory
-        ));
+//TEMP
+//        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
+//                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+//                trajectory
+//        ));
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
@@ -316,13 +317,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // Strafe left or right to approach to the target tag
-            robot.drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            0.27 * xDirection,
-                            0.32 * yDirection
-                    ),
-                    0.27 * zDirection
-            ));
+//            robot.drive.setDrivePowers(new PoseVelocity2d(
+//                    new Vector2d(
+//                            0.27 * xDirection,
+//                            0.32 * yDirection
+//                    ),
+//                    0.25 * zDirection
+//            ));
 
 
             robot.drive.updatePoseEstimate();

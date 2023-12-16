@@ -49,7 +49,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueLeftSpike_Center.y - constants.robot_length/2.0 - 3.0)
+                .lineToY(constants.vBlueLeftSpike_Center.y - constants.robot_length/2.0 + 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -60,7 +60,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setTangent(-45)
                 .lineToY(constants.vBlueLeftSpike_Center.y - 12)    // Move away from the pixel to avoid de-scoring
                 .setTangent(0)
-                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .splineToSplineHeading(new Pose2d(constants.vBlueBackdrop_Center.x - 5.0, constants.vBlueBackdrop_Center.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueLeftSpike_Right.y + 3.0, Math.toRadians(180))
+                .lineToYSplineHeading(constants.vBlueLeftSpike_Right.y, Math.toRadians(180)) //+ 3.0, Math.toRadians(180))
                 .endTrajectory()
                 .lineToX(constants.vBlueLeftSpike_Right.x + constants.robot_length / 2.0 - 1.5)
 
