@@ -70,6 +70,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         boolean foundZ = false;
         int position_error;
 
+        // Fail safe for Strafe caught up in a loop
+        int prevStrafeDir = 1; // randomly assigned
+        int strafeCounter = 0; // how many times the strafing changed direction
+
+
         double distanceLeft = 0;
         double distanceRight = 0;
 
@@ -99,7 +104,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         telemetry.addData("Block", blocks[i].toString());
 
                         if (blocks[i].id == 2) {
-                            targetTagPos = getTargetTag(blocks, alliance());
+                            targetTagPos = getTargetTag(blocks, i, alliance());
                             telemetry.addData("Found target prop: ", targetTagPos);
                         }
                     }
@@ -108,7 +113,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         telemetry.addData("Block", blocks[i].toString());
 
                         if (blocks[i].id == 1) {
-                            targetTagPos = getTargetTag(blocks, alliance());
+                            targetTagPos = getTargetTag(blocks, i, alliance());
                             telemetry.addData("Found target prop: ", targetTagPos);
                         }
                     }
@@ -303,9 +308,28 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 if (position_error < 0) {
                     yDirection = -1;
                     telemetry.addLine("strafing left");
+
+                    // increment counter if the direction changed
+                    if(prevStrafeDir == 1) {
+                        strafeCounter++;
+                        prevStrafeDir = -1;
+                    }
                 } else {
                     yDirection = 1;
                     telemetry.addLine("strafing right");
+
+                    // increment counter if the direction changed
+                    if(prevStrafeDir == -1) {
+                        strafeCounter++;
+                        prevStrafeDir = 1;
+                    }
+                }
+
+                // Exit strafing if it caught up in a loop
+                if (strafeCounter>3) {
+                    yDirection = 0;
+                    foundY = true;
+                    telemetry.addLine("Exit strafing due to frequent direction change.");
                 }
 
                 // TODO: if position_error is 160 or -160 more than x seconds, do something
@@ -412,7 +436,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         robot.arm.armToIdlePosition();
                         return false;
                     }
-                }
+                },
+                new SleepAction(3.0)
         ));
 
     }
@@ -430,25 +455,25 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
     // Returns the position of the prop.
     // If not recognized, returns CENTER (2 or 5 depending on alliance)
-    int getTargetTag(HuskyLens.Block[] blocks, Alliance a) {
+    int getTargetTag(HuskyLens.Block[] blocks, int i, Alliance a) {
 
         int propPos;
         // for test purposes, return a known value
         // delete this segment when team prop is available
         //        return 1;
-
-        if (blocks.length == 1) {
-            if (blocks[0].x < 110) {
+        if(i>=0) {
+            if (blocks[i].x < 110) {
                 // Prop is on left
                 propPos = (a == Alliance.BLUE) ? 1 : 4;
-            } else if (blocks[0].x > 210) {
+            } else if (blocks[i].x > 210) {
                 // prop is on right
                 propPos = (a == Alliance.BLUE) ? 3 : 6;
             } else {
                 // prop is on center
                 propPos = (a == Alliance.BLUE) ? 2 : 5;
             }
-        } else {
+        }
+        else {
             // could not recognize; return center
             propPos = (a == Alliance.BLUE) ? 2 : 5;
         }
