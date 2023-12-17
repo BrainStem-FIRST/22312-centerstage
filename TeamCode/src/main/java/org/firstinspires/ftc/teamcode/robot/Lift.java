@@ -69,7 +69,7 @@ public class Lift {
 
         liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
 
-        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
