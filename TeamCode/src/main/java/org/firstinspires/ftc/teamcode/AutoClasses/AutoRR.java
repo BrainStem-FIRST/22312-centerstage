@@ -47,7 +47,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vRedRightSpike_Center.y + constants.robot_length/2.0 + 3.0)  // Adjust delta to fine tune pixel drop off position
+                .lineToY(constants.vRedRightSpike_Center.y + constants.robot_length/2.0) // + 3.0)  // Adjust delta to fine tune pixel drop off position
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -58,7 +58,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setTangent(45)
                 .lineToY(constants.vRedRightSpike_Center.y + 12)    // Move away from the pixel to avoid de-scoring
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Right.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 6.0, constants.vRedBackdrop_Right.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }
@@ -68,12 +68,10 @@ public class AutoRR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vRedRightSpike_Right.y, Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vRedRightSpike_Right.x, constants.vRedRightSpike_Right.y - 5.0), Math.toRadians(0))
+//                        .lineToYSplineHeading(vBlueLeftSpike_Left.y, Math.toRadians(0))
                 .endTrajectory()
-
-                // Add small movement if needed
-//                .lineToX(constants.vRedRightSpike_Right.x - constants.robot_length / 2)
+                .lineToX(constants.vRedRightSpike_Right.x + constants.robot_length / 2)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -83,10 +81,8 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(45)
-                .lineToX(constants.vRedRightSpike_Right.x-15)   // Move away from the pixel. Adjust distance if needed.
-                .setTangent(225)
-                .splineToSplineHeading(new Pose2d(constants.vRedBackdrop_Right.x,constants.vRedBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .setTangent(-45)
+                .splineToSplineHeading(new Pose2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }

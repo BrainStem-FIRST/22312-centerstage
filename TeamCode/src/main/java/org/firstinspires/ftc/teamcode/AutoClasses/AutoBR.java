@@ -26,20 +26,21 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y + 3.0, Math.toRadians(0))
+                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y + 5.0, Math.toRadians(0)) // -3.0
                 .endTrajectory()
+// probably not needed
+                .lineToX(constants.vBlueRightSpike_Left.x - 3.0 - constants.robot_length / 2) // no delta
 
                 // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
-                .setTangent(Math.toRadians(-135))
+                .setTangent(Math.toRadians(-180))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(-180.00001)), Math.toRadians(0))
-                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineTo(constants.vBlueBackdrop_Left, Math.toRadians(0))
                 .build();
     }
@@ -65,7 +66,7 @@ public class AutoBR extends AutoAbstractOpMode {
 
 //                .setTangent(Math.toRadians(-45))
 //                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineTo(constants.vBlueBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x + 3.0 , constants.vBlueBackdrop_Center.y), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
@@ -86,7 +87,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 // Go to backdrop to place your purple pixel
                 .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
 //                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
-                .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(new Vector2d(constants.vBlueBackdrop_Right.x + 1.5, constants.vBlueBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
 
     }

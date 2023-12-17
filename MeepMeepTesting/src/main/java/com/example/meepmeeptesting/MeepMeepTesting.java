@@ -123,13 +123,14 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_BlueLeft)
+                myBot.getDrive().actionBuilder(pStartingPose_BlueRight)
                         .setReversed(true)
 
-                        // Go to position to drop yellow pixel (this is a little next to the team prop, not pushing it)
-                        .lineToYSplineHeading(vBlueLeftSpike_Right.y + 3.0, Math.toRadians(180))
+                        // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
+                        .lineToYSplineHeading(vBlueRightSpike_Left.y + 5.0, Math.toRadians(0)) // -3.0
                         .endTrajectory()
-                        .lineToX(vBlueLeftSpike_Right.x + robot_length / 2.0 - 1.5)
+// probably not needed
+                        .lineToX(vBlueRightSpike_Left.x - 3.0 - robot_length / 2) // no delta
 
                         // Drop yellow pixel in position
 
@@ -138,7 +139,10 @@ public class MeepMeepTesting {
                         .setReversed(true)
 
                         // Goto Backdrop to place your purple pixel
-                        .splineTo(vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
+                        .setTangent(Math.toRadians(-180))
+                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER, TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(-180.00001)), Math.toRadians(0))
+                        .splineTo(new Vector2d(vBlueClearStageGate.x + 5.0, vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                        .splineTo(vBlueBackdrop_Left, Math.toRadians(0))
 
                         // Final Approach to the targetdistance
                         .endTrajectory()
@@ -149,7 +153,7 @@ public class MeepMeepTesting {
                         // PARKING
 //                        .lineToX(37)
                         .setTangent(135)
-                        .splineToLinearHeading(new Pose2d(FIELD_BACKSTAGE_X, 56, Math.toRadians(180)), Math.toRadians(45))
+                        .splineToLinearHeading(new Pose2d(FIELD_BACKSTAGE_X, 12, Math.toRadians(180)), Math.toRadians(45))
                         .build();
         myBot.runAction(trajectory);
 

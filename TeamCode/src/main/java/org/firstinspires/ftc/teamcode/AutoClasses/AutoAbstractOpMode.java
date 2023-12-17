@@ -94,8 +94,25 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             telemetry.addData("amount of blocks", blocks.length);
 
             if (blocks.length != 0) {
-                targetTagPos = getTargetTag(blocks, alliance());
-                telemetry.addData("Found target prop: ", targetTagPos);
+                if (alliance() == Alliance.RED) {
+                    for (int i = 0; i < blocks.length; i++) {
+                        telemetry.addData("Block", blocks[i].toString());
+
+                        if (blocks[i].id == 2) {
+                            targetTagPos = getTargetTag(blocks, alliance());
+                            telemetry.addData("Found target prop: ", targetTagPos);
+                        }
+                    }
+                } else if (alliance() == Alliance.BLUE) {
+                    for (int i = 0; i < blocks.length; i++) {
+                        telemetry.addData("Block", blocks[i].toString());
+
+                        if (blocks[i].id == 1) {
+                            targetTagPos = getTargetTag(blocks, alliance());
+                            telemetry.addData("Found target prop: ", targetTagPos);
+                        }
+                    }
+                }
             } else {
                 telemetry.addLine("Don't see the prop :(");
 
@@ -177,10 +194,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         //                GO TO BACKDROP
         //////////////////////////////////////////////////////////
 //TEMP
-//        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
-//                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-//                trajectory
-//        ));
+        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
+                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+                trajectory
+        ));
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
@@ -317,13 +334,13 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
             // Strafe left or right to approach to the target tag
-//            robot.drive.setDrivePowers(new PoseVelocity2d(
-//                    new Vector2d(
-//                            0.27 * xDirection,
-//                            0.32 * yDirection
-//                    ),
-//                    0.25 * zDirection
-//            ));
+            robot.drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            0.27 * xDirection,
+                            0.32 * yDirection
+                    ),
+                    0.25 * zDirection
+            ));
 
 
             robot.drive.updatePoseEstimate();
