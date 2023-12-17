@@ -26,12 +26,16 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                .lineToYSplineHeading(constants.vBlueRightSpike_Left.y + 5.0, Math.toRadians(0)) // -3.0
+                .setTangent(180)
+                .lineToYLinearHeading(constants.vBlueRightSpike_Left.y + 5.0, Math.toRadians(0)) // -3.0
+                .endTrajectory()
+                .lineToX(constants.vBlueRightSpike_Left.x - constants.robot_length / 2.0)
                 .endTrajectory()
 // probably not needed
-                .lineToX(constants.vBlueRightSpike_Left.x - 3.0 - constants.robot_length / 2) // no delta
+//                .lineToX(constants.vBlueRightSpike_Left.x - 5.0 - constants.robot_length / 2) // no delta
 
                 // Drop yellow pixel in position
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()
@@ -39,10 +43,12 @@ public class AutoBR extends AutoAbstractOpMode {
 
                 // Goto Backdrop to place your purple pixel
                 .setTangent(Math.toRadians(-180))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(-180.00001)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.0000)), Math.toRadians(0))
                 .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineTo(constants.vBlueBackdrop_Left, Math.toRadians(0))
+
                 .build();
+
     }
 
     @Override
