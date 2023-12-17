@@ -227,12 +227,25 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             telemetry.addData("block of interest is in slot", targetBlockPos);
 
+
+            // Read distance
+            distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM)); //sensorDistanceLeft.getDistance(DistanceUnit.MM);
+            distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM)); //sensorDistanceRight.getDistance(DistanceUnit.MM);
+
+            telemetry.addData("distance right", distanceRight);
+            telemetry.addData("distance left", distanceLeft);
+
             if (targetBlockPos >= 0) {
                 position_error = blocks[targetBlockPos].x - 160;
             } else {
                 if (blocks.length == 0) {
                     telemetry.addLine("didn't see anything");
-                    if (robot.drive.pose.position.y < constants.vRedBackdrop_Center.y) {
+                    if (distanceRight < constants.minTagVision) {
+                        position_error = 0;
+                        foundY = true;
+                        telemetry.addLine("too close to board");
+                    }
+                    else if (robot.drive.pose.position.y < constants.vRedBackdrop_Center.y) {
                         position_error = -160;
                     } else {
                         position_error = 160;
@@ -247,14 +260,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 }
             }
             telemetry.addData("position error", position_error);
-
-
-            // Read distance
-            distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM)); //sensorDistanceLeft.getDistance(DistanceUnit.MM);
-            distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM)); //sensorDistanceRight.getDistance(DistanceUnit.MM);
-
-            telemetry.addData("distance right", distanceRight);
-            telemetry.addData("distance left", distanceLeft);
 
 
             // direction to turn
