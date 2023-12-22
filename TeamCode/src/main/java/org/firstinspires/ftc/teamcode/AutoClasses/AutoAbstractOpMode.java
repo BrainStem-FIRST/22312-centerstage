@@ -70,6 +70,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         boolean foundZ = false;
         int position_error;
 
+
         // Fail safe for Strafe caught up in a loop
         int prevStrafeDir = 1; // randomly assigned
         int strafeCounter = 0; // how many times the strafing changed direction
@@ -103,7 +104,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     for (int i = 0; i < blocks.length; i++) {
                         telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 2) {
+                        if (blocks[i].id == 1) {
                             targetTagPos = getTargetTag(blocks, i, alliance());
                             telemetry.addData("Found target prop: ", targetTagPos);
                         }
@@ -112,7 +113,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     for (int i = 0; i < blocks.length; i++) {
                         telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 1) {
+                        if (blocks[i].id == 2) {
                             targetTagPos = getTargetTag(blocks, i, alliance());
                             telemetry.addData("Found target prop: ", targetTagPos);
                         }
@@ -186,13 +187,16 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         telemetry.update();
 
 // Disabled to test if it had a negative impact on placing pixels at the board
-        runBlocking(new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                robot.grabber.grabber.setPosition(1.0);
-                return false;
-            }
-        });
+        runBlocking(new SequentialAction (
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.grabber.grabber.setPosition(0.0);
+                        return false;
+                    }
+                },
+                new SleepAction(0.5)
+        ));
 
 
         //////////////////////////////////////////////////////////
@@ -437,7 +441,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         return false;
                     }
                 },
-                new SleepAction(3.0)
+                new SleepAction(4.0)
         ));
 
     }

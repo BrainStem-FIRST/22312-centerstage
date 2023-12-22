@@ -25,9 +25,9 @@ public class AutoRR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                .lineToYSplineHeading(constants.vRedRightSpike_Left.y - 3.0, Math.toRadians(180))
+                .lineToYSplineHeading(constants.vRedRightSpike_Left.y, Math.toRadians(180))
                 .endTrajectory()
-                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 - 1.5)    // Adjust delta accordingly
+                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 2.5)    // Adjust delta accordingly
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -35,7 +35,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(constants.vRedBackdrop_Left, Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x + 6.0, constants.vRedBackdrop_Left.y), Math.toRadians(0))
 
                 .build();
     }
@@ -47,7 +47,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vRedRightSpike_Center.y + constants.robot_length/2.0) // + 3.0)  // Adjust delta to fine tune pixel drop off position
+                .lineToY(constants.vRedRightSpike_Center.y + constants.robot_length/2.0 - 3.0) // + 3.0)  // Adjust delta to fine tune pixel drop off position
 
                 .stopAndAdd(robot.intake.spitPixel)
 

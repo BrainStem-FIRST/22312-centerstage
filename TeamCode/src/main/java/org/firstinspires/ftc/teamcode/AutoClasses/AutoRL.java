@@ -25,7 +25,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                .splineTo(constants.vRedLeftSpike_Left, Math.toRadians(90))
+                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
                 .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
@@ -35,7 +35,7 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 // Go to backdrop to place your purple pixel
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
-                .splineTo(constants.vRedBackdrop_Left, Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x - 6.5, constants.vRedBackdrop_Left.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
     }
 
@@ -54,7 +54,7 @@ public class AutoRL extends AutoAbstractOpMode {
 
 //                .lineToY(constants.vRedLeftSpike_Center.y+12)
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
-                .splineTo(constants.vRedBackdrop_Center, Math.toRadians(0))     // Then, go to designated tag position
+                .splineTo(new Vector2d(constants.vRedBackdrop_Center.x - 6.0, constants.vRedBackdrop_Center.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }
@@ -82,7 +82,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                 .splineTo(new Vector2d(constants.vRedClearStageGate.x + 5.0, constants.vRedClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineTo(constants.vRedBackdrop_Right, Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
                 .build();
     }
 
