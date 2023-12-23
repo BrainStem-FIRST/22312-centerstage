@@ -61,7 +61,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         // Store color values from the color sensor
-        NormalizedRGBA referenceColor, currentColor;
+        NormalizedRGBA currentColor;
 
         // Setup possible trajectories
         robot.drive.pose = startPose();
@@ -85,9 +85,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         double distanceRight = 0;
 
         /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
-        while (!programConfirmation && !isStopRequested()) {
-            setTimeDelay();
-        }
+//        while (!programConfirmation && !isStopRequested()) {
+//            setTimeDelay();
+//        }
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
@@ -186,8 +186,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         // Capture the current RED and BLUE values as reference
         robot.colorSensor.setGain(10);
 
-        referenceColor = robot.colorSensor.getNormalizedColors();
-
 
         // In a loop, keep reading the color sensor,
         // Compare current Red and Blue against the reference
@@ -201,15 +199,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             // read current color values
             currentColor = robot.colorSensor.getNormalizedColors();
-            telemetry.addData("reference color red:", referenceColor.red);
-            telemetry.addData("reference color green:", referenceColor.green);
-            telemetry.addData("reference color blue:", referenceColor.blue);
             telemetry.addData("current color red:", currentColor.red);
             telemetry.addData("current color green:", currentColor.green);
             telemetry.addData("current color blue:", currentColor.blue);
 
             if (alliance() == Alliance.RED) {
-                if (Math.abs(referenceColor.red - currentColor.red) > 0.05) {
+                if (currentColor.red > 0.075) {
                     findColor = 0;
                     foundSpike = true;
                 } else {
@@ -218,7 +213,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             }
             else { // Alliance.BLUE)
-                if (Math.abs(referenceColor.blue - currentColor.blue) > 0.05) {
+                if (currentColor.blue > 0.19) {
                     findColor = 0;
                     foundSpike = true;
                 } else {
@@ -231,8 +226,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
-                            0.0,
-                            0.0//0.35 * findColor
+                            0.25 * findColor,
+                            0.0
+
                     ),
                     0.0
             ));
