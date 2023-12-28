@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
@@ -26,7 +27,7 @@ public class AutoRL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left(BrainSTEMRobotA robot) {
+    public Action traj_left1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
@@ -46,7 +47,12 @@ public class AutoRL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_center(BrainSTEMRobotA robot) {
+    public Action traj_left2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_center1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
@@ -60,9 +66,9 @@ public class AutoRL extends AutoAbstractOpMode {
                     return false;
                 })
 
-                .stopAndAdd(robot.findSpikeRed)
+//                .stopAndAdd(robot.findSpikeRed)
                 .endTrajectory()
-
+/*
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addData("pose after findSpike", robot.drive.pose.position.y);
                     telemetry.update();
@@ -96,7 +102,45 @@ public class AutoRL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_right(BrainSTEMRobotA robot) {
+    public Action traj_center2(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose after findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+//                .setReversed(true)
+//                .lineToY(-10)
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose target", robot.drive.pose.position.y + 7.5);
+                    telemetry.update();
+                    return false;
+                })
+                .lineToY(robot.drive.pose.position.y + 7.5)
+
+                .stopAndAdd(robot.intake.spitPixel)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose after lineTo", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+                .endTrajectory()
+
+                .setReversed(true)
+//                .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vRedClearStageGate.x, constants.vRedClearStageGate.y - 2.0), Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vRedBackdrop_Center.x - 8.0, constants.vRedBackdrop_Center.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
+
+                .build();
+    }
+
+    @Override
+    public Action traj_right1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
@@ -122,7 +166,12 @@ public class AutoRL extends AutoAbstractOpMode {
                 .build();
     }
 
-    
+    @Override
+    public Action traj_right2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)

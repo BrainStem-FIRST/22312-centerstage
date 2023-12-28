@@ -20,7 +20,7 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left(BrainSTEMRobotA robot) {
+    public Action traj_left1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
@@ -52,7 +52,12 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_center(BrainSTEMRobotA robot) {
+    public Action traj_left2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_center1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
@@ -77,7 +82,12 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_right(BrainSTEMRobotA robot) {
+    public Action traj_center2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_right1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
@@ -96,6 +106,11 @@ public class AutoBR extends AutoAbstractOpMode {
                 .splineTo(new Vector2d(constants.vBlueBackdrop_Right.x + 1.5, constants.vBlueBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
                 .build();
 
+    }
+
+    @Override
+    public Action traj_right2(BrainSTEMRobotA robot) {
+        return null;
     }
 
     @Override

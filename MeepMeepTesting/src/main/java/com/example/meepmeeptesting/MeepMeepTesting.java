@@ -123,34 +123,19 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_BlueLeft)
+                myBot.getDrive().actionBuilder(pStartingPose_RedLeft)
                         .setReversed(true)
-
-                        // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                        .splineTo(new Vector2d(vBlueLeftSpike_Left.x + 9.0, vBlueLeftSpike_Left.y), Math.toRadians(0))
-//                        .lineToX(36)
-
-                        // Drop yellow pixel in position
-
-                        // Discontinue trajectory
+                        // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
+//                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 4.0)
+                        .lineToY(-35)
                         .endTrajectory()
                         .setReversed(true)
-
-
-                        .setTangent(90)
-                        .splineToSplineHeading(new Pose2d(vBlueBackdrop_Left.x, vBlueBackdrop_Left.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
-
-
-                        // Final Approach to the targetdistance
+                        .lineToY(-15)
                         .endTrajectory()
-                        .lineToX(FIELD_BACKDROP_X- 7.0) // 180mm = 7in
-
-                        .endTrajectory()
-
-                        // PARKING
-//                        .lineToX(37)
-                        .setTangent(135)
-                        .splineToLinearHeading(new Pose2d(FIELD_BACKSTAGE_X, 12, Math.toRadians(180)), Math.toRadians(45))
+                        .setReversed(true)
+                        .splineTo(new Vector2d(vRedClearStageGate.x, vRedClearStageGate.y - 2.0), Math.toRadians(0))
+//                        .splineToLinearHeading(new Pose2d(vRedClearStageGate.x, vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0))
+                        .splineTo(new Vector2d(vRedBackdrop_Center.x - 5.0, vRedBackdrop_Center.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
                         .build();
         myBot.runAction(trajectory);
 

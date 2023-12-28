@@ -26,9 +26,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
     public abstract Pose2d startPose();
 
-    public abstract Action traj_left(BrainSTEMRobotA robot);
-    public abstract Action traj_center(BrainSTEMRobotA robot);
-    public abstract Action traj_right(BrainSTEMRobotA robot);
+    public abstract Action traj_left1(BrainSTEMRobotA robot);
+    public abstract Action traj_left2(BrainSTEMRobotA robot);
+    public abstract Action traj_center1(BrainSTEMRobotA robot);
+    public abstract Action traj_center2(BrainSTEMRobotA robot);
+    public abstract Action traj_right1(BrainSTEMRobotA robot);
+    public abstract Action traj_right2(BrainSTEMRobotA robot);
 
     public abstract Action parking_traj(BrainSTEMRobotA robot);
 
@@ -143,24 +146,28 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         /********* CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION ***********/
 
-        Action trajectory;
+        Action trajectory1, trajectory2;
 
         switch (targetTagPos) {
             case 1:
             case 4:
-                trajectory = traj_left(robot);
+                trajectory1 = traj_left1(robot);
+                trajectory2 = traj_left2(robot);
                 break;
             case 2:
             case 5:
-                trajectory = traj_center(robot);
+                trajectory1 = traj_center1(robot);
+                trajectory2 = traj_center2(robot);
                 break;
             case 3:
             case 6:
-                trajectory = traj_right(robot);
+                trajectory1 = traj_right1(robot);
+                trajectory2 = traj_right2(robot);
                 break;
             default:
                 telemetry.addLine("it did not select the program yet");
-                trajectory = traj_center(robot);
+                trajectory1 = traj_center1(robot);
+                trajectory2 = traj_center2(robot);
                 telemetry.addLine("running default: Center");
                 telemetry.update();
                 //if we don't see the prop this will default to center
@@ -280,12 +287,14 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 //TEMP
         runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-                trajectory
+                trajectory1,
+                robot.findSpikeRed,
+                trajectory2
         ));
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
-/*
+
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
 
             telemetry.addData("Loop Counter: ", ++loopCounter);
@@ -348,7 +357,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             // direction to turn
             if (distanceLeft < 1000.00 && distanceRight < 1000.00 && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
-                if (Math.abs(distanceRight - distanceLeft) > 20.00 ) {
+                if (Math.abs(distanceRight - distanceLeft) > 50.00 ) {
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
                     } else {
@@ -519,7 +528,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 new SleepAction(4.0)
         ));
 
- */
 
     }
 

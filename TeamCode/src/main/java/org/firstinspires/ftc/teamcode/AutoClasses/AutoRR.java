@@ -20,7 +20,7 @@ public class AutoRR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left(BrainSTEMRobotA robot) {
+    public Action traj_left1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_RedRight)
                 // go backwards
                 .setReversed(true)
@@ -41,7 +41,12 @@ public class AutoRR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_center(BrainSTEMRobotA robot) {
+    public Action traj_left2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_center1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_RedRight)
                 // go backwards
                 .setReversed(true)
@@ -62,8 +67,14 @@ public class AutoRR extends AutoAbstractOpMode {
 
                 .build();
     }
+
     @Override
-    public Action traj_right(BrainSTEMRobotA robot) {
+    public Action traj_center2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_right1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_RedRight)
                 // go backwards
                 .setReversed(true)
@@ -85,6 +96,11 @@ public class AutoRR extends AutoAbstractOpMode {
                 .splineToSplineHeading(new Pose2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
+    }
+
+    @Override
+    public Action traj_right2(BrainSTEMRobotA robot) {
+        return null;
     }
 
     @Override

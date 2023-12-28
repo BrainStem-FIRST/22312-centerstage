@@ -20,7 +20,7 @@ public class AutoBL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left(BrainSTEMRobotA robot) {
+    public Action traj_left1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 .setReversed(true)
 
@@ -43,7 +43,12 @@ public class AutoBL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_center(BrainSTEMRobotA robot) {
+    public Action traj_left2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_center1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
@@ -65,7 +70,12 @@ public class AutoBL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_right(BrainSTEMRobotA robot) {
+    public Action traj_center2(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action traj_right1(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 // go backwards
                 .setReversed(true)
@@ -85,6 +95,11 @@ public class AutoBL extends AutoAbstractOpMode {
                 // Goto Backdrop to place your purple pixel
                 .splineTo(constants.vBlueBackdrop_Right, Math.toRadians(0))     // Then, go to designated tag position
                 .build();
+    }
+
+    @Override
+    public Action traj_right2(BrainSTEMRobotA robot) {
+        return null;
     }
 
     @Override
