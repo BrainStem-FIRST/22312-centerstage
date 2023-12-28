@@ -192,6 +192,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         // If delta is large enough, stop the robot
         // Otherwise, keep driving
 
+/*
         int findColor = 0;
         boolean foundSpike = false;
 
@@ -234,6 +235,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             ));
         }
 
+ */
 
 
 
@@ -242,7 +244,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
 
 
-/*
+
+
         // Change recognition mode to AprilTags before the While Loop
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         sleep(100);
@@ -250,9 +253,9 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         int loopCounter = 0;
 
 
-        /***************   INITIAL TRAJECTORY RUN  ****************
-        /* This was moved outside of the While loop
-        /**********************************************************
+        /***************   INITIAL TRAJECTORY RUN  ****************/
+        /* This was moved outside of the While loop               */
+        /**********************************************************/
 
         telemetry.addData("target tag: ", targetTagPos);
         telemetry.addLine("Started trajectory");
@@ -282,7 +285,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
-
+/*
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
 
             telemetry.addData("Loop Counter: ", ++loopCounter);

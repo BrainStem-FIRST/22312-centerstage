@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -43,21 +47,51 @@ public class AutoRL extends AutoAbstractOpMode {
 
     @Override
     public Action traj_center(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(startPose())
+        return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
-
                 // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
-                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 4.0)
+//                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 4.0)
+                .lineToY(-35)
 
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose before findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+                .stopAndAdd(robot.findSpikeRed)
                 .endTrajectory()
-                .setReversed(true)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose after findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+//                .setReversed(true)
+//                .lineToY(-10)
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose target", robot.drive.pose.position.y + 10);
+                    telemetry.update();
+                    return false;
+                })
+                .lineToY(robot.drive.pose.position.y + 10)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose after lineTo", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+                .stopAndAdd(robot.intake.spitPixel)
+
+                .endTrajectory()
+       /*         .setReversed(true)
 
 //                .lineToY(constants.vRedLeftSpike_Center.y+12)
                 .splineTo(constants.vRedClearStageGate, Math.toRadians(0))
                 .splineTo(new Vector2d(constants.vRedBackdrop_Center.x - 6.0, constants.vRedBackdrop_Center.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
-
+ */
                 .build();
     }
 
@@ -88,6 +122,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .build();
     }
 
+    
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
