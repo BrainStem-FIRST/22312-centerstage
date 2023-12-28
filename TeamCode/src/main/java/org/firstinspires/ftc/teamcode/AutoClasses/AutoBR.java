@@ -20,8 +20,34 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left1(BrainSTEMRobotA robot) {
+    public Action traj_init(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
+                // go backwards
+                .setReversed(true)
+
+                // Move close enough to center spike
+                .lineToY(35)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose before findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+                .stopAndAdd(findSpike(robot))
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose after findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+                .build();
+    }
+
+    @Override
+    public Action traj_left(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
 
@@ -52,18 +78,13 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action traj_left2(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action traj_center1(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
+    public Action traj_center(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
 
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(constants.vBlueRightSpike_Center.y - constants.robot_length / 2.0 + 4.0)
+                .lineToY(robot.drive.pose.position.y - 8.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -72,45 +93,48 @@ public class AutoBR extends AutoAbstractOpMode {
 
                 // Go to backdrop to place your purple pixel
 //                .lineToY(constants.vBlueRightSpike_Center.y-12)
+                /*
                 .setTangent(Math.toRadians(-135))
                 .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
 
 //                .setTangent(Math.toRadians(-45))
 //                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x + 3.0 , constants.vBlueBackdrop_Center.y), Math.toRadians(0))     // Then, go to designated tag position
+           */
                 .build();
     }
 
     @Override
-    public Action traj_center2(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action traj_right1(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
+    public Action traj_right(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
 
-                .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(-90))
-                .lineToY(constants.vBlueRightSpike_Right.y - constants.robot_length / 2.0 + 2.0)
+                .setTangent(135)
+                .lineToX(constants.vBlueRightSpike_Right.x)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.update();
+                    return false;
+                })
+//                .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(-90))
+//                .lineToY(constants.vBlueRightSpike_Right.y - constants.robot_length / 2.0 + 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
+                /*
                 .setReversed(true)
 
                 // Go to backdrop to place your purple pixel
                 .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
 //                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
                 .splineTo(new Vector2d(constants.vBlueBackdrop_Right.x + 1.5, constants.vBlueBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
+        */
                 .build();
 
-    }
-
-    @Override
-    public Action traj_right2(BrainSTEMRobotA robot) {
-        return null;
     }
 
     @Override

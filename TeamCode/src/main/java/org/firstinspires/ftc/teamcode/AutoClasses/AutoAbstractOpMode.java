@@ -26,12 +26,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
     public abstract Pose2d startPose();
 
-    public abstract Action traj_left1(BrainSTEMRobotA robot);
-    public abstract Action traj_left2(BrainSTEMRobotA robot);
-    public abstract Action traj_center1(BrainSTEMRobotA robot);
-    public abstract Action traj_center2(BrainSTEMRobotA robot);
-    public abstract Action traj_right1(BrainSTEMRobotA robot);
-    public abstract Action traj_right2(BrainSTEMRobotA robot);
+    public abstract Action traj_init(BrainSTEMRobotA robot);
+    public abstract Action traj_left(BrainSTEMRobotA robot);
+    public abstract Action traj_center(BrainSTEMRobotA robot);
+    public abstract Action traj_right(BrainSTEMRobotA robot);
 
     public abstract Action parking_traj(BrainSTEMRobotA robot);
 
@@ -62,9 +60,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         DistanceSensor sensorDistanceLeft, sensorDistanceRight;
         sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
-
-        // Store color values from the color sensor
-        NormalizedRGBA currentColor;
 
         // Setup possible trajectories
         robot.drive.pose = startPose();
@@ -146,28 +141,24 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         /********* CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION ***********/
 
-        Action trajectory1, trajectory2;
+        Action trajectory;
 
         switch (targetTagPos) {
             case 1:
             case 4:
-                trajectory1 = traj_left1(robot);
-                trajectory2 = traj_left2(robot);
+                trajectory = traj_left(robot);
                 break;
             case 2:
             case 5:
-                trajectory1 = traj_center1(robot);
-                trajectory2 = traj_center2(robot);
+                trajectory = traj_center(robot);
                 break;
             case 3:
             case 6:
-                trajectory1 = traj_right1(robot);
-                trajectory2 = traj_right2(robot);
+                trajectory = traj_right(robot);
                 break;
             default:
                 telemetry.addLine("it did not select the program yet");
-                trajectory1 = traj_center1(robot);
-                trajectory2 = traj_center2(robot);
+                trajectory = traj_right(robot); //traj_center(robot);
                 telemetry.addLine("running default: Center");
                 telemetry.update();
                 //if we don't see the prop this will default to center
@@ -180,84 +171,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 break;
         }
 
-        // not necessary to call this - start is already given
-        // waitForStart();
-
-
-        ////////////////////////////////////////////////////////////////
-        //
-        //  Color sensor at spike experiment
-        //
-        ////////////////////////////////////////////////////////////////
-
-        // Capture the current RED and BLUE values as reference
-        robot.colorSensor.setGain(10);
-
-
-        // In a loop, keep reading the color sensor,
-        // Compare current Red and Blue against the reference
-        // If delta is large enough, stop the robot
-        // Otherwise, keep driving
-
-/*
-        int findColor = 0;
-        boolean foundSpike = false;
-
-        while (opModeIsActive() && !foundSpike) {
-
-            // read current color values
-            currentColor = robot.colorSensor.getNormalizedColors();
-            telemetry.addData("current color red:", currentColor.red);
-            telemetry.addData("current color green:", currentColor.green);
-            telemetry.addData("current color blue:", currentColor.blue);
-
-            if (alliance() == Alliance.RED) {
-                if (currentColor.red > 0.075) {
-                    findColor = 0;
-                    foundSpike = true;
-                } else {
-                    findColor = -1;
-                }
-
-            }
-            else { // Alliance.BLUE)
-                if (currentColor.blue > 0.19) {
-                    findColor = 0;
-                    foundSpike = true;
-                } else {
-                    findColor = -1;
-                }
-            }
-
-            telemetry.addData("found spike:", foundSpike);
-            telemetry.update();
-
-            robot.drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            0.25 * findColor,
-                            0.0
-
-                    ),
-                    0.0
-            ));
-        }
-
- */
-
-
-
-
-
-
-
-
-
 
         // Change recognition mode to AprilTags before the While Loop
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         sleep(100);
 
-        int loopCounter = 0;
+        int loopCounter = 0;    // for debug purposes, no longer necessary
 
 
         /***************   INITIAL TRAJECTORY RUN  ****************/
@@ -287,9 +206,8 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 //TEMP
         runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-                trajectory1,
-                robot.findSpikeRed,
-                trajectory2
+                traj_init(robot),   // all variations first go to center spike
+                trajectory
         ));
 
         telemetry.addLine("Finished trajectory");
@@ -449,7 +367,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 }
             }
 
-
+/*
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -458,7 +376,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     ),
                     0.25 * zDirection
             ));
-
+ */
 
             robot.drive.updatePoseEstimate();
 
@@ -632,5 +550,61 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         sleep(500);
         telemetry.clearAll();
     }
+
+    public Action findSpike(BrainSTEMRobotA robot) {
+        return new Action() {
+
+            NormalizedRGBA currentColor;
+            int moveToSpike = 0; // move direction
+            boolean foundSpike = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+                // read current color values
+                currentColor = robot.colorSensor.getNormalizedColors();
+                telemetry.addData("gain", robot.colorSensor.getGain());
+                telemetry.addData("alliance", alliance());
+                telemetry.addData("current color red:", currentColor.red);
+                telemetry.addData("current color green:", currentColor.green);
+                telemetry.addData("current color blue:", currentColor.blue);
+
+                if (alliance() == Alliance.RED) {
+                    if (currentColor.red > 0.027) { //75) {
+                        moveToSpike = 0;
+                        foundSpike = true;  // found it
+                    } else {
+                        moveToSpike = -1;   // keep moving
+                    }
+                } else {  // Alliance is BLUE
+                    if (currentColor.blue > 0.1) {
+                        moveToSpike = 0;
+                        foundSpike = true;
+                    } else {
+                        moveToSpike = -1;
+                    }
+                }
+
+                telemetry.addData("found spike:", foundSpike);
+
+                robot.drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.25 * moveToSpike,
+                                0.0
+
+                        ),
+                        0.0
+                ));
+
+                robot.drive.updatePoseEstimate();
+
+                telemetry.addData("pose", robot.drive.pose.position.y);
+                telemetry.update();
+
+                return !foundSpike; // repeat action if not found spike
+            }
+        };
+    }
+
 
 }

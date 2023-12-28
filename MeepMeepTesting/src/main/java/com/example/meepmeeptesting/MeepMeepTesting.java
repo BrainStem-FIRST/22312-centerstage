@@ -128,14 +128,10 @@ public class MeepMeepTesting {
                         // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
 //                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 4.0)
                         .lineToY(-35)
+                        .lineToY(-25)
                         .endTrajectory()
                         .setReversed(true)
-                        .lineToY(-15)
-                        .endTrajectory()
-                        .setReversed(true)
-                        .splineTo(new Vector2d(vRedClearStageGate.x, vRedClearStageGate.y - 2.0), Math.toRadians(0))
-//                        .splineToLinearHeading(new Pose2d(vRedClearStageGate.x, vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0))
-                        .splineTo(new Vector2d(vRedBackdrop_Center.x - 5.0, vRedBackdrop_Center.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
+                        .turnTo(Math.toRadians(0))
                         .build();
         myBot.runAction(trajectory);
 

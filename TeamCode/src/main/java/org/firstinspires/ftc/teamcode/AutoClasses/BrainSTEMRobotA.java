@@ -56,6 +56,7 @@ public class BrainSTEMRobotA {
         grabber = new GrabberA(hardwareMap, telemetry);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftBottomColorSensor");
+        colorSensor.setGain(15);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
@@ -97,83 +98,4 @@ public class BrainSTEMRobotA {
             }
     );
 
-    public Action findSpikeRed = new SequentialAction(
-            new Action() {
-
-                NormalizedRGBA currentColor;
-                int findColor = 0;
-                boolean didNotFindSpike = true;
-
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                    // read current color values
-                    currentColor = colorSensor.getNormalizedColors();
-                    telemetry.addData("current color red:", currentColor.red);
-                    telemetry.addData("current color green:", currentColor.green);
-                    telemetry.addData("current color blue:", currentColor.blue);
-
-                    if (currentColor.red > 0.075) {
-                        findColor = 0;
-                        didNotFindSpike = false; //(so like it found it)
-                    } else {
-                        findColor = -1;
-                    }
-
-                    telemetry.addData("found spike:", didNotFindSpike);
-                    telemetry.update();
-
-                    drive.setDrivePowers(new PoseVelocity2d(
-                            new Vector2d(
-                                    0.25 * findColor,
-                                    0.0
-
-                            ),
-                            0.0
-                    ));
-//                    drive.updatePoseEstimate();
-                    telemetry.addData("pose", drive.pose.position.y);
-                    telemetry.update();
-                    return didNotFindSpike;
-                }
-            }
-    );
-
-    public Action findSpikeBlue = new SequentialAction(
-            new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                    NormalizedRGBA currentColor;
-                    int findColor = 0;
-                    boolean foundSpike = false;
-
-                    // read current color values
-                    currentColor = colorSensor.getNormalizedColors();
-                    telemetry.addData("current color red:", currentColor.red);
-                    telemetry.addData("current color green:", currentColor.green);
-                    telemetry.addData("current color blue:", currentColor.blue);
-
-                    if (currentColor.blue > 0.19) {
-                        findColor = 0;
-                        foundSpike = true;
-                    } else {
-                        findColor = -1;
-                    }
-
-                    telemetry.addData("found spike:", foundSpike);
-                    telemetry.update();
-
-                    drive.setDrivePowers(new PoseVelocity2d(
-                            new Vector2d(
-                                    0.25 * findColor,
-                                    0.0
-
-                            ),
-                            0.0
-                    ));
-                    return false;
-                }
-            }
-    );
 }
