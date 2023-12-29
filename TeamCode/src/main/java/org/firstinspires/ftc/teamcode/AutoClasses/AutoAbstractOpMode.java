@@ -16,9 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
@@ -36,15 +34,17 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     public abstract Alliance alliance();
     public abstract Orientation orientation();
 
-    private boolean timeDelayIsSet = false;
-    private boolean programConfirmation = false;
+    // Used for setting a time delay before starting Auto
     private int     autoTimeDelay = 0;
 
     private StickyButton gamepad1dpadUp = new StickyButton();
     private StickyButton gamepad1dpadDown = new StickyButton();
 
+    // Used for exception handling
     private ElapsedTime turnTimer = new ElapsedTime();
     private boolean firstTimeVisiting = true;
+
+
 
     @Override
     public void runOpMode() {
@@ -89,88 +89,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
-        // Determine the prop position
-        int targetTagPos = -1;
-        int targetBlockPos = -1; // The block of interest within the blocks array.
+        int targetTagPos = readPropPosition(robot);
 
-        // find prop and target tag before START
-        robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
-
-        while (!isStarted() && !isStopRequested()) {
-
-            // Read the scene
-            blocks = robot.huskyLens.blocks();
-            telemetry.addData("amount of blocks", blocks.length);
-
-            if (blocks.length != 0) {
-                if (alliance() == Alliance.RED) {
-                    for (int i = 0; i < blocks.length; i++) {
-                        telemetry.addData("Block", blocks[i].toString());
-
-                        if (blocks[i].id == 1) {
-                            targetTagPos = getTargetTag(blocks, i, alliance());
-                            telemetry.addData("Found target prop: ", targetTagPos);
-                        }
-                    }
-                } else if (alliance() == Alliance.BLUE) {
-                    for (int i = 0; i < blocks.length; i++) {
-                        telemetry.addData("Block", blocks[i].toString());
-
-                        if (blocks[i].id == 2) {
-                            targetTagPos = getTargetTag(blocks, i, alliance());
-                            telemetry.addData("Found target prop: ", targetTagPos);
-                        }
-                    }
-                }
-            } else {
-                telemetry.addLine("Don't see the prop :(");
-
-                if (targetTagPos == -1) {
-                    telemetry.addLine("(The prop has never been seen)");
-                } else {
-                    telemetry.addLine("\nBut we HAVE seen the prop before");
-                    telemetry.addData("which was: ", targetTagPos);
-                }
-
-                sleep(20);
-            }
-            telemetry.update();
-        }
-
-        ////////////// Start is given ///////////////
-
-        /********* CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION ***********/
-
-        Action trajectory;
-
-        switch (targetTagPos) {
-            case 1:
-            case 4:
-                trajectory = traj_left(robot);
-                break;
-            case 2:
-            case 5:
-                trajectory = traj_center(robot);
-                break;
-            case 3:
-            case 6:
-                trajectory = traj_right(robot);
-                break;
-            default:
-                telemetry.addLine("it did not select the program yet");
-                trajectory = traj_right(robot); //traj_center(robot);
-                telemetry.addLine("running default: Center");
-                telemetry.update();
-                //if we don't see the prop this will default to center
-                if (alliance() == Alliance.RED) {
-                    targetTagPos = 5;
-                }
-                else {
-                    targetTagPos = 2;
-                }
-                break;
-        }
-
+        /////////////////////////////////////////////
+        //             START WAS GIVEN             //
+        /////////////////////////////////////////////
 
         // Change recognition mode to AprilTags before the While Loop
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
@@ -179,39 +102,44 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         int loopCounter = 0;    // for debug purposes, no longer necessary
 
 
-        /***************   INITIAL TRAJECTORY RUN  ****************/
-        /* This was moved outside of the While loop               */
-        /**********************************************************/
+        //////////////////////////////////////////////////////////
+        //                INITIALIZE BEFORE AUTO                //
+        //////////////////////////////////////////////////////////
 
         telemetry.addData("target tag: ", targetTagPos);
         telemetry.addLine("Started trajectory");
         telemetry.update();
 
-// Disabled to test if it had a negative impact on placing pixels at the board
-        runBlocking(new SequentialAction (
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.grabber.grabber.setPosition(0.0);
-                        return false;
-                    }
-                },
-                new SleepAction(0.5)
-        ));
+// Any initialization of servos before auto will be done here:
+//        runBlocking(new SequentialAction (
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        robot.grabber.grabber.setPosition(0.0);
+//                        return false;
+//                    }
+//                },
+//                new SleepAction(0.5)
+//        ));
 
 
         //////////////////////////////////////////////////////////
-        //                GO TO BACKDROP
+        //                GO TO BACKDROP                        //
         //////////////////////////////////////////////////////////
-//TEMP
-        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
+
+        runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
                 traj_init(robot),   // all variations first go to center spike
-                trajectory
+                getTrajectory(robot, targetTagPos)  // Need to calculate trajectories dynamically
         ));
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
+
+        //////////////////////////////////////////////////////////
+        //           FINAL APPROACH USING SENSORS               //
+        //////////////////////////////////////////////////////////
+        int targetBlockPos = -1; // The block of interest within the blocks array.
 
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
 
@@ -489,10 +417,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     }
 
     private void setTimeDelay() {
-        timeDelayIsSet = false;
-
+        boolean timeDelayIsSet = false;
 
         telemetry.clearAll();
+
         while (!timeDelayIsSet && !isStopRequested()) {
 
             gamepad1dpadUp.update(gamepad1.dpad_up);
@@ -535,13 +463,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 telemetry.clearAll();
                 telemetry.addLine("Program Confirmed");
                 telemetry.update();
-                programConfirmation = true;
                 confirmation = true;
             } else if (gamepad2.b) {
                 telemetry.clearAll();
                 telemetry.addLine("Program Rejected");
                 telemetry.update();
-                programConfirmation = false;
                 timeDelayIsSet = false;
                 confirmation = true;
             }
@@ -605,6 +531,98 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             }
         };
     }
+
+    // CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION
+    // Note 1: Due to dynamic change in pose, the trajectories need to be built on-demand
+    //         Call this function after the traj_init (which has movement based on color sensor
+    //         is finished and current pose is estimated.
+    // Note 2: This method uses public targetTagPos and modifies its value
+    //
+    private Action getTrajectory(BrainSTEMRobotA robot, int targetTagPos) {
+        Action trajectory;
+
+        switch (targetTagPos) {
+            case 1:
+            case 4:
+                trajectory = traj_left(robot);
+                break;
+            case 2:
+            case 5:
+                trajectory = traj_center(robot);
+                break;
+            case 3:
+            case 6:
+                trajectory = traj_right(robot);
+                break;
+            default:
+                telemetry.addLine("it did not select the program yet");
+                trajectory = traj_right(robot); //traj_center(robot);
+                telemetry.addLine("running default: Right");
+                telemetry.update();
+                //if we don't see the prop this will default to center
+                if (alliance() == Alliance.RED) {
+                    targetTagPos = 6;
+                } else {
+                    targetTagPos = 3;
+                }
+                break;
+        }
+
+        return trajectory;
+    }
+
+    int readPropPosition(BrainSTEMRobotA robot) {
+        HuskyLens.Block[] blocks;   // recognized objects will be added to this array
+        int targetTagPos = -1;
+
+        // find prop and target tag before START
+        robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+
+        while (!isStarted() && !isStopRequested()) {
+
+            // Read the scene
+            blocks = robot.huskyLens.blocks();
+            telemetry.addData("amount of blocks", blocks.length);
+
+            if (blocks.length != 0) {
+                if (alliance() == Alliance.RED) {
+                    for (int i = 0; i < blocks.length; i++) {
+                        telemetry.addData("Block", blocks[i].toString());
+
+                        if (blocks[i].id == 1) {
+                            targetTagPos = getTargetTag(blocks, i, alliance());
+                            telemetry.addData("Found target prop: ", targetTagPos);
+                        }
+                    }
+                } else if (alliance() == Alliance.BLUE) {
+                    for (int i = 0; i < blocks.length; i++) {
+                        telemetry.addData("Block", blocks[i].toString());
+
+                        if (blocks[i].id == 2) {
+                            targetTagPos = getTargetTag(blocks, i, alliance());
+                            telemetry.addData("Found target prop: ", targetTagPos);
+                        }
+                    }
+                }
+            } else {
+                telemetry.addLine("Don't see the prop :(");
+
+                if (targetTagPos == -1) {
+                    telemetry.addLine("(The prop has never been seen)");
+                } else {
+                    telemetry.addLine("\nBut we HAVE seen the prop before");
+                    telemetry.addData("which was: ", targetTagPos);
+                }
+
+                sleep(20);
+            }
+            telemetry.update();
+        } // while
+
+        // return if start is given
+        return targetTagPos;
+    }
+
 
 
 }
