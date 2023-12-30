@@ -109,12 +109,13 @@ public class AutoRL extends AutoAbstractOpMode {
                     telemetry.update();
                     return false;
                 })
+
                 // go backwards
                 .setReversed(true)
-                .setTangent(-45)
-//                .splineToLinearHeading(new Pose2d(robot.drive.pose.position.x, robot.drive.pose.position.y-5,Math.toRadians(-45)), Math.toRadians(-45))
-//                .lineToYSplineHeading(robot.drive.pose.position.y - 5, Math.toRadians(-45))
-                .lineToYLinearHeading(robot.drive.pose.position.y - 10, Math.toRadians(0))
+
+                .setTangent(-90)
+                .splineToLinearHeading(new Pose2d(constants.vRedLeftSpike_Right.x-8, -30,Math.toRadians(-35)),Math.toRadians(0))
+
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after LineToY:");
                     telemetry.addData("x", robot.drive.pose.position.x);
