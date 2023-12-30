@@ -156,7 +156,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         // go forwards
                         .setReversed(true)
                         .setTangent(-90)
-                        .splineToLinearHeading(new Pose2d(constants.vRedLeftSpike_Right.x-8, -30,Math.toRadians(-35)),Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(-32, -30,Math.toRadians(-35)),Math.toRadians(0))
 
                         .build(),
 
