@@ -61,7 +61,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
-        // Setup possible trajectories
+        // Set starting pose since robot was initialized with Pose2d(0,0,0)
         robot.drive.pose = startPose();
 
         // Additional variables
@@ -129,35 +129,47 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+
                 traj_init(robot),   // all variations first go to center spike
+
                 telemetryPacket -> {
-                    telemetry.addData("pose x", robot.drive.pose.position.x);
-                    telemetry.addData("pose y", robot.drive.pose.position.y);
-                    telemetry.addData("pose heading", robot.drive.pose.heading);
-                    telemetry.update();
+                    telemetry.addLine("traj_init ending pose:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+//                    telemetry.update();
                     return false;
                 },
+
 //                getTrajectory(robot, targetTagPos)  // Need to calculate trajectories dynamically
+
                 robot.drive.actionBuilder(robot.drive.pose)
                         .stopAndAdd(telemetryPacket -> {
-                            telemetry.addLine("Pose after finding Spike:");
+                            telemetry.addLine("pose reported in traj_right:");
                             telemetry.addData("x", robot.drive.pose.position.x);
                             telemetry.addData("y", robot.drive.pose.position.y);
-                            telemetry.update();
+                            telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+//                            telemetry.update();
                             return false;
                         })
 
                         // go forwards
                         .setReversed(true)
-
                         .setTangent(-90)
-    //                .splineToLinearHeading(new Pose2d(-35, -30,Math.toRadians(-35)),Math.toRadians(0))
-    //                .splineToLinearHeading(new Pose2d(robot.drive.pose.position.x + 5.0,
-    //                        robot.drive.pose.position.y - 5.0, Math.toRadians(-35)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(constants.vRedLeftSpike_Right.x-8, -30,Math.toRadians(-35)),Math.toRadians(0))
 
-                        .splineTo(new Vector2d(robot.drive.pose.position.x + 5.0,
-                                robot.drive.pose.position.y - 5.0), Math.toRadians(-35))
-                        .build()
+                        .build(),
+
+                telemetryPacket -> {
+                    telemetry.addLine("Pose after traj_right:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+                    telemetry.update();
+                    return false;
+                },
+
+                robot.intake.spitPixel
         ));
 
         telemetry.addLine("Finished trajectory");

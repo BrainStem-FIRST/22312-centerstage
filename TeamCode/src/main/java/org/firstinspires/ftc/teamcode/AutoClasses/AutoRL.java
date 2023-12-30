@@ -23,7 +23,7 @@ public class AutoRL extends AutoAbstractOpMode {
 
     @Override
     public Pose2d startPose() {
-        return new Pose2d(-1.5 * constants.TILE_CENTER_TO_CENTER, -constants.FIELD_BOUNDARY_FROM_CENTER + constants.robot_length / 2, Math.toRadians(-90));
+        return constants.pStartingPose_RedLeft;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class AutoRL extends AutoAbstractOpMode {
 
     @Override
     public Action traj_init(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
+        return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
 
@@ -112,6 +112,8 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 // go forwards
                 .setReversed(true)
+                .setTangent(-90)
+                .splineToLinearHeading(new Pose2d(constants.vRedLeftSpike_Right.x-8, -30,Math.toRadians(-35)),Math.toRadians(0))
 
                 .setTangent(-90)
 //                .splineToLinearHeading(new Pose2d(-35, -30,Math.toRadians(-35)),Math.toRadians(0))
