@@ -130,7 +130,34 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
                 traj_init(robot),   // all variations first go to center spike
-                getTrajectory(robot, targetTagPos)  // Need to calculate trajectories dynamically
+                telemetryPacket -> {
+                    telemetry.addData("pose x", robot.drive.pose.position.x);
+                    telemetry.addData("pose y", robot.drive.pose.position.y);
+                    telemetry.addData("pose heading", robot.drive.pose.heading);
+                    telemetry.update();
+                    return false;
+                },
+//                getTrajectory(robot, targetTagPos)  // Need to calculate trajectories dynamically
+                robot.drive.actionBuilder(robot.drive.pose)
+                        .stopAndAdd(telemetryPacket -> {
+                            telemetry.addLine("Pose after finding Spike:");
+                            telemetry.addData("x", robot.drive.pose.position.x);
+                            telemetry.addData("y", robot.drive.pose.position.y);
+                            telemetry.update();
+                            return false;
+                        })
+
+                        // go forwards
+                        .setReversed(true)
+
+                        .setTangent(-90)
+    //                .splineToLinearHeading(new Pose2d(-35, -30,Math.toRadians(-35)),Math.toRadians(0))
+    //                .splineToLinearHeading(new Pose2d(robot.drive.pose.position.x + 5.0,
+    //                        robot.drive.pose.position.y - 5.0, Math.toRadians(-35)), Math.toRadians(0))
+
+                        .splineTo(new Vector2d(robot.drive.pose.position.x + 5.0,
+                                robot.drive.pose.position.y - 5.0), Math.toRadians(-35))
+                        .build()
         ));
 
         telemetry.addLine("Finished trajectory");
@@ -523,7 +550,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 ));
 
                 robot.drive.updatePoseEstimate();
-
                 telemetry.addData("pose", robot.drive.pose.position.y);
                 telemetry.update();
 

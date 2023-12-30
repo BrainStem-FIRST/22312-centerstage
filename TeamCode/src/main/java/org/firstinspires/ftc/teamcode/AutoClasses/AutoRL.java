@@ -110,19 +110,26 @@ public class AutoRL extends AutoAbstractOpMode {
                     return false;
                 })
 
-                // go backwards
+                // go forwards
                 .setReversed(true)
 
                 .setTangent(-90)
-                .splineToLinearHeading(new Pose2d(constants.vRedLeftSpike_Right.x-8, -30,Math.toRadians(-35)),Math.toRadians(0))
+//                .splineToLinearHeading(new Pose2d(-35, -30,Math.toRadians(-35)),Math.toRadians(0))
+//                .splineToLinearHeading(new Pose2d(robot.drive.pose.position.x + 5.0,
+//                        robot.drive.pose.position.y - 5.0, Math.toRadians(-35)), Math.toRadians(0))
 
-                .stopAndAdd(telemetryPacket -> {
-                    telemetry.addLine("Pose after LineToY:");
-                    telemetry.addData("x", robot.drive.pose.position.x);
-                    telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.update();
-                    return false;
-                })
+                .splineTo(new Vector2d(robot.drive.pose.position.x + 5.0,
+                        robot.drive.pose.position.y - 5.0), Math.toRadians(-35))
+
+//                .lineToY(-30)
+
+//                .stopAndAdd(telemetryPacket -> {
+//                    telemetry.addLine("Pose after LineToY:");
+//                    telemetry.addData("x", robot.drive.pose.position.x);
+//                    telemetry.addData("y", robot.drive.pose.position.y);
+//                    telemetry.update();
+//                    return false;
+//                })
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
 
