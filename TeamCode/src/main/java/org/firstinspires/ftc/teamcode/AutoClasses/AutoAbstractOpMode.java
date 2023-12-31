@@ -8,12 +8,15 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TimeTurn;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -130,47 +133,22 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
 
-                traj_init(robot),   // all variations first go to center spike
-
-                telemetryPacket -> {
-                    telemetry.addLine("traj_init ending pose:");
-                    telemetry.addData("x", robot.drive.pose.position.x);
-                    telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-//                    telemetry.update();
-                    return false;
-                },
-
-//                getTrajectory(robot, targetTagPos)  // Need to calculate trajectories dynamically
-
-                robot.drive.actionBuilder(robot.drive.pose)
-                        .stopAndAdd(telemetryPacket -> {
-                            telemetry.addLine("pose reported in traj_right:");
-                            telemetry.addData("x", robot.drive.pose.position.x);
-                            telemetry.addData("y", robot.drive.pose.position.y);
-                            telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-//                            telemetry.update();
-                            return false;
-                        })
-
-                        // go forwards
-                        .setReversed(true)
-                        .setTangent(-90)
-                        .splineToLinearHeading(new Pose2d(-32, -30,Math.toRadians(-35)),Math.toRadians(0))
-
-                        .build(),
-
-                telemetryPacket -> {
-                    telemetry.addLine("Pose after traj_right:");
-                    telemetry.addData("x", robot.drive.pose.position.x);
-                    telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-                    telemetry.update();
-                    return false;
-                },
-
-                robot.intake.spitPixel
+                traj_init(robot)   // all variations first go to center spike
         ));
+
+        runBlocking(new SequentialAction(
+                getTrajectory(robot, targetTagPos),
+                telemetryPacket -> {
+                        telemetry.addLine("Ending pose:");
+                        telemetry.addData("x", robot.drive.pose.position.x);
+                        telemetry.addData("y", robot.drive.pose.position.y);
+                        telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+                        telemetry.update();
+                        return false;
+                }
+        )); // Need to calculate trajectories dynamically
+
+
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
@@ -535,7 +513,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 telemetry.addData("current color blue:", currentColor.blue);
 
                 if (alliance() == Alliance.RED) {
-                    if (currentColor.red > 0.027) { //75) {
+                    if (currentColor.red > 0.03) { //27) { //75) {
                         moveToSpike = 0;
                         foundSpike = true;  // found it
                     } else {

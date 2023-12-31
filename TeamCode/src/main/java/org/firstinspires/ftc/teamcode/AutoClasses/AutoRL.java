@@ -58,16 +58,22 @@ public class AutoRL extends AutoAbstractOpMode {
                 .lineToY(-35)
 
                 .stopAndAdd(telemetryPacket -> {
-                    telemetry.addData("pose before findSpike", robot.drive.pose.position.y);
-                    telemetry.update();
+                    telemetry.addLine("Pose before findSpike:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+//                    telemetry.update();
                     return false;
                 })
 
                 .stopAndAdd(findSpike(robot))
 
                 .stopAndAdd(telemetryPacket -> {
-                    telemetry.addData("pose after findSpike", robot.drive.pose.position.y);
-                    telemetry.update();
+                    telemetry.addLine("Pose after traj_init:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+//                    telemetry.update();
                     return false;
                 })
 
@@ -103,35 +109,31 @@ public class AutoRL extends AutoAbstractOpMode {
     public Action traj_right(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
                 .stopAndAdd(telemetryPacket -> {
-                    telemetry.addLine("Pose after finding Spike:");
+                    telemetry.addLine("Pose before traj_right:");
                     telemetry.addData("x", robot.drive.pose.position.x);
                     telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.update();
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+//                    telemetry.update();
                     return false;
                 })
 
                 // go forwards
-                .setReversed(true)
-                .setTangent(-90)
-                .splineToLinearHeading(new Pose2d(constants.vRedLeftSpike_Right.x-8, -30,Math.toRadians(-35)),Math.toRadians(0))
+//                .setReversed(true)
+//                .setTangent(-90)
+//                .splineToLinearHeading(new Pose2d(-30, -30,Math.toRadians(-35)),Math.toRadians(0))
 
-                .setTangent(-90)
-//                .splineToLinearHeading(new Pose2d(-35, -30,Math.toRadians(-35)),Math.toRadians(0))
-//                .splineToLinearHeading(new Pose2d(robot.drive.pose.position.x + 5.0,
-//                        robot.drive.pose.position.y - 5.0, Math.toRadians(-35)), Math.toRadians(0))
+                .lineToY(robot.drive.pose.position.y - 2.0)
+                .turnTo(Math.toRadians(0))
+                .lineToX(-34)
 
-                .splineTo(new Vector2d(robot.drive.pose.position.x + 5.0,
-                        robot.drive.pose.position.y - 5.0), Math.toRadians(-35))
-
-//                .lineToY(-30)
-
-//                .stopAndAdd(telemetryPacket -> {
-//                    telemetry.addLine("Pose after LineToY:");
-//                    telemetry.addData("x", robot.drive.pose.position.x);
-//                    telemetry.addData("y", robot.drive.pose.position.y);
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addLine("Pose after traj_right:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
 //                    telemetry.update();
-//                    return false;
-//                })
+                    return false;
+                })
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
 
