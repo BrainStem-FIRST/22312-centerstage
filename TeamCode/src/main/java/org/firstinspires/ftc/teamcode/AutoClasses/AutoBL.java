@@ -20,6 +20,32 @@ public class AutoBL extends AutoAbstractOpMode {
     }
 
     @Override
+    public Action traj_init(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
+                // go backwards
+                .setReversed(true)
+
+                // Move close enough to center spike
+                .lineToY(35)
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose before findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+                .stopAndAdd(findSpike(robot))
+
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addData("pose after findSpike", robot.drive.pose.position.y);
+                    telemetry.update();
+                    return false;
+                })
+
+                .build();
+    }
+
+    @Override
     public Action traj_left(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(constants.pStartingPose_BlueLeft)
                 .setReversed(true)

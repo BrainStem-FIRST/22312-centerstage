@@ -8,15 +8,18 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TimeTurn;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
-import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public abstract class AutoAbstractOpMode extends ActionOpMode {
@@ -24,6 +27,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
     public abstract Pose2d startPose();
 
+    public abstract Action traj_init(BrainSTEMRobotA robot);
     public abstract Action traj_left(BrainSTEMRobotA robot);
     public abstract Action traj_center(BrainSTEMRobotA robot);
     public abstract Action traj_right(BrainSTEMRobotA robot);
@@ -33,15 +37,17 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     public abstract Alliance alliance();
     public abstract Orientation orientation();
 
-    private boolean timeDelayIsSet = false;
-    private boolean programConfirmation = false;
+    // Used for setting a time delay before starting Auto
     private int     autoTimeDelay = 0;
 
     private StickyButton gamepad1dpadUp = new StickyButton();
     private StickyButton gamepad1dpadDown = new StickyButton();
 
+    // Used for exception handling
     private ElapsedTime turnTimer = new ElapsedTime();
     private boolean firstTimeVisiting = true;
+
+
 
     @Override
     public void runOpMode() {
@@ -58,7 +64,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
-        // Setup possible trajectories
+        // Set starting pose since robot was initialized with Pose2d(0,0,0)
         robot.drive.pose = startPose();
 
         // Additional variables
@@ -80,136 +86,77 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         double distanceRight = 0;
 
         /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
-        while (!programConfirmation && !isStopRequested()) {
-            setTimeDelay();
-        }
+//        while (!programConfirmation && !isStopRequested()) {
+//            setTimeDelay();
+//        }
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
-        // Determine the prop position
-        int targetTagPos = -1;
-        int targetBlockPos = -1; // The block of interest within the blocks array.
+        int targetAprilTagNum = readPropPosition(robot);
 
-        // find prop and target tag before START
-        robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
-
-        while (!isStarted() && !isStopRequested()) {
-
-            // Read the scene
-            blocks = robot.huskyLens.blocks();
-            telemetry.addData("amount of blocks", blocks.length);
-
-            if (blocks.length != 0) {
-                if (alliance() == Alliance.RED) {
-                    for (int i = 0; i < blocks.length; i++) {
-                        telemetry.addData("Block", blocks[i].toString());
-
-                        if (blocks[i].id == 1) {
-                            targetTagPos = getTargetTag(blocks, i, alliance());
-                            telemetry.addData("Found target prop: ", targetTagPos);
-                        }
-                    }
-                } else if (alliance() == Alliance.BLUE) {
-                    for (int i = 0; i < blocks.length; i++) {
-                        telemetry.addData("Block", blocks[i].toString());
-
-                        if (blocks[i].id == 2) {
-                            targetTagPos = getTargetTag(blocks, i, alliance());
-                            telemetry.addData("Found target prop: ", targetTagPos);
-                        }
-                    }
-                }
-            } else {
-                telemetry.addLine("Don't see the prop :(");
-
-                if (targetTagPos == -1) {
-                    telemetry.addLine("(The prop has never been seen)");
-                } else {
-                    telemetry.addLine("\nBut we HAVE seen the prop before");
-                    telemetry.addData("which was: ", targetTagPos);
-                }
-
-                sleep(20);
-            }
-            telemetry.update();
-        }
-
-        ////////////// Start is given ///////////////
-
-        /********* CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION ***********/
-
-        Action trajectory;
-
-        switch (targetTagPos) {
-            case 1:
-            case 4:
-                trajectory = traj_left(robot);
-                break;
-            case 2:
-            case 5:
-                trajectory = traj_center(robot);
-                break;
-            case 3:
-            case 6:
-                trajectory = traj_right(robot);
-                break;
-            default:
-                telemetry.addLine("it did not select the program yet");
-                trajectory = traj_center(robot);
-                telemetry.addLine("running default: Center");
-                telemetry.update();
-                //if we don't see the prop this will default to center
-                if (alliance() == Alliance.RED) {
-                    targetTagPos = 5;
-                }
-                else {
-                    targetTagPos = 2;
-                }
-                break;
-        }
-
-        // not necessary to call this - start is already given
-        // waitForStart();
+        /////////////////////////////////////////////
+        //             START WAS GIVEN             //
+        /////////////////////////////////////////////
 
         // Change recognition mode to AprilTags before the While Loop
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         sleep(100);
 
-        int loopCounter = 0;
+        int loopCounter = 0;    // for debug purposes, no longer necessary
 
 
-        /***************   INITIAL TRAJECTORY RUN  *****************/
-        /* This was moved outside of the While loop                */
-        /***********************************************************/
+        //////////////////////////////////////////////////////////
+        //                INITIALIZE BEFORE AUTO                //
+        //////////////////////////////////////////////////////////
 
-        telemetry.addData("target tag: ", targetTagPos);
+        telemetry.addData("target tag: ", targetAprilTagNum);
         telemetry.addLine("Started trajectory");
         telemetry.update();
 
-// Disabled to test if it had a negative impact on placing pixels at the board
-        runBlocking(new SequentialAction (
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.grabber.grabber.setPosition(0.0);
-                        return false;
-                    }
-                },
-                new SleepAction(0.5)
-        ));
+// Any initialization of servos before auto will be done here:
+//        runBlocking(new SequentialAction (
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        robot.grabber.grabber.setPosition(0.0);
+//                        return false;
+//                    }
+//                },
+//                new SleepAction(0.5)
+//        ));
 
 
         //////////////////////////////////////////////////////////
-        //                GO TO BACKDROP
+        //                GO TO BACKDROP                        //
         //////////////////////////////////////////////////////////
-//TEMP
-        runBlocking(new SequentialAction( // TODO: Should this be inside or outside of While loop? Does it matter?
+
+        runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-                trajectory
+
+                traj_init(robot)   // all variations first go to center spike
         ));
+
+        runBlocking(new SequentialAction(
+                getTrajectory(robot, targetAprilTagNum),
+                telemetryPacket -> {
+                        telemetry.addLine("Ending pose:");
+                        telemetry.addData("x", robot.drive.pose.position.x);
+                        telemetry.addData("y", robot.drive.pose.position.y);
+                        telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+                        telemetry.update();
+                        return false;
+                }
+        )); // Need to calculate trajectories dynamically
+
+
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
+
+        //////////////////////////////////////////////////////////
+        //           FINAL APPROACH USING SENSORS               //
+        //////////////////////////////////////////////////////////
+        int targetBlockPos = -1; // The block of interest within the blocks array.
 
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
 
@@ -228,7 +175,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
 
-                if (blocks[i].id == targetTagPos) {
+                if (blocks[i].id == targetAprilTagNum) {
                     targetBlockPos = i;
                     telemetry.addData("block seen (target): ", blocks[i].id);
                 }
@@ -261,7 +208,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     }
                 } else {
                     telemetry.addData("block seen (not the target): ", blocks[0].id);
-                    if (blocks[0].id > targetTagPos) {
+                    if (blocks[0].id > targetAprilTagNum) {
                         position_error = -160;
                     } else {
                         position_error = 160;
@@ -273,7 +220,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
             // direction to turn
             if (distanceLeft < 1000.00 && distanceRight < 1000.00 && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
-                if (Math.abs(distanceRight - distanceLeft) > 20.00 ) {
+                if (Math.abs(distanceRight - distanceLeft) > 50.00 ) {
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
                     } else {
@@ -365,7 +312,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 }
             }
 
-
+/*
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -374,7 +321,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     ),
                     0.25 * zDirection
             ));
-
+ */
 
             robot.drive.updatePoseEstimate();
 
@@ -444,6 +391,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 new SleepAction(4.0)
         ));
 
+
     }
 
     public enum Alliance {
@@ -457,39 +405,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     }
 
 
-    // Returns the position of the prop.
-    // If not recognized, returns CENTER (2 or 5 depending on alliance)
-    int getTargetTag(HuskyLens.Block[] blocks, int i, Alliance a) {
-
-        int propPos;
-        // for test purposes, return a known value
-        // delete this segment when team prop is available
-        //        return 1;
-        if(i>=0) {
-            if (blocks[i].x < 110) {
-                // Prop is on left
-                propPos = (a == Alliance.BLUE) ? 1 : 4;
-            } else if (blocks[i].x > 210) {
-                // prop is on right
-                propPos = (a == Alliance.BLUE) ? 3 : 6;
-            } else {
-                // prop is on center
-                propPos = (a == Alliance.BLUE) ? 2 : 5;
-            }
-        }
-        else {
-            // could not recognize; return center
-            propPos = (a == Alliance.BLUE) ? 2 : 5;
-        }
-
-        return propPos;
-    }
-
     private void setTimeDelay() {
-        timeDelayIsSet = false;
-
+        boolean timeDelayIsSet = false;
 
         telemetry.clearAll();
+
         while (!timeDelayIsSet && !isStopRequested()) {
 
             gamepad1dpadUp.update(gamepad1.dpad_up);
@@ -532,13 +452,11 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 telemetry.clearAll();
                 telemetry.addLine("Program Confirmed");
                 telemetry.update();
-                programConfirmation = true;
                 confirmation = true;
             } else if (gamepad2.b) {
                 telemetry.clearAll();
                 telemetry.addLine("Program Rejected");
                 telemetry.update();
-                programConfirmation = false;
                 timeDelayIsSet = false;
                 confirmation = true;
             }
@@ -547,5 +465,189 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         sleep(500);
         telemetry.clearAll();
     }
+
+    public Action findSpike(BrainSTEMRobotA robot) {
+        return new Action() {
+
+            NormalizedRGBA currentColor;
+            int moveToSpike = 0; // move direction
+            boolean foundSpike = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+                // read current color values
+                currentColor = robot.colorSensor.getNormalizedColors();
+                telemetry.addData("gain", robot.colorSensor.getGain());
+                telemetry.addData("alliance", alliance());
+                telemetry.addData("current color red:", currentColor.red);
+                telemetry.addData("current color green:", currentColor.green);
+                telemetry.addData("current color blue:", currentColor.blue);
+
+                if (alliance() == Alliance.RED) {
+                    if (currentColor.red > 0.03) { //27) { //75) {
+                        moveToSpike = 0;
+                        foundSpike = true;  // found it
+                    } else {
+                        moveToSpike = -1;   // keep moving
+                    }
+                } else {  // Alliance is BLUE
+                    if (currentColor.blue > 0.1) {
+                        moveToSpike = 0;
+                        foundSpike = true;
+                    } else {
+                        moveToSpike = -1;
+                    }
+                }
+
+                telemetry.addData("found spike:", foundSpike);
+
+                robot.drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0.25 * moveToSpike,
+                                0.0
+
+                        ),
+                        0.0
+                ));
+
+                robot.drive.updatePoseEstimate();
+                telemetry.addData("pose", robot.drive.pose.position.y);
+                telemetry.update();
+
+                return !foundSpike; // repeat action if not found spike
+            }
+        };
+    }
+
+    // CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION
+    // Note 1: Due to dynamic change in pose, the trajectories need to be built on-demand
+    //         Call this function after the traj_init (which has movement based on color sensor
+    //         is finished and current pose is estimated.
+    // Note 2: This method uses public targetTagPos and modifies its value
+    //
+    private Action getTrajectory(BrainSTEMRobotA robot, int targetTagNum) {
+        Action trajectory;
+
+        switch (targetTagNum) {
+            case 1:
+            case 4:
+                trajectory = traj_left(robot);
+                break;
+            case 2:
+            case 5:
+                trajectory = traj_center(robot);
+                break;
+            case 3:
+            case 6:
+                trajectory = traj_right(robot);
+                break;
+            default:
+                // This default should never be reached because a default value for
+                // targetTagPos is already assigned during readPropPosition().
+                //
+                // Still...
+                telemetry.addLine("BUG IN CODE! Target Tag Number was not properly set.");
+                trajectory = traj_right(robot);
+                telemetry.addLine("running default: Right");
+                telemetry.update();
+                break;
+        }
+
+        return trajectory;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    //
+    // Continuously read the scene and determine if RED or BLUE
+    // prop was detected. Then call getTargetTag() for the actual
+    // april tag to look for (based on where the prop is located).
+    //
+    // If no prop is detected, return a default target tag number.
+    //
+    ///////////////////////////////////////////////////////////////
+    int readPropPosition(BrainSTEMRobotA robot) {
+        HuskyLens.Block[] blocks;   // recognized objects will be added to this array
+        int targetTagNum = -1;
+
+        // find prop and target tag before START
+        robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+
+        while (!isStarted() && !isStopRequested()) {
+
+            // Read the scene
+            blocks = robot.huskyLens.blocks();
+            telemetry.addData("amount of blocks", blocks.length);
+
+            if (blocks.length != 0) {
+                if (alliance() == Alliance.RED) {
+                    for (int i = 0; i < blocks.length; i++) {
+                        telemetry.addData("Block", blocks[i].toString());
+
+                        if (blocks[i].id == 1) {    // Look only for Red
+                            targetTagNum = getTargetTag(blocks[i]);
+                            telemetry.addData("Found target prop: ", targetTagNum);
+                        }
+                    }
+                } else if (alliance() == Alliance.BLUE) {
+                    for (int i = 0; i < blocks.length; i++) {
+                        telemetry.addData("Block", blocks[i].toString());
+
+                        if (blocks[i].id == 2) {    // Look only for Blue
+                            targetTagNum = getTargetTag(blocks[i]);
+                            telemetry.addData("Found target prop: ", targetTagNum);
+                        }
+                    }
+                }
+            } else {
+                telemetry.addLine("Don't see the prop :(");
+
+                if (targetTagNum == -1) {
+                    telemetry.addLine("(The prop has never been seen)");
+                } else {
+                    telemetry.addLine("\nBut we HAVE seen the prop before");
+                    telemetry.addData("which was: ", targetTagNum);
+                }
+
+                sleep(20);
+            }
+            telemetry.update();
+        } // while
+
+        // return if start is given
+        if(targetTagNum == -1) {
+            // No prop was detected by the time of Start, return a default value
+            // Default is Right
+            targetTagNum = (alliance()==Alliance.BLUE) ? 3 : 6;
+        }
+
+        return targetTagNum;
+    }
+
+    // Returns the position of the prop based on block's relative location on display.
+    // Must receive a valid block (i.e. not null)
+    int getTargetTag(HuskyLens.Block block) {
+
+        int propPos;
+        Alliance a = alliance();
+
+        // for test purposes, return a known value
+        // delete this segment when team prop is available
+        //        return 1;
+        if (block.x < 110) {
+            // Prop is on left
+            propPos = (a == Alliance.BLUE) ? 1 : 4;
+        } else if (block.x > 210) {
+            // prop is on right
+            propPos = (a == Alliance.BLUE) ? 3 : 6;
+        } else {
+            // prop is on center
+            propPos = (a == Alliance.BLUE) ? 2 : 5;
+        }
+
+        return propPos;
+    }
+
+
 
 }
