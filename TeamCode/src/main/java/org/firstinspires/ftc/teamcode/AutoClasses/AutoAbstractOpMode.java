@@ -92,7 +92,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
-        int targetTagPos = readPropPosition(robot);
+        int targetAprilTagNum = readPropPosition(robot);
 
         /////////////////////////////////////////////
         //             START WAS GIVEN             //
@@ -109,7 +109,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         //                INITIALIZE BEFORE AUTO                //
         //////////////////////////////////////////////////////////
 
-        telemetry.addData("target tag: ", targetTagPos);
+        telemetry.addData("target tag: ", targetAprilTagNum);
         telemetry.addLine("Started trajectory");
         telemetry.update();
 
@@ -137,7 +137,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         ));
 
         runBlocking(new SequentialAction(
-                getTrajectory(robot, targetTagPos),
+                getTrajectory(robot, targetAprilTagNum),
                 telemetryPacket -> {
                         telemetry.addLine("Ending pose:");
                         telemetry.addData("x", robot.drive.pose.position.x);
@@ -175,7 +175,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
 
-                if (blocks[i].id == targetTagPos) {
+                if (blocks[i].id == targetAprilTagNum) {
                     targetBlockPos = i;
                     telemetry.addData("block seen (target): ", blocks[i].id);
                 }
@@ -208,7 +208,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     }
                 } else {
                     telemetry.addData("block seen (not the target): ", blocks[0].id);
-                    if (blocks[0].id > targetTagPos) {
+                    if (blocks[0].id > targetAprilTagNum) {
                         position_error = -160;
                     } else {
                         position_error = 160;
@@ -405,34 +405,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     }
 
 
-    // Returns the position of the prop.
-    // If not recognized, returns CENTER (2 or 5 depending on alliance)
-    int getTargetTag(HuskyLens.Block[] blocks, int i, Alliance a) {
-
-        int propPos;
-        // for test purposes, return a known value
-        // delete this segment when team prop is available
-        //        return 1;
-        if(i>=0) {
-            if (blocks[i].x < 110) {
-                // Prop is on left
-                propPos = (a == Alliance.BLUE) ? 1 : 4;
-            } else if (blocks[i].x > 210) {
-                // prop is on right
-                propPos = (a == Alliance.BLUE) ? 3 : 6;
-            } else {
-                // prop is on center
-                propPos = (a == Alliance.BLUE) ? 2 : 5;
-            }
-        }
-        else {
-            // could not recognize; return center
-            propPos = (a == Alliance.BLUE) ? 2 : 5;
-        }
-
-        return propPos;
-    }
-
     private void setTimeDelay() {
         boolean timeDelayIsSet = false;
 
@@ -554,10 +526,10 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
     //         is finished and current pose is estimated.
     // Note 2: This method uses public targetTagPos and modifies its value
     //
-    private Action getTrajectory(BrainSTEMRobotA robot, int targetTagPos) {
+    private Action getTrajectory(BrainSTEMRobotA robot, int targetTagNum) {
         Action trajectory;
 
-        switch (targetTagPos) {
+        switch (targetTagNum) {
             case 1:
             case 4:
                 trajectory = traj_left(robot);
@@ -571,25 +543,32 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 trajectory = traj_right(robot);
                 break;
             default:
-                telemetry.addLine("it did not select the program yet");
-                trajectory = traj_right(robot); //traj_center(robot);
+                // This default should never be reached because a default value for
+                // targetTagPos is already assigned during readPropPosition().
+                //
+                // Still...
+                telemetry.addLine("BUG IN CODE! Target Tag Number was not properly set.");
+                trajectory = traj_right(robot);
                 telemetry.addLine("running default: Right");
                 telemetry.update();
-                //if we don't see the prop this will default to center
-                if (alliance() == Alliance.RED) {
-                    targetTagPos = 6;
-                } else {
-                    targetTagPos = 3;
-                }
                 break;
         }
 
         return trajectory;
     }
 
+    ///////////////////////////////////////////////////////////////
+    //
+    // Continuously read the scene and determine if RED or BLUE
+    // prop was detected. Then call getTargetTag() for the actual
+    // april tag to look for (based on where the prop is located).
+    //
+    // If no prop is detected, return a default target tag number.
+    //
+    ///////////////////////////////////////////////////////////////
     int readPropPosition(BrainSTEMRobotA robot) {
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
-        int targetTagPos = -1;
+        int targetTagNum = -1;
 
         // find prop and target tag before START
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
@@ -605,29 +584,29 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                     for (int i = 0; i < blocks.length; i++) {
                         telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 1) {
-                            targetTagPos = getTargetTag(blocks, i, alliance());
-                            telemetry.addData("Found target prop: ", targetTagPos);
+                        if (blocks[i].id == 1) {    // Look only for Red
+                            targetTagNum = getTargetTag(blocks[i]);
+                            telemetry.addData("Found target prop: ", targetTagNum);
                         }
                     }
                 } else if (alliance() == Alliance.BLUE) {
                     for (int i = 0; i < blocks.length; i++) {
                         telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 2) {
-                            targetTagPos = getTargetTag(blocks, i, alliance());
-                            telemetry.addData("Found target prop: ", targetTagPos);
+                        if (blocks[i].id == 2) {    // Look only for Blue
+                            targetTagNum = getTargetTag(blocks[i]);
+                            telemetry.addData("Found target prop: ", targetTagNum);
                         }
                     }
                 }
             } else {
                 telemetry.addLine("Don't see the prop :(");
 
-                if (targetTagPos == -1) {
+                if (targetTagNum == -1) {
                     telemetry.addLine("(The prop has never been seen)");
                 } else {
                     telemetry.addLine("\nBut we HAVE seen the prop before");
-                    telemetry.addData("which was: ", targetTagPos);
+                    telemetry.addData("which was: ", targetTagNum);
                 }
 
                 sleep(20);
@@ -636,7 +615,37 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         } // while
 
         // return if start is given
-        return targetTagPos;
+        if(targetTagNum == -1) {
+            // No prop was detected by the time of Start, return a default value
+            // Default is Right
+            targetTagNum = (alliance()==Alliance.BLUE) ? 3 : 6;
+        }
+
+        return targetTagNum;
+    }
+
+    // Returns the position of the prop based on block's relative location on display.
+    // Must receive a valid block (i.e. not null)
+    int getTargetTag(HuskyLens.Block block) {
+
+        int propPos;
+        Alliance a = alliance();
+
+        // for test purposes, return a known value
+        // delete this segment when team prop is available
+        //        return 1;
+        if (block.x < 110) {
+            // Prop is on left
+            propPos = (a == Alliance.BLUE) ? 1 : 4;
+        } else if (block.x > 210) {
+            // prop is on right
+            propPos = (a == Alliance.BLUE) ? 3 : 6;
+        } else {
+            // prop is on center
+            propPos = (a == Alliance.BLUE) ? 2 : 5;
+        }
+
+        return propPos;
     }
 
 
