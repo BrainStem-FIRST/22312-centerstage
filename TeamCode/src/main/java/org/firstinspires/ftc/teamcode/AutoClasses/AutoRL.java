@@ -117,21 +117,26 @@ public class AutoRL extends AutoAbstractOpMode {
                     return false;
                 })
 
+                .setReversed(false)
                 // go forwards
 //                .setReversed(true)
 //                .setTangent(-90)
 //                .splineToLinearHeading(new Pose2d(-30, -30,Math.toRadians(-35)),Math.toRadians(0))
 
-                .lineToY(robot.drive.pose.position.y - 2.0)
-                .turnTo(Math.toRadians(0))
-                .lineToX(-34)
+                .lineToY(-28)
+                .setTangent(Math.toRadians(-20))
+//                .lineToX(-30)
+                .lineToXLinearHeading(-28, Math.toRadians(-35))
+//                .lineToYLinearHeading(-30, Math.toRadians(0))
+
+//                .splineTo(new Vector2d(-30, -30), Math.toRadians(0))
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after traj_right:");
                     telemetry.addData("x", robot.drive.pose.position.x);
                     telemetry.addData("y", robot.drive.pose.position.y);
                     telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-//                    telemetry.update();
+                    telemetry.update();
                     return false;
                 })
                 // Drop yellow pixel in position

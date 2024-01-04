@@ -135,7 +135,6 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
 
                 traj_init(robot)   // all variations first go to center spike
         ));
-
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
                 telemetryPacket -> {
