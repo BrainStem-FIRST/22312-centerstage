@@ -146,7 +146,9 @@ public class AutoRL extends AutoAbstractOpMode {
 //                .setTangent(Math.toRadians(135))
 //                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
 //                .splineTo(new Vector2d(constants.vRedClearStageGate.x + 5.0, constants.vRedClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-//                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
+////                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
+//                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x + 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
+
                 .build();
     }
 

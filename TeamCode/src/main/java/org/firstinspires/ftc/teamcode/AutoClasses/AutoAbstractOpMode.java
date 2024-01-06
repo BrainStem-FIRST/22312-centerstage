@@ -11,8 +11,10 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TimeTurn;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
@@ -22,7 +24,7 @@ import org.firstinspires.ftc.teamcode.robot.StickyButton;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public abstract class AutoAbstractOpMode extends ActionOpMode {
+public abstract class AutoAbstractOpMode extends LinearOpMode {
     AutoConstants constants;
 
     public abstract Pose2d startPose();
@@ -130,12 +132,12 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         //                GO TO BACKDROP                        //
         //////////////////////////////////////////////////////////
 
-        runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
 
                 traj_init(robot)   // all variations first go to center spike
         ));
-        runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
                 telemetryPacket -> {
                         telemetry.addLine("Ending pose:");
@@ -146,6 +148,15 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                         return false;
                 }
         )); // Need to calculate trajectories dynamically
+        robot.drive.updatePoseEstimate();
+        Actions.runBlocking(robot.drive.actionBuilder(new Pose2d(-32, -26, Math.toRadians(-36)))
+                        .setReversed(true)
+                        .setTangent(Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
+                        .splineTo(new Vector2d(constants.vRedClearStageGate.x, constants.vRedClearStageGate.y), Math.toRadians(-45)) // added delta to x so we don't un-score partner's pixel
+                        .splineTo(new Vector2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y), Math.toRadians(0))
+                        .build()
+        );
 
 
 
@@ -332,7 +343,7 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
         }
 
         // Arrived at position. Place pixel and park
-        runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -484,14 +495,14 @@ public abstract class AutoAbstractOpMode extends ActionOpMode {
                 telemetry.addData("current color blue:", currentColor.blue);
 
                 if (alliance() == Alliance.RED) {
-                    if (currentColor.red > 0.03) { //27) { //75) {
+                    if (currentColor.red > 0.03 || robot.drive.pose.position.y > -24) {
                         moveToSpike = 0;
                         foundSpike = true;  // found it
                     } else {
                         moveToSpike = -1;   // keep moving
                     }
                 } else {  // Alliance is BLUE
-                    if (currentColor.blue > 0.1) {
+                    if (currentColor.blue > 0.1 || robot.drive.pose.position.y < 24) {
                         moveToSpike = 0;
                         foundSpike = true;
                     } else {
