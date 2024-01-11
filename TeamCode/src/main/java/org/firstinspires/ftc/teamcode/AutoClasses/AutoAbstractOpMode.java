@@ -134,11 +134,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-
-                traj_init(robot)   // all variations first go to center spike
+                traj_init(robot) // all variations first go to center spike
         ));
         Actions.runBlocking(new SequentialAction(
-                getTrajectory(robot, targetAprilTagNum),
+//                getTrajectory(robot, targetAprilTagNum),
+                traj_right(robot),
                 telemetryPacket -> {
                         telemetry.addLine("Ending pose:");
                         telemetry.addData("x", robot.drive.pose.position.x);
@@ -148,17 +148,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         return false;
                 }
         )); // Need to calculate trajectories dynamically
-        robot.drive.updatePoseEstimate();
-        Actions.runBlocking(robot.drive.actionBuilder(new Pose2d(-32, -26, Math.toRadians(-36)))
-                        .setReversed(true)
-                        .setTangent(Math.toRadians(135))
-                        .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
-                        .splineTo(new Vector2d(constants.vRedClearStageGate.x, constants.vRedClearStageGate.y), Math.toRadians(-45)) // added delta to x so we don't un-score partner's pixel
-                        .splineTo(new Vector2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y), Math.toRadians(0))
-                        .build()
-        );
-
-
 
         telemetry.addLine("Finished trajectory");
         telemetry.update();
@@ -495,14 +484,14 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 telemetry.addData("current color blue:", currentColor.blue);
 
                 if (alliance() == Alliance.RED) {
-                    if (currentColor.red > 0.03 || robot.drive.pose.position.y > -24) {
+                    if (currentColor.red > 0.09) { // || robot.drive.pose.position.y > -24) {
                         moveToSpike = 0;
                         foundSpike = true;  // found it
                     } else {
                         moveToSpike = -1;   // keep moving
                     }
                 } else {  // Alliance is BLUE
-                    if (currentColor.blue > 0.1 || robot.drive.pose.position.y < 24) {
+                    if (currentColor.blue > 0.1) { //) || robot.drive.pose.position.y < 24) {
                         moveToSpike = 0;
                         foundSpike = true;
                     } else {
@@ -522,7 +511,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 ));
 
                 robot.drive.updatePoseEstimate();
-                telemetry.addData("pose", robot.drive.pose.position.y);
+                telemetry.addLine("Pose searching findSpike:");
+                telemetry.addData("x", robot.drive.pose.position.x);
+                telemetry.addData("y", robot.drive.pose.position.y);
+                telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
                 telemetry.update();
 
                 return !foundSpike; // repeat action if not found spike
@@ -538,6 +530,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     //
     private Action getTrajectory(BrainSTEMRobotA robot, int targetTagNum) {
         Action trajectory;
+        robot.drive.updatePoseEstimate();
 
         switch (targetTagNum) {
             case 1:

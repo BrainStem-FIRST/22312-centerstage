@@ -50,12 +50,20 @@ public class AutoRL extends AutoAbstractOpMode {
 
     @Override
     public Action traj_init(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(robot.drive.pose)
+        return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
+                .stopAndAdd(telemetryPacket -> {
+                    telemetry.addLine("start pose:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+//                    telemetry.update();
+                    return false;
+                })
                 .setReversed(true)
 
                 // Move close enough to center spike
-                .lineToY(-35)
+                .lineToY(-38)
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose before findSpike:");
@@ -123,16 +131,19 @@ public class AutoRL extends AutoAbstractOpMode {
 //                .setTangent(-90)
 //                .splineToLinearHeading(new Pose2d(-30, -30,Math.toRadians(-35)),Math.toRadians(0))
 
-                .lineToY(-28)
+//                .setTangent(-135)
+//                .lineToYLinearHeading(-30, Math.toRadians(-20))
+//                .turnTo(Math.toRadians(-20))
+//                .lineToY(-26)
                 .setTangent(Math.toRadians(-20))
 //                .lineToX(-30)
-                .lineToXLinearHeading(-28, Math.toRadians(-35))
-//                .lineToYLinearHeading(-30, Math.toRadians(0))
+                .lineToYLinearHeading(-30, Math.toRadians(-25))
+//                .lineToYLinearHeading(-30, Math.toRadians(-35))
 
 //                .splineTo(new Vector2d(-30, -30), Math.toRadians(0))
 
                 .stopAndAdd(telemetryPacket -> {
-                    telemetry.addLine("Pose after traj_right:");
+                    telemetry.addLine("Pose after before spit:");
                     telemetry.addData("x", robot.drive.pose.position.x);
                     telemetry.addData("y", robot.drive.pose.position.y);
                     telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
@@ -143,11 +154,14 @@ public class AutoRL extends AutoAbstractOpMode {
                 .stopAndAdd(robot.intake.spitPixel)
 
                 // Goto Backdrop to place your yellow pixel
-//                .setTangent(Math.toRadians(135))
-//                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
-//                .splineTo(new Vector2d(constants.vRedClearStageGate.x + 5.0, constants.vRedClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-////                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
-//                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x + 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
+                .setReversed(true)
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*1.5, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
+                .setTangent(0)
+//                .splineToLinearHeading(new Pose2d(12, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+//                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(-90))
 
                 .build();
     }

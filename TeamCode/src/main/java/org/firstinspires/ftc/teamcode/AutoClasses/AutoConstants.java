@@ -62,7 +62,7 @@ public class AutoConstants {
     public static double FIELD_BLUE_BACKDROP_RIGHT_Y  = 1.5 * TILE_CENTER_TO_CENTER - 6.0;
 
     // Trajectory ending positions (takes into account the distance of robot from the backdrop)
-    public static double BACKDROP_X_WITH_FOV = FIELD_BACKDROP_X - 6 - robot_length/2.0;    // Adjust value between backdrop and front of robot where it can still see AprilTags
+    public static double BACKDROP_X_WITH_FOV = FIELD_BACKDROP_X - 7 - robot_length/2.0;    // Adjust value between backdrop and front of robot where it can still see AprilTag
 
     public static Vector2d vRedBackdrop_Left = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_RED_BACKDROP_LEFT_Y);
     public static Vector2d vRedBackdrop_Center = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_RED_BACKDROP_CENTER_Y);
