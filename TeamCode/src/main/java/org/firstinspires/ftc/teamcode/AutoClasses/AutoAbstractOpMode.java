@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
 
+import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -33,6 +35,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     public abstract Action traj_left(BrainSTEMRobotA robot);
     public abstract Action traj_center(BrainSTEMRobotA robot);
     public abstract Action traj_right(BrainSTEMRobotA robot);
+    public abstract Action cycle_red(BrainSTEMRobotA robot);
+    public abstract Action cycle_blue(BrainSTEMRobotA robot);
 
     public abstract Action parking_traj(BrainSTEMRobotA robot);
 
@@ -127,17 +131,26 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 //                new SleepAction(0.5)
 //        ));
 
+        runBlocking(new SequentialAction(
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
+                        return false;
+                    }
+                }
+        ));
 
         //////////////////////////////////////////////////////////
         //                GO TO BACKDROP                        //
         //////////////////////////////////////////////////////////
 
-        Actions.runBlocking(new SequentialAction(
+        runBlocking(new SequentialAction(
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
                 traj_init(robot) // all variations first go to center spike
         ));
-        Actions.runBlocking(new SequentialAction(
-//                getTrajectory(robot, targetAprilTagNum),
+        runBlocking(new SequentialAction(
+                getTrajectory(robot, targetAprilTagNum),
                 traj_right(robot),
                 telemetryPacket -> {
                         telemetry.addLine("Ending pose:");
@@ -311,7 +324,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 }
             }
 
-/*
+
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -320,7 +333,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     ),
                     0.25 * zDirection
             ));
- */
+
 
             robot.drive.updatePoseEstimate();
 
@@ -332,7 +345,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         }
 
         // Arrived at position. Place pixel and park
-        Actions.runBlocking(new SequentialAction(
+        runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -345,6 +358,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         robot.lift.raiseHeightTo(robot.lift.LIFT_LOW_STATE_POSITION);
+                        telemetry.addData("lift position", robot.lift.liftMotor1.getCurrentPosition());
+                        telemetry.update();
                         return false;
                     }
                 },
@@ -363,11 +378,27 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         robot.grabber.depositPixel();
                         return false;
                     }
-                },
-                new SleepAction(0.8),
+                }
+        ));
+
+        runBlocking(new SequentialAction(
+                new SleepAction(2.0),
+
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        runBlocking(cycle_red(robot));
+                        return false;
+                    }
+                })
+        );
+
+//        Actions.runBlocking(getCycle(robot, alliance()));
 
                 // GO TO PARK
                 // TODO: In future revisions, add time check to park within 30 seconds
+
+/*
                 parking_traj(robot),
 
                 new Action() {
@@ -389,6 +420,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 },
                 new SleepAction(4.0)
         ));
+
+ */
 
 
     }
@@ -527,7 +560,24 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     //         Call this function after the traj_init (which has movement based on color sensor
     //         is finished and current pose is estimated.
     // Note 2: This method uses public targetTagPos and modifies its value
-    //
+
+    /*
+    private Action getCycle(BrainSTEMRobotA robot, Alliance alliance) {
+        Action cycle;
+        robot.drive.updatePoseEstimate();
+
+        if (alliance == Alliance.RED){
+            cycle = cycle_red(robot);
+        }
+        else {
+            cycle = cycle_blue(robot);
+        }
+
+        return cycle;
+    }
+
+     */
+
     private Action getTrajectory(BrainSTEMRobotA robot, int targetTagNum) {
         Action trajectory;
         robot.drive.updatePoseEstimate();
@@ -650,7 +700,5 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         return propPos;
     }
-
-
 
 }

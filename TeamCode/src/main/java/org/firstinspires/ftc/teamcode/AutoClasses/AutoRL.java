@@ -135,7 +135,7 @@ public class AutoRL extends AutoAbstractOpMode {
 //                .lineToYLinearHeading(-30, Math.toRadians(-20))
 //                .turnTo(Math.toRadians(-20))
 //                .lineToY(-26)
-                .setTangent(Math.toRadians(-20))
+                .setTangent(Math.toRadians(-35))
 //                .lineToX(-30)
                 .lineToYLinearHeading(-30, Math.toRadians(-25))
 //                .lineToYLinearHeading(-30, Math.toRadians(-35))
@@ -156,14 +156,27 @@ public class AutoRL extends AutoAbstractOpMode {
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*1.5, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*1.75, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(0))
                 .setTangent(0)
 //                .splineToLinearHeading(new Pose2d(12, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
 //                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(-90))
 
                 .build();
+    }
+
+    @Override
+    public Action cycle_red(BrainSTEMRobotA robot) {
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setTangent(90)
+                .splineTo(new Vector2d(-constants.TILE_CENTER_TO_CENTER*2.5, -constants.TILE_CENTER_TO_CENTER/2), Math.toRadians(-180))
+                .build();
+    }
+
+    @Override
+    public Action cycle_blue(BrainSTEMRobotA robot) {
+        return null;
     }
 
 
