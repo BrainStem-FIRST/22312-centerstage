@@ -35,8 +35,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     public abstract Action traj_left(BrainSTEMRobotA robot);
     public abstract Action traj_center(BrainSTEMRobotA robot);
     public abstract Action traj_right(BrainSTEMRobotA robot);
-    public abstract Action cycle_red(BrainSTEMRobotA robot);
-    public abstract Action cycle_blue(BrainSTEMRobotA robot);
+    public abstract Action cycle(BrainSTEMRobotA robot);
 
     public abstract Action parking_traj(BrainSTEMRobotA robot);
 
@@ -79,7 +78,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         int zDirection = 0;
         boolean foundX = false;
         boolean foundY = false;
-        boolean foundZ = false;
+        boolean foundZ = true; //false;
         int position_error;
 
 
@@ -151,7 +150,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         ));
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
-                traj_right(robot),
+//                traj_right(robot),
                 telemetryPacket -> {
                         telemetry.addLine("Ending pose:");
                         telemetry.addData("x", robot.drive.pose.position.x);
@@ -331,7 +330,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                             0.27 * xDirection,
                             0.32 * yDirection
                     ),
-                    0.25 * zDirection
+                    0.0 //25 * zDirection
             ));
 
 
@@ -344,6 +343,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.update();
         }
 
+        /*
         // Arrived at position. Place pixel and park
         runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
@@ -380,6 +380,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 }
         ));
+         */
 
         runBlocking(new SequentialAction(
                 new SleepAction(2.0),
@@ -387,13 +388,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        runBlocking(cycle_red(robot));
+                        runBlocking(cycle(robot));
                         return false;
                     }
                 })
         );
-
-//        Actions.runBlocking(getCycle(robot, alliance()));
 
                 // GO TO PARK
                 // TODO: In future revisions, add time check to park within 30 seconds
@@ -561,22 +560,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     //         is finished and current pose is estimated.
     // Note 2: This method uses public targetTagPos and modifies its value
 
-    /*
-    private Action getCycle(BrainSTEMRobotA robot, Alliance alliance) {
-        Action cycle;
-        robot.drive.updatePoseEstimate();
-
-        if (alliance == Alliance.RED){
-            cycle = cycle_red(robot);
-        }
-        else {
-            cycle = cycle_blue(robot);
-        }
-
-        return cycle;
-    }
-
-     */
 
     private Action getTrajectory(BrainSTEMRobotA robot, int targetTagNum) {
         Action trajectory;

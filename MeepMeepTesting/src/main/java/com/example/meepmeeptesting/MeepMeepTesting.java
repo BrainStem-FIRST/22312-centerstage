@@ -123,16 +123,12 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_RedLeft)
-                        .setReversed(true)
-                        // Replace prop with your purple pixel (the offset is to adjust pixel's landing position after spit)
-//                .lineToY(constants.vRedLeftSpike_Center.y + constants.robot_length/2.0 - 4.0)
-                        .lineToY(-35)
-                        .lineToY(-25)
-                        .endTrajectory()
-                        .setReversed(true)
-                        .turnTo(Math.toRadians(0))
+                myBot.getDrive().actionBuilder(new Pose2d(50,-40, Math.toRadians(-150)))
+                        .setTangent(90)
+                        .splineToLinearHeading(new Pose2d(TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER/2, Math.toRadians(-180)), Math.toRadians(-180))
+                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER*2.5, -TILE_CENTER_TO_CENTER/2, Math.toRadians(-180)), Math.toRadians(-180))
                         .build();
+
         myBot.runAction(trajectory);
 
 

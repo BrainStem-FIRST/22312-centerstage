@@ -138,12 +138,7 @@ public class AutoBR extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action cycle_red(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action cycle_blue(BrainSTEMRobotA robot) {
+    public Action cycle(BrainSTEMRobotA robot) {
         return null;
     }
 
