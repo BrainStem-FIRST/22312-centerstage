@@ -56,7 +56,7 @@ public class BrainSTEMRobotA {
         grabber = new GrabberA(hardwareMap, telemetry);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftBottomColorSensor");
-        colorSensor.setGain(15);
+        colorSensor.setGain(50);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 

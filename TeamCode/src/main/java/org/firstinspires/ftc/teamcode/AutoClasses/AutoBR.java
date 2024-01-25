@@ -26,7 +26,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Move close enough to center spike
-                .lineToY(35)
+                .lineToY(30.5)
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addData("pose before findSpike", robot.drive.pose.position.y);
@@ -48,33 +48,25 @@ public class AutoBR extends AutoAbstractOpMode {
     @Override
     public Action traj_left(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                // go backwards
-                .setReversed(true)
+                // go forwards
+                .setReversed(false)
 
-                // Go to position to drop purple pixel (this is a little next to the team prop, not pushing it)
-                .setTangent(180)
-                .lineToYLinearHeading(constants.vBlueRightSpike_Left.y + 5.0, Math.toRadians(0)) // -3.0
-                .endTrajectory()
-                .lineToX(constants.vBlueRightSpike_Left.x - constants.robot_length / 2.0)
-                .endTrajectory()
-// probably not needed
-//                .lineToX(constants.vBlueRightSpike_Left.x - 5.0 - constants.robot_length / 2) // no delta
+                // Turn heading towards right spike
+                .setTangent(Math.toRadians(35))
+                .lineToYLinearHeading(30, Math.toRadians(25))
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
 
-                // Discontinue trajectory
-                .endTrajectory()
+                // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
-
-                // Goto Backdrop to place your purple pixel
-                .setTangent(Math.toRadians(-180))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.0000)), Math.toRadians(0))
-                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineTo(constants.vBlueBackdrop_Left, Math.toRadians(0))
+                .setTangent(Math.toRadians(-135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Left.x, constants.vBlueBackdrop_Left.y, Math.toRadians(-180)), Math.toRadians(-90))
 
                 .build();
-
     }
 
     @Override
@@ -83,24 +75,18 @@ public class AutoBR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
 
-                // Replace prop with your yellow pixel (just push)
+                // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
                 .lineToY(robot.drive.pose.position.y - 8.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
-                .endTrajectory()
-                .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
+                .setReversed(true)
+                .setTangent(Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x, constants.vBlueBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(90))
 
-                // Go to backdrop to place your purple pixel
-//                .lineToY(constants.vBlueRightSpike_Center.y-12)
-                /*
-                .setTangent(Math.toRadians(-135))
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-
-//                .setTangent(Math.toRadians(-45))
-//                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineTo(new Vector2d(constants.vBlueBackdrop_Center.x + 3.0 , constants.vBlueBackdrop_Center.y), Math.toRadians(0))     // Then, go to designated tag position
-           */
                 .build();
     }
 
@@ -112,42 +98,40 @@ public class AutoBR extends AutoAbstractOpMode {
 
                 .setTangent(135)
                 .lineToX(constants.vBlueRightSpike_Right.x)
-
-                .stopAndAdd(telemetryPacket -> {
-                    telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.addData("x", robot.drive.pose.position.x);
-                    telemetry.update();
-                    return false;
-                })
-//                .splineTo(constants.vBlueRightSpike_Right, Math.toRadians(-90))
-//                .lineToY(constants.vBlueRightSpike_Right.y - constants.robot_length / 2.0 + 2.0)
+//                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
+//                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
 
                 .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
-                /*
                 .setReversed(true)
+                .setTangent(Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Right.x-4, constants.vBlueBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(90))
 
-                // Go to backdrop to place your purple pixel
-                .splineTo(new Vector2d(constants.vBlueClearStageGate.x + 5.0, constants.vBlueClearStageGate.y - 3.0), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-//                .splineTo(constants.vBlueClearStageGate, Math.toRadians(0))
-                .splineTo(new Vector2d(constants.vBlueBackdrop_Right.x + 1.5, constants.vBlueBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
-        */
                 .build();
-
     }
 
     @Override
     public Action cycle(BrainSTEMRobotA robot) {
-        return null;
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setTangent(90)
+                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER * 2.5, constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                .waitSeconds(2.0)
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(180)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x+2, constants.vBlueBackdrop_Center.y-2, Math.toRadians(180)), Math.toRadians(90))
+                .build();
     }
 
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-//                .lineToX(37)
-                .setTangent(-135)
-                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, 12, Math.toRadians(180)), Math.toRadians(-45))
+                .setTangent(135)
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, 56, Math.toRadians(180)), Math.toRadians(45))
                 .build();
     }
 

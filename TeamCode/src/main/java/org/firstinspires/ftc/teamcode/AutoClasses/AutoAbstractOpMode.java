@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -501,20 +503,25 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         return new Action() {
 
             NormalizedRGBA currentColor;
+
             int moveToSpike = 0; // move direction
             boolean foundSpike = false;
+
+            float[] hsv = {0F, 0F, 0F};
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
                 // read current color values
                 currentColor = robot.colorSensor.getNormalizedColors();
+                Color.colorToHSV(currentColor.toColor(), hsv);
+
                 telemetry.addData("gain", robot.colorSensor.getGain());
                 telemetry.addData("alliance", alliance());
                 telemetry.addData("current color red:", currentColor.red);
                 telemetry.addData("current color green:", currentColor.green);
                 telemetry.addData("current color blue:", currentColor.blue);
-
+/*
                 if (alliance() == Alliance.RED) {
                     if (currentColor.red > 0.09) { // || robot.drive.pose.position.y > -24) {
                         moveToSpike = 0;
@@ -529,6 +536,13 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     } else {
                         moveToSpike = -1;
                     }
+                }
+ */
+                if (Math.abs(180 - hsv[0]) < 20){
+                    moveToSpike = 0;
+                    foundSpike = true;  // found it
+                } else {
+                    moveToSpike = -1;   // keep moving
                 }
 
                 telemetry.addData("found spike:", foundSpike);

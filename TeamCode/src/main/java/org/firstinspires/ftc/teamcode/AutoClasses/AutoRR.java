@@ -116,7 +116,15 @@ public class AutoRR extends AutoAbstractOpMode {
 
     @Override
     public Action cycle(BrainSTEMRobotA robot) {
-        return null;
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setTangent(90)
+                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER * 2.5, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                .waitSeconds(2.0)
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(180)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x+2, constants.vRedBackdrop_Left.y-2, Math.toRadians(180)), Math.toRadians(-90))
+                .build();
     }
 
     @Override

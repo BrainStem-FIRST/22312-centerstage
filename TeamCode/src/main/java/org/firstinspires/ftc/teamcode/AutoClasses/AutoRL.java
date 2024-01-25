@@ -42,9 +42,14 @@ public class AutoRL extends AutoAbstractOpMode {
                 .endTrajectory()
                 .setReversed(true)
 
-                // Go to backdrop to place your purple pixel
-//                .splineTo(constants.vRedClearStageGate, Math.toRadians(0))     // First clear the trusses
-//                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x - 6.5, constants.vRedBackdrop_Left.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
+                // Goto Backdrop to place your yellow pixel
+                .setReversed(true)
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x, constants.vRedBackdrop_Left.y, Math.toRadians(-180)), Math.toRadians(-90))
+
                 .build();
     }
 
@@ -91,24 +96,21 @@ public class AutoRL extends AutoAbstractOpMode {
     @Override
     public Action traj_center(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
+                // go backwards
                 .setReversed(true)
 
                 // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
                 .lineToY(robot.drive.pose.position.y + 8.0)
 
-                .stopAndAdd(telemetryPacket -> {
-                    telemetry.addData("pose target", robot.drive.pose.position.y);
-                    telemetry.update();
-                    return false;
-                })
-
                 .stopAndAdd(robot.intake.spitPixel)
 
-                .endTrajectory()
-
-//                .setReversed(true)
-//                .splineTo(new Vector2d(constants.vRedClearStageGate.x, constants.vRedClearStageGate.y - 2.0), Math.toRadians(0))
-//                .splineTo(new Vector2d(constants.vRedBackdrop_Center.x - 8.0, constants.vRedBackdrop_Center.y - 1.5), Math.toRadians(0))     // Then, go to designated tag position
+                // Goto Backdrop to place your yellow pixel
+                .setReversed(true)
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(-90))
 
                 .build();
     }
@@ -125,22 +127,12 @@ public class AutoRL extends AutoAbstractOpMode {
                     return false;
                 })
 
-                .setReversed(false)
                 // go forwards
-//                .setReversed(true)
-//                .setTangent(-90)
-//                .splineToLinearHeading(new Pose2d(-30, -30,Math.toRadians(-35)),Math.toRadians(0))
+                .setReversed(false)
 
-//                .setTangent(-135)
-//                .lineToYLinearHeading(-30, Math.toRadians(-20))
-//                .turnTo(Math.toRadians(-20))
-//                .lineToY(-26)
+                // Turn heading towards right spike
                 .setTangent(Math.toRadians(-35))
-//                .lineToX(-30)
                 .lineToYLinearHeading(-30, Math.toRadians(-25))
-//                .lineToYLinearHeading(-30, Math.toRadians(-35))
-
-//                .splineTo(new Vector2d(-30, -30), Math.toRadians(0))
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after before spit:");
@@ -158,9 +150,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
                 .setTangent(0)
-//                .splineToLinearHeading(new Pose2d(12, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-//                .splineTo(new Vector2d(constants.vRedBackdrop_Right.x - 6.0, constants.vRedBackdrop_Right.y - 3.0), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(-90))
 
                 .build();
