@@ -13,60 +13,44 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 @TeleOp(name = "Sensor tests", group = "Robot")
-public class SensorTestOpMode extends LinearOpMode {
+public class SensorTestOpMode extends LinearOpMode { //TODO: abstract class? idk it was the only thing that got rid of the errors
 
+    @Override
     public void runOpMode() {
-
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
 
-        waitForStart();
-
-        while (opModeIsActive()) {
-        /*
-        /********************************************
+        /////////////////////////////////////////////
         //               HUSKYLENS                 //
-        ********************************************
+        /////////////////////////////////////////////
 
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
         int targetAprilTagNum = readPropPosition(robot);
 
-        // Change recognition mode to AprilTags before the While Loop
+        // Start is handled within readPropPosition
+//        waitForStart();
+
+        // Switch to tag recognition mode
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-        sleep(100);
 
-        telemetry.addData("target tag: ", targetAprilTagNum);
-        telemetry.update();
+        while (opModeIsActive()) {
+            /********************************************
+            //            AprilTag RECOGNITION         //
+            ********************************************/
+            blocks = robot.huskyLens.blocks();
+            telemetry.addData("Block count", blocks.length);
 
-        //////////////////////////////////////////////////////////
-        //           FINAL APPROACH USING SENSORS               //
-        //////////////////////////////////////////////////////////
-        int targetBlockPos = -1; // The block of interest within the blocks array.
-
-        blocks = robot.huskyLens.blocks();
-        telemetry.addData("Block count", blocks.length);
-
-        for (int i = 0; i < blocks.length; i++) {
-            telemetry.addData("Block", blocks[i].toString());
-
-            if (blocks[i].id == targetAprilTagNum) {
-                targetBlockPos = i;
-                telemetry.addData("block seen (target): ", blocks[i].id);
+            for (int i = 0; i < blocks.length; i++) {
+                telemetry.addData("Block", blocks[i].toString());
             }
-        }
-
-        telemetry.addData("block of interest is in slot", targetBlockPos);
-
-         */
 
 
             /********************************************
-             //              COLOR SENSORS              //
-             ********************************************/
+            //              COLOR SENSORS              //
+            ********************************************/
 
             // read current color values
             NormalizedRGBA currentColor = robot.colorSensor.getNormalizedColors();
             telemetry.addData("gain", robot.colorSensor.getGain());
-//        telemetry.addData("alliance", alliance());
 
             final float[] hsvValues = new float[3];
             Color.colorToHSV(currentColor.toColor(), hsvValues);
@@ -81,8 +65,6 @@ public class SensorTestOpMode extends LinearOpMode {
                     .addData("Value", "%.3f", hsvValues[2]);
 
             telemetry.addData("Alpha", "%.3f", currentColor.alpha);
-
-            //TODO: add saturation and hue telemetry
 
 
             /********************************************
@@ -101,11 +83,12 @@ public class SensorTestOpMode extends LinearOpMode {
             telemetry.update();
 
         }
+    }
 
-/*
     int readPropPosition(BrainSTEMRobotA robot) {
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
         int targetTagNum = -1;
+        AutoAbstractOpMode.Alliance alliance = AutoAbstractOpMode.Alliance.RED;
 
         // find prop and target tag before START
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
@@ -114,29 +97,26 @@ public class SensorTestOpMode extends LinearOpMode {
 
             // Read the scene
             blocks = robot.huskyLens.blocks();
-            telemetry.addData("amount of blocks", blocks.length);
+            telemetry.addData("amount of blocks seen ", blocks.length);
 
             if (blocks.length != 0) {
-                if (alliance() == AutoAbstractOpMode.Alliance.RED) {
-                    for (int i = 0; i < blocks.length; i++) {
-                        telemetry.addData("Block", blocks[i].toString());
+                for (int i = 0; i < blocks.length; i++) {
+                    telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 1) {    // Look only for Red
-                            targetTagNum = getTargetTag(blocks[i]);
-                            telemetry.addData("Found target prop: ", targetTagNum);
-                        }
+                    if (blocks[i].id == 1) {    // Look only for Red
+                        telemetry.addLine("Red detected.");
+                        alliance = AutoAbstractOpMode.Alliance.RED;
                     }
-                } else if (alliance() == AutoAbstractOpMode.Alliance.BLUE) {
-                    for (int i = 0; i < blocks.length; i++) {
-                        telemetry.addData("Block", blocks[i].toString());
+                    else if (blocks[i].id == 2) {
+                        telemetry.addLine("Blue detected.");
+                        alliance = AutoAbstractOpMode.Alliance.BLUE;
+                    }
 
-                        if (blocks[i].id == 2) {    // Look only for Blue
-                            targetTagNum = getTargetTag(blocks[i]);
-                            telemetry.addData("Found target prop: ", targetTagNum);
-                        }
-                    }
+                    targetTagNum = getTargetTag(blocks[i], alliance);
+                    telemetry.addData("Found target prop: ", targetTagNum);
                 }
-            } else {
+            }
+            else {
                 telemetry.addLine("Don't see the prop :(");
 
                 if (targetTagNum == -1) {
@@ -151,20 +131,19 @@ public class SensorTestOpMode extends LinearOpMode {
             telemetry.update();
         } // while
 
-        // return if start is given
-        if(targetTagNum == -1) {
-            // No prop was detected by the time of Start, return a default value
-            // Default is Right
-            targetTagNum = (alliance()== AutoAbstractOpMode.Alliance.BLUE) ? 3 : 6;
-        }
+//        // return if start is given
+//        if(targetTagNum == -1) {
+//            // No prop was detected by the time of Start, return a default value
+//            // Default is Right
+//            targetTagNum = (alliance()== AutoAbstractOpMode.Alliance.BLUE) ? 3 : 6;
+//        }
 
         return targetTagNum;
     }
 
-    int getTargetTag(HuskyLens.Block block) {
+    int getTargetTag(HuskyLens.Block block, AutoAbstractOpMode.Alliance a) {
 
         int propPos;
-        AutoAbstractOpMode.Alliance a = alliance();
 
         // for test purposes, return a known value
         // delete this segment when team prop is available
@@ -182,8 +161,5 @@ public class SensorTestOpMode extends LinearOpMode {
 
         return propPos;
 
-    }
-
- */
     }
 }
