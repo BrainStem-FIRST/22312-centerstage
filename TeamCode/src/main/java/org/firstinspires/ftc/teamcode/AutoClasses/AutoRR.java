@@ -53,7 +53,7 @@ public class AutoRR extends AutoAbstractOpMode {
 
                 .lineToYSplineHeading(constants.vRedRightSpike_Left.y, Math.toRadians(180))
                 .endTrajectory()
-                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 2.5)    // Adjust delta accordingly
+                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 1.5)    // Adjust delta accordingly
 
                 .stopAndAdd(robot.intake.spitPixel)
 
@@ -61,7 +61,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Go to backdrop to place your purple pixel
-                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x + 6.0, constants.vRedBackdrop_Left.y), Math.toRadians(0))
+                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x - 4, constants.vRedBackdrop_Left.y), Math.toRadians(0))
 
                 .build();
     }
@@ -84,7 +84,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setTangent(45)
                 .lineToY(constants.vRedRightSpike_Center.y + 12)    // Move away from the pixel to avoid de-scoring
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 6.0, constants.vRedBackdrop_Right.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Right.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }
@@ -109,13 +109,15 @@ public class AutoRR extends AutoAbstractOpMode {
 
                 // Goto Backdrop to place your purple pixel
                 .setTangent(-45)
-                .splineToSplineHeading(new Pose2d(constants.vRedBackdrop_Right.x, constants.vRedBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .splineToSplineHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y,Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }
 
     @Override
     public Action cycle(BrainSTEMRobotA robot) {
+        return null;
+        /*
         return robot.drive.actionBuilder(robot.drive.pose)
                 .setTangent(90)
                 .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
@@ -125,6 +127,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(180)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x+2, constants.vRedBackdrop_Left.y-2, Math.toRadians(180)), Math.toRadians(-90))
                 .build();
+                 */
     }
 
     @Override

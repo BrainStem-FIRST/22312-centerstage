@@ -147,12 +147,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //////////////////////////////////////////////////////////
 
         runBlocking(new SequentialAction(
-                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
-                traj_init(robot) // all variations first go to center spike
+                new SleepAction(autoTimeDelay) // wait for specified time before running trajectory
+//                traj_init(robot) // all variations first go to center spike
         ));
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
-//                traj_right(robot),
                 telemetryPacket -> {
                         telemetry.addLine("Ending pose:");
                         telemetry.addData("x", robot.drive.pose.position.x);
@@ -345,7 +344,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.update();
         }
 
-        /*
+
         // Arrived at position. Place pixel and park
         runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
@@ -382,10 +381,22 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 }
         ));
-         */
 
         runBlocking(new SequentialAction(
-                new SleepAction(2.0),
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.arm.armToIdlePosition();
+                        return false;
+                    }
+                },
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
+                        return false;
+                    }
+                },
 
                 new Action() {
                     @Override
@@ -507,7 +518,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             int moveToSpike = 0; // move direction
             boolean foundSpike = false;
 
-            float[] hsv = {0F, 0F, 0F};
+            final float[] hsv = new float[3];
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -516,12 +527,21 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 currentColor = robot.colorSensor.getNormalizedColors();
                 Color.colorToHSV(currentColor.toColor(), hsv);
 
-                telemetry.addData("gain", robot.colorSensor.getGain());
-                telemetry.addData("alliance", alliance());
-                telemetry.addData("current color red:", currentColor.red);
-                telemetry.addData("current color green:", currentColor.green);
-                telemetry.addData("current color blue:", currentColor.blue);
+                telemetry.addLine()
+                        .addData("Red", "%.3f", currentColor.red)
+                        .addData("Green", "%.3f", currentColor.green)
+                        .addData("Blue", "%.3f", currentColor.blue);
+                telemetry.addLine()
+                        .addData("Hue", "%.3f", hsv[0])
+                        .addData("Saturation", "%.3f", hsv[1])
+                        .addData("Value", "%.3f", hsv[2]);
+
+                telemetry.addData("Alpha", "%.3f", currentColor.alpha);
+
+                telemetry.update();
+
 /*
+                // Find spike based on color value
                 if (alliance() == Alliance.RED) {
                     if (currentColor.red > 0.09) { // || robot.drive.pose.position.y > -24) {
                         moveToSpike = 0;
@@ -538,7 +558,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 }
  */
-                if (Math.abs(180 - hsv[0]) < 20){
+                // Find spike based on change in hue value
+                // Rubber mat (gray) gives out 180.
+                // Any color moves the hue away from 180 (can be in either direction)
+                if (Math.abs(180.0 - hsv[0]) > 20.0){
                     moveToSpike = 0;
                     foundSpike = true;  // found it
                 } else {
@@ -595,10 +618,9 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             default:
                 // This default should never be reached because a default value for
                 // targetTagPos is already assigned during readPropPosition().
-                //
                 // Still...
                 telemetry.addLine("BUG IN CODE! Target Tag Number was not properly set.");
-                trajectory = traj_right(robot);
+                trajectory = traj_center(robot);
                 telemetry.addLine("running default: Right");
                 telemetry.update();
                 break;
@@ -668,7 +690,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         if(targetTagNum == -1) {
             // No prop was detected by the time of Start, return a default value
             // Default is Right
-            targetTagNum = (alliance()==Alliance.BLUE) ? 3 : 6;
+            targetTagNum = (alliance()==Alliance.BLUE) ? 2 : 5;
         }
 
         return targetTagNum;

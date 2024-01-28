@@ -64,7 +64,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Left.x, constants.vBlueBackdrop_Left.y, Math.toRadians(-180)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Left.x, constants.vBlueBackdrop_Left.y, Math.toRadians(-180)), Math.toRadians(90))
 
                 .build();
     }
@@ -117,7 +117,7 @@ public class AutoBR extends AutoAbstractOpMode {
     @Override
     public Action cycle(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .setTangent(90)
+                .setTangent(-90)
                 .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER * 2.5, constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
                 .waitSeconds(2.0)
