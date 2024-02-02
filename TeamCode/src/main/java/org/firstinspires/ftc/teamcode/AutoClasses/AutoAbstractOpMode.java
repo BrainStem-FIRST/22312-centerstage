@@ -147,8 +147,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //////////////////////////////////////////////////////////
 
         runBlocking(new SequentialAction(
-                new SleepAction(autoTimeDelay) // wait for specified time before running trajectory
-//                traj_init(robot) // all variations first go to center spike
+                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+                traj_init(robot) // all variations first go to center spike
         ));
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
@@ -396,15 +396,17 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
                         return false;
                     }
-                },
-
+                }
+/*
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         runBlocking(cycle(robot));
                         return false;
                     }
-                })
+                }
+ */
+                )
         );
 
                 // GO TO PARK
