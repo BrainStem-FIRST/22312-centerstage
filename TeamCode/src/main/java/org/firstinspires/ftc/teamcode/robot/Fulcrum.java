@@ -66,7 +66,7 @@ public class Fulcrum {
         String desiredState = (String) stateMap.get(FULCRUM_SYSTEM_NAME);
         switch(desiredState){
             case FULCRUM_DOWN:{
-                if(lift.liftMotor1.getCurrentPosition() < 100){
+                if(lift.liftMotor2.getCurrentPosition() < 100){
                     fulcrumUp();
                 } else{
                     fulcrumDown();

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import android.text.style.IconMarginSpan;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,7 +11,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.Map;
 public class Lift {
     private Telemetry telemetry;
+    public DcMotorEx liftMotor2;
     public DcMotorEx liftMotor1;
+    public DcMotorEx liftMotor3;
     private Map stateMap;
     //Create Strings for StateMap Lift Control
     public final String LIFT_SYSTEM_NAME = "LIFT_SYSTEM_NAME";
@@ -46,15 +46,18 @@ public class Lift {
     private int LIFT_ROW2_POSITION = 544;
     private int LIFT_ROW3_POSITION = 750;
     private int LIFT_ROW4_POSITION = 996;
-    private int LIFT_ROW5_POSITION = 1044;
+    private int LIFT_ROW5_POSITION = 1500;
 
     //PID values
-    private double kP = 0.0125;
+    private double kP = 0.0065;
     private double kI = 0;
     private double kD = 0;
-    private double kS = 0.025;
+    private double kS = 0.02;
+
+    private double lowerkP = 0.0095;
 
     PIDController liftController = new PIDController(kP,kI,kD);
+    PIDController liftControllerDown = new PIDController(lowerkP, kI, kD);
     //Other important variables
     private int heightTolerance = 3;
 
@@ -67,17 +70,28 @@ public class Lift {
         this.telemetry = telemetry;
         this.stateMap = stateMap;
 
+        liftMotor2 = hwMap.get(DcMotorEx.class, "liftMotor2");
         liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
+        liftMotor3 = hwMap.get(DcMotorEx.class, "liftMotor3");
 
-//        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_ROW5_POSITION);
-        liftController.setOutputBounds(-0.1,0.75);
+        liftMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        liftMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        grabber = new Grabber(hwMap, telemetry, stateMap);
+        liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_ROW5_POSITION);
+        liftController.setOutputBounds(-0.9,0.8);
+
+        liftControllerDown.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_ROW5_POSITION);
+        liftControllerDown.setOutputBounds(-0.9,0.8);
+
     }
 
     public void setState(Arm arm){
@@ -92,20 +106,26 @@ public class Lift {
         updatePixelCycleState();
 
         String desiredLevel = (String) stateMap.get(LIFT_SYSTEM_NAME);
-        int desiredPosition = getDesiredPosition(desiredLevel);
-
+        int desiredPosition = selectTransition(desiredLevel, arm);
+        boolean liftGoingUp = desiredPosition > liftMotor2.getCurrentPosition();
+        telemetry.addData("Lift going up", liftGoingUp);
         stateMap.put(LIFT_CURRENT_STATE, currentLevel);
         stateMap.put(LIFT_DESIRED_POSITION, selectTransition(desiredLevel, arm));
         if(desiredLevel.equalsIgnoreCase(currentLevel)) {
             liftController.updateWithError(0);
+            liftControllerDown.updateWithError(0);
         } else {
-            raiseHeightPID(selectTransition(desiredLevel, arm));
+            if(liftGoingUp){
+                raiseHeightPID(desiredPosition);
+            } else{
+                lowerHeightPID(desiredPosition);
+            }
         }
     }
 
     private void updatePixelCycleState(){
         if(isCycleInProgress()){
-            if(inCycleTolerance(liftMotor1.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
+            if(inCycleTolerance(liftMotor2.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
                 stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
                 grabber.grabberCycleDelay.reset();
             }
@@ -113,7 +133,7 @@ public class Lift {
     }
 
     public void resetEncoders(){
-        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     private boolean inCycleTolerance(int currentPosition, int statePosition){
         if((statePosition - cycleTolerance) <= currentPosition && currentPosition <=  (statePosition + cycleTolerance)){
@@ -147,7 +167,7 @@ public class Lift {
     }
     private String getCurrentState() {
         String state = TRANSITION_STATE;
-        int currentPosition = liftMotor1.getCurrentPosition();
+        int currentPosition = liftMotor2.getCurrentPosition();
         if(inHeightTolerance(currentPosition, LIFT_GROUND_STATE_POSITION)){
             telemetry.addData("In height tolerance", "ground");
             state = LIFT_GROUND_STATE;
@@ -214,16 +234,16 @@ public class Lift {
     }
 
     public void raiseHeightTo(int desiredTickPosition){
-        liftMotor1.setTargetPosition(desiredTickPosition);
-        liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor1.setPower(0.5);
+        liftMotor2.setTargetPosition(desiredTickPosition);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor2.setPower(0.5);
     }
     private void moveToPID(int desiredTickPosition){
-        int currentPosition = liftMotor1.getCurrentPosition();
+        int currentPosition = liftMotor2.getCurrentPosition();
         int error = Math.abs(currentPosition - desiredTickPosition);
         if(error < 7){
-            liftMotor1.setTargetPosition(desiredTickPosition);
-            liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftMotor2.setTargetPosition(desiredTickPosition);
+            liftMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             setRawPower(1.0);
         }else{
             setMotorPIDPower(desiredTickPosition, currentPosition);
@@ -232,10 +252,18 @@ public class Lift {
 
     public void raiseHeightPID(int desiredTickPosition){
         liftController.setTarget(desiredTickPosition);
-        double error = desiredTickPosition - liftMotor1.getCurrentPosition();
+        double error = desiredTickPosition - liftMotor2.getCurrentPosition();
         telemetry.addData("Error for lift", error);
-        liftMotor1.setPower(liftController.updateWithError(error) + kS);
-        telemetry.addData("Lift motor power", liftMotor1.getPower());
+        setRawPower(liftController.updateWithError(error) + kS);
+        telemetry.addData("Lift motor power", liftMotor2.getPower());
+    }
+
+    public void lowerHeightPID(int desiredTickPosition){
+        liftControllerDown.setTarget(desiredTickPosition);
+        double error = desiredTickPosition - liftMotor2.getCurrentPosition();
+        telemetry.addData("Error for lift", error);
+        setRawPower(liftControllerDown.updateWithError(error) + kS);
+        telemetry.addData("Lift motor power", liftMotor2.getPower());
     }
 
     private void setMotorPIDPower(int ticks, int currentPosition){
@@ -254,5 +282,9 @@ public class Lift {
     public void setRawPower(double power) {
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor1.setPower(power);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor2.setPower(power);
+        liftMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor3.setPower(power);
     }
 }

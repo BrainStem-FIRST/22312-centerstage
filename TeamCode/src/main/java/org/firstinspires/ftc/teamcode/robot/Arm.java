@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Map;
@@ -57,7 +55,7 @@ public class Arm {
     }
 
     public void setState(Lift lift){
-//        if(lift.liftMotor1.getCurrentPosition() > liftMinPosition){
+//        if(lift.liftMotor2.getCurrentPosition() > liftMinPosition){
 //            selectTransition();
 //        }
         selectTransition(lift);
@@ -67,7 +65,7 @@ public class Arm {
         String desiredState = (String) stateMap.get(ARM_SYSTEM_NAME);
         switch (desiredState){
             case ARM_DEPOSIT_STATE:{
-                if(lift.liftMotor1.getCurrentPosition() < liftMinPosition){
+                if(lift.liftMotor2.getCurrentPosition() < liftMinPosition){
                     armToIdlePosition();
                 } else {
                     armToDepositPosition();

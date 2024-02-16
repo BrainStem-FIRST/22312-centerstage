@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Disabled
 @TeleOp(name="Robot: 22312Tele", group="Robot")
 public class RobotTeleOp extends LinearOpMode {
     private int liftCounter = 0;
@@ -70,7 +72,7 @@ public class RobotTeleOp extends LinearOpMode {
             if (gamepad2.right_bumper && gamepad2.left_bumper && !hangingMode) {
                 robot.lift.resetEncoders();
             } else if (gamepad2.left_trigger > 0.5 && !hangingMode) {
-                robot.lift.liftMotor1.setPower(-1.0);
+                robot.lift.liftMotor2.setPower(-1.0);
             } else {
                 setButtons();
                 telemetry.addLine("IN Tele");
@@ -205,7 +207,7 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
                 }
 
-                if(robot.lift.liftMotor1.getCurrentPosition() > 230){
+                if(robot.lift.liftMotor2.getCurrentPosition() > 230){
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(
                                     (0.6 * -gamepad1.left_stick_y),
@@ -228,7 +230,6 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("Left Hanging Position", robot.hanging.leftHanging.getCurrentPosition());
                 telemetry.addData("Right hanging Position", robot.hanging.rightHanging.getCurrentPosition());
                 telemetry.addData("drawbridge position", drawbridgeCounter);
-                telemetry.addData("Lift intake automation", robot.startLiftDown());
                 telemetry.addData("Drawbridge commanded position", robot.drawbridge.drawBridge.getPosition());
                 telemetry.addData("Hardstop commanded position", robot.drawbridge.hardStop.getPosition());
                 telemetry.addData("Arm angle", robot.arm.encoder.getCurrentPositionOriginal());
