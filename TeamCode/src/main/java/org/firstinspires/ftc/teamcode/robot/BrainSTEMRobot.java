@@ -25,6 +25,7 @@ public class BrainSTEMRobot {
     public Grabber grabber;
     public Hanging hanging;
     public GrabberCR grabberCR;
+    public Wrist wrist;
 
     public Drone drone;
     private Map stateMap;
@@ -39,6 +40,7 @@ public class BrainSTEMRobot {
 //        drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
 //        arm = new Arm(hardwareMap, telemetry, stateMap);
         lift = new Lift(hardwareMap, telemetry, stateMap);
+        wrist = new Wrist(hardwareMap, telemetry, stateMap);
 //        hanging = new Hanging(hardwareMap, telemetry, stateMap);
 //        grabberCR = new GrabberCR(hardwareMap, telemetry, stateMap);
 //        grabber = new Grabber(hardwareMap, telemetry, stateMap);
@@ -67,6 +69,7 @@ public class BrainSTEMRobot {
 //            arm.setState(lift);
 //            hanging.setState();
         lift.setState(arm);
+        wrist.setState();
 //            grabber.setState();
 //            drone.setState();
     }

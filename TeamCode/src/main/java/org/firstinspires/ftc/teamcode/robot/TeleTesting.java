@@ -22,6 +22,7 @@ public class TeleTesting extends LinearOpMode {
         Map<String, String> stateMap = new HashMap<String, String>() {{ }};
         BrainSTEMRobot robot = new BrainSTEMRobot(hardwareMap, telemetry, stateMap);
         stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_GROUND_STATE);
+        stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_0_DEGREE_STATE);
         robot.updateSystems();
         waitForStart();
 
@@ -33,6 +34,18 @@ public class TeleTesting extends LinearOpMode {
                 stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_GROUND_STATE);
             }
 
+            if(gamepad1.dpad_right){
+                stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_45_DEGREE_STATE);
+            }
+            if(gamepad1.dpad_up){
+                stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_90_DEGREE_STATE);
+            }
+            if(gamepad1.dpad_left){
+                stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_135_DEGREE_STATE);
+            }
+            if(gamepad1.dpad_down){
+                stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_180_DEGREE_STATE);
+            }
             robot.updateSystems();
             telemetry.addData("Lift Motor 3 power", robot.lift.liftMotor3.getPower());
             telemetry.addData("Lift Motor 2 power", robot.lift.liftMotor2.getPower());
