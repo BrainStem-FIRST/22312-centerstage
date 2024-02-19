@@ -63,7 +63,6 @@ public class Lift {
 
     private int cycleTolerance = 5;
 
-    Grabber grabber;
     public ElapsedTime liftCycleTime = new ElapsedTime();
     private Constants constants = new Constants();
     public Lift(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
@@ -96,15 +95,6 @@ public class Lift {
 
     public void setState(Arm arm){
         String currentLevel = getCurrentState();
-//        if(isCycleInProgress()) {
-//            stateMap.put(LIFT_SYSTEM_NAME, LIFT_GROUND_STATE);
-//            if (currentLevel.equals(LIFT_GROUND_STATE)){
-//                stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
-//            }
-//        }
-
-        updatePixelCycleState();
-
         String desiredLevel = (String) stateMap.get(LIFT_SYSTEM_NAME);
         int desiredPosition = selectTransition(desiredLevel, arm);
         boolean liftGoingUp = desiredPosition > liftMotor2.getCurrentPosition();
@@ -123,14 +113,13 @@ public class Lift {
         }
     }
 
-    private void updatePixelCycleState(){
-        if(isCycleInProgress()){
-            if(inCycleTolerance(liftMotor2.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
-                stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
-                grabber.grabberCycleDelay.reset();
-            }
-        }
-    }
+//    private void updatePixelCycleState(){
+//        if(isCycleInProgress()){
+//            if(inCycleTolerance(liftMotor2.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
+//                stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
+//            }
+//        }
+//    }
 
     public void resetEncoders(){
         liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

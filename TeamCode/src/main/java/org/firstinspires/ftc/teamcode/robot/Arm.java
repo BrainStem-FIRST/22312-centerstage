@@ -15,6 +15,7 @@ public class Arm {
     public final String ARM_IDLE_STATE = "ARM_IDLE_STATE";
     public ServoImplEx rightArmServo;
     public ServoImplEx leftArmServo;
+    public ServoImplEx armServo;
     private double arm_deposit_position = 1.0;
     private double arm_idle_position = 0.0;
     private Telemetry telemetry;
@@ -42,22 +43,12 @@ public class Arm {
         this.telemetry = telemetry;
         this.stateMap = stateMap;
 
-        rightArmServo = hwMap.get(ServoImplEx.class, "rightArmServo");
-        leftArmServo = hwMap.get(ServoImplEx.class, "leftArmServo");
-
-        rightArmServo.setPwmRange(new PwmControl.PwmRange(rightServoPWMLowerLimit,rightServoPWMHigherLimit));
-        leftArmServo.setPwmRange(new PwmControl.PwmRange(leftServoLowerPWMLimit,leftServoHigherPWMLimit));
-
-        armEncoder = hwMap.get(AnalogInput.class, "armEncoder");
-
-        encoder = new AbsoluteAnalogEncoder(armEncoder, 3.3).zero(encoderOffset).setInverted(false);
+        armServo = hwMap.get(ServoImplEx.class, "armServo");
+        armServo.setPwmRange(new PwmControl.PwmRange(1080,2050));
 
     }
 
     public void setState(Lift lift){
-//        if(lift.liftMotor2.getCurrentPosition() > liftMinPosition){
-//            selectTransition();
-//        }
         selectTransition(lift);
     }
 
@@ -65,11 +56,12 @@ public class Arm {
         String desiredState = (String) stateMap.get(ARM_SYSTEM_NAME);
         switch (desiredState){
             case ARM_DEPOSIT_STATE:{
-                if(lift.liftMotor2.getCurrentPosition() < liftMinPosition){
-                    armToIdlePosition();
-                } else {
-                    armToDepositPosition();
-                }
+//                if(lift.liftMotor2.getCurrentPosition() < liftMinPosition){
+//                    armToIdlePosition();
+//                } else {
+//                    armToDepositPosition();
+//                }
+                armToDepositPosition();
                 break;
             }
 
@@ -82,16 +74,12 @@ public class Arm {
     }
 
     private void armToDepositPosition(){
-//        leftArmServo.setPosition(leftIdlePosition);
         telemetry.addData("Arm Position Called", "Deposit");
-        rightArmServo.setPosition(0.03);
-        leftArmServo.setPosition(0.98);
+        armServo.setPosition(0.01);
     }
     public void armToIdlePosition(){
-//        leftArmServo.setPosition(leftDepositPosition);
         telemetry.addData("Arm Position Called", "Idle");
-        rightArmServo.setPosition(0.925);
-        leftArmServo.setPosition(0.123);
+        armServo.setPosition(0.99);
 
     }
 }
