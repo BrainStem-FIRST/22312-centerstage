@@ -44,6 +44,7 @@ public class BrainSTEMRobot {
         stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         stateMap.put(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+        stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
 
         telemetry.addData("Robot", "is ready");
         telemetry.update();
@@ -108,8 +109,8 @@ public class BrainSTEMRobot {
     private boolean startGateAndDepositer() {
         String intakeCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
         String depositerCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE);
-
-        if (intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED)) {
+        long endTime = (long) (stateMap.get(constants.PICKUP_DELAY_TIMESTART)) + 700;
+        if (intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && System.currentTimeMillis() > endTime) {
             return true;
         }
         return false;

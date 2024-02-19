@@ -40,7 +40,7 @@ public class Hopper {
         telemetry.addData("Color sensor 1 distance", (((DistanceSensor) colorSensor1).getDistance(DistanceUnit.CM)));
         telemetry.addData("Color sensor 2 distance", (((DistanceSensor) colorSensor2).getDistance(DistanceUnit.CM)));
         boolean pixelSensor1 = (((DistanceSensor) colorSensor1).getDistance(DistanceUnit.CM)) < 0.65;
-        boolean pixelSensor2 = (((DistanceSensor) colorSensor2).getDistance(DistanceUnit.CM)) < 0.65;
+        boolean pixelSensor2 = (((DistanceSensor) colorSensor2).getDistance(DistanceUnit.CM)) < 1.2;
 
         if(!pixelSensor1){
             stateMap.put(HOPPER_SYSTEM_NAME, HOPPER_NO_PIXELS);

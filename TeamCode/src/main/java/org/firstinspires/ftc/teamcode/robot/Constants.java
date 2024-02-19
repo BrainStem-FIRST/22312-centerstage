@@ -14,6 +14,8 @@ public class Constants {
     public final String PIXEL_PICKUP_2_PIXELS= "PIXEL_PICKUP_2_PIXELS";
     public final String PIXEL_PICKUP_1_PIXEL = "PIXEL_PICKUP_1_PIXEL";
 
+    public final String PICKUP_DELAY_TIMESTART = "PICKUP_DELAY_TIMESTART";
+
     public final String HOPPER_2_PIXELS_TIME = "HOPPER_2_PIXELS_TIME";
 
     public final String DRIVER_2_SELECTED_HEIGHT = "DRIVER_2_SELECTED_HEIGHT";

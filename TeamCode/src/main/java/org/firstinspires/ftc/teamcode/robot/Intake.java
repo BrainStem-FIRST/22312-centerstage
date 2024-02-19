@@ -62,7 +62,7 @@ public class Intake {
             updatePixelPickupState(numOfPixels);
         }
         if (cycleInProgress()) {
-            intakeMotor.setPower(0.7);
+            intakeMotor.setPower(1.0);
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_SPITTING_STATE)) {
             intakeMotor.setPower(-1.0);
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_DRIVER_INPUT)) {
@@ -76,9 +76,11 @@ public class Intake {
         String hopperState = (String) stateMap.get(hopper.HOPPER_SYSTEM_NAME);
         if (hopperState.equalsIgnoreCase(hopper.HOPPER_ONE_PIXEL) && numOfPixels == 1) {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
+            stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
         }
         if (hopperState.equalsIgnoreCase(hopper.HOPPER_TWO_PIXELS) && numOfPixels == 2) {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
+            stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
         }
     }
 
