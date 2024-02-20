@@ -131,7 +131,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 //                },
 //                new SleepAction(0.5)
 //        ));
-
+/*
         runBlocking(new SequentialAction(
                 new Action() {
                     @Override
@@ -141,6 +141,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 }
         ));
+
+ */
 
         //////////////////////////////////////////////////////////
         //                GO TO BACKDROP                        //

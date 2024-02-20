@@ -55,7 +55,7 @@ public class AutoRR extends AutoAbstractOpMode {
 //                .endTrajectory()
                 .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 1.5)    // Adjust delta accordingly
 
-                .stopAndAdd(robot.intake.spitPixel)
+//                .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
                 .setReversed(true)
@@ -80,7 +80,7 @@ public class AutoRR extends AutoAbstractOpMode {
 //                .splineTo(constants.vRedRightSpike_Center, Math.toRadians(180))
 //                .lineToXLinearHeading(constants.vRedRightSpike_Center.x, Math.toRadians(180)) // + 3.0)  // Adjust delta to fine tune pixel drop off position
 
-                .stopAndAdd(robot.intake.spitPixel)
+//                .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
@@ -105,7 +105,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .lineToX(constants.vRedRightSpike_Right.x + constants.robot_length / 2+2)
 
                 // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
+//                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()

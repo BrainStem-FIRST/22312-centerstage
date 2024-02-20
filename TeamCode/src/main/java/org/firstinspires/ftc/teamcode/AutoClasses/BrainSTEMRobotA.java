@@ -28,13 +28,15 @@ public class BrainSTEMRobotA {
     private Telemetry telemetry;
 
     public HuskyLens huskyLens;
-
+/*
     public IntakeA intake;
     public DrawbridgeA drawbridge;
     public HopperA hopper;
     public LiftA lift;
     public ArmA arm;
     public GrabberA grabber;
+
+ */
 
     public NormalizedColorSensor colorSensor;
     public NormalizedRGBA colors;
@@ -45,7 +47,7 @@ public class BrainSTEMRobotA {
         this.telemetry = telemetry;
 
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-
+/*
         intake = new IntakeA(hardwareMap, telemetry);
         drawbridge = new DrawbridgeA(hardwareMap, telemetry);
         hopper = new HopperA(hardwareMap, telemetry);
@@ -53,7 +55,9 @@ public class BrainSTEMRobotA {
         arm = new ArmA(hardwareMap, telemetry);
         grabber = new GrabberA(hardwareMap, telemetry);
 
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftBottomColorSensor");
+ */
+
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftFloorColorSensor");
         colorSensor.setGain(50);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
@@ -61,7 +65,7 @@ public class BrainSTEMRobotA {
         telemetry.addData("Robot", "is ready");
         telemetry.update();
     }
-
+/*
     public Action depositToBoardinAuto = new SequentialAction(
             new Action() {
                 @Override
@@ -95,5 +99,7 @@ public class BrainSTEMRobotA {
                 }
             }
     );
+
+ */
 
 }
