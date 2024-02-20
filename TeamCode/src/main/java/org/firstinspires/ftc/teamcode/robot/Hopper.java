@@ -28,8 +28,8 @@ public class Hopper {
         this.telemetry = telemetry;
         this.stateMap = stateMap;
 
-        colorSensor1 = hwMap.get(NormalizedColorSensor.class, "backPixelColorSensor");
-        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "frontPixelColorSensor");
+        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "backPixelColorSensor");
+        colorSensor1 = hwMap.get(NormalizedColorSensor.class, "frontPixelColorSensor");
 
         colorSensor1.setGain(gain);
         colorSensor2.setGain(gain);
@@ -39,8 +39,8 @@ public class Hopper {
     public void setState(){
         telemetry.addData("Color sensor 1 distance", (((DistanceSensor) colorSensor1).getDistance(DistanceUnit.CM)));
         telemetry.addData("Color sensor 2 distance", (((DistanceSensor) colorSensor2).getDistance(DistanceUnit.CM)));
-        boolean pixelSensor1 = (((DistanceSensor) colorSensor1).getDistance(DistanceUnit.CM)) < 0.65;
-        boolean pixelSensor2 = (((DistanceSensor) colorSensor2).getDistance(DistanceUnit.CM)) < 1.2;
+        boolean pixelSensor1 = (((DistanceSensor) colorSensor1).getDistance(DistanceUnit.CM)) < 2;
+        boolean pixelSensor2 = (((DistanceSensor) colorSensor2).getDistance(DistanceUnit.CM)) < 2;
 
         if(!pixelSensor1){
             stateMap.put(HOPPER_SYSTEM_NAME, HOPPER_NO_PIXELS);

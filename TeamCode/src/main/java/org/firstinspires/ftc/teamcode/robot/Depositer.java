@@ -20,6 +20,8 @@ public class Depositer {
     public final String DEPOSITER_PICKUP_TWO = "DEPOSITER_PICKUP_TWO";
     public final String DEPOSITER_PICKUP_ONE = "DEPOSITER_PICKUP_ONE";
     public final String DEPOSITER_OPEN = "DEPOISTER_OPEN";
+    public final String GREEN_DEPOSITER_OPEN = "GREEN_DEPOSITER_OPEN";
+    public final String RED_DEPOSITER_OPEN = "RED_DEPOSITER_OPEN";
 
 
     private int greenDepositerPWMMin = 1819;
@@ -72,6 +74,15 @@ public class Depositer {
             case DEPOSITER_OPEN: {
                 setGreenServoPosition(0);
                 setRedServoPosition(0);
+                break;
+            }
+            case GREEN_DEPOSITER_OPEN:{
+                setGreenServoPosition(0);
+                break;
+            }
+            case RED_DEPOSITER_OPEN:{
+                setRedServoPosition(0);
+                break;
             }
         }
     }

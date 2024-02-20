@@ -37,7 +37,7 @@ public class Arm {
     private double leftIdlePosition = 0.01;
     private double encoderOffset = 0;
 
-    private int liftMinPosition = 200;
+    private int liftMinPosition = 250;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
@@ -56,11 +56,11 @@ public class Arm {
         String desiredState = (String) stateMap.get(ARM_SYSTEM_NAME);
         switch (desiredState){
             case ARM_DEPOSIT_STATE:{
-//                if(lift.liftMotor2.getCurrentPosition() < liftMinPosition){
-//                    armToIdlePosition();
-//                } else {
-//                    armToDepositPosition();
-//                }
+                if(lift.liftMotor2.getCurrentPosition() < liftMinPosition){
+                    armToIdlePosition();
+                } else {
+                    armToDepositPosition();
+                }
                 armToDepositPosition();
                 break;
             }

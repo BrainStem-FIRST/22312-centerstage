@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,7 +40,7 @@ public class BrainSTEMRobot {
 //        drone = new Drone(hardwareMap, telemetry, stateMap);
         depositer = new Depositer(hardwareMap, telemetry, stateMap);
         transfer  = new Transfer(hardwareMap, telemetry, stateMap);
-//        drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
         stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         stateMap.put(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
