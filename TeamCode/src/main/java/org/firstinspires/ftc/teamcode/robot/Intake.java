@@ -62,14 +62,7 @@ public class Intake {
             updatePixelPickupState(numOfPixels);
         }
         if (cycleInProgress()) {
-            intakeMotor.setPower(0.8);
-        } else if (((String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_SPITTING)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)) {
-            if (cycleSpitTime.milliseconds() <= 750) {
-                intakeMotor.setPower(-1.0);
-            } else {
-                stateMap.put(constants.PIXEL_CYCLE_INTAKE_SPITTING, constants.PIXEL_CYCLE_STATE_COMPLETE);
-                intakeMotor.setPower(0);
-            }
+            intakeMotor.setPower(1.0);
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_SPITTING_STATE)) {
             intakeMotor.setPower(-1.0);
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_DRIVER_INPUT)) {
@@ -83,11 +76,11 @@ public class Intake {
         String hopperState = (String) stateMap.get(hopper.HOPPER_SYSTEM_NAME);
         if (hopperState.equalsIgnoreCase(hopper.HOPPER_ONE_PIXEL) && numOfPixels == 1) {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
-            timeBetweenIntakeSpit.reset();
+            stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
         }
         if (hopperState.equalsIgnoreCase(hopper.HOPPER_TWO_PIXELS) && numOfPixels == 2) {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
-            timeBetweenIntakeSpit.reset();
+            stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
         }
     }
 

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,11 +17,11 @@ public class Drawbridge {
     public final String DRAWBRIDGE_3_PIXEL_HEIGHT = "DRAWBRIDGE_3_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_4_PIXEL_HEIGHT = "DRAWBRIDGE_4_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_5_PIXEL_HEIGHT = "DRAWBRIDGE_5_PIXEL_HEIGHT";
-    private int drawbridgePWMLowerLimit = 670;
-    private int drawbridgePWMHigherLimit = 1300;
+    private int drawbridgePWMLowerLimit = 373;
+    private int drawbridgePWMHigherLimit = 2254;
 
-    private int hardstopPWMLowerLimit = 1050;
-    private int hardstopPWMHigherLimit = 2470;
+    private int hardstopPWMLowerLimit = 675;
+    private int hardstopPWMHigherLimit = 2130;
     private double firstPixelPosition = 0.99;
     private double secondPixelPosition = 0.5;
     private double thirdPixelPosition = 0.01;

@@ -39,7 +39,7 @@ public class LiftA {
 
 
         liftController = new PIDController(0,0,0);
-        liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
+        liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor2");
 
         liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -51,7 +51,7 @@ public class LiftA {
     }
 
     public void raiseHeightTo(int desiredTickPosition){
-//        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor1.setTargetPosition(desiredTickPosition);
         liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor1.setPower(1.0);
