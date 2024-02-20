@@ -324,7 +324,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 }
             }
 
-
+/*
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -333,6 +333,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     ),
                     0.0 //25 * zDirection
             ));
+
+ */
 
 
             robot.drive.updatePoseEstimate();
@@ -346,7 +348,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
 
         // Arrived at position. Place pixel and park
-        runBlocking(new SequentialAction(
+     /*   runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -381,8 +383,9 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 }
         ));
+*/
 
-        runBlocking(new SequentialAction(
+    /*    runBlocking(new SequentialAction(
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -405,9 +408,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         return false;
                     }
                 }
- */
+
                 )
         );
+*/
 
                 // GO TO PARK
                 // TODO: In future revisions, add time check to park within 30 seconds

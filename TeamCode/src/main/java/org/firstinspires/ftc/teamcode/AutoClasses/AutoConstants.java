@@ -7,8 +7,8 @@ import com.acmerobotics.roadrunner.Vector2d;
 public class AutoConstants {
 
     // Robot dimensions. Will become handy to orient around waypoints
-    static double robot_length = 15.75;
-    static double robot_width = 14;
+    static double robot_length = 14.5;
+    static double robot_width = 12;
 
     static double IN_TO_MM = 25.4;  // conversion multiplier from inch to millimeter
     static double DISTANCE_BETWEEN_DISTSENSORS = 10;    // distance between two sensors in inches

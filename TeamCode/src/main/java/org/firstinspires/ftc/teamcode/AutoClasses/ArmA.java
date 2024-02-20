@@ -14,15 +14,12 @@ import java.util.Map;
 
 public class ArmA {
 
-    public ServoImplEx rightArmServo;
-    public ServoImplEx leftArmServo;
+    public ServoImplEx armServo;
 
     private final double arm_deposit_position = 1.0;
     private final double arm_idle_position = 0.0;
 
     private Telemetry telemetry;
-
-    public AnalogInput armEncoder;
 
     public AbsoluteAnalogEncoder encoder;
     private final double leftServoLowerPWMLimit = 930;
@@ -40,26 +37,17 @@ public class ArmA {
     public ArmA(HardwareMap hwMap, Telemetry telemetry){
         this.telemetry = telemetry;
 
-        rightArmServo = hwMap.get(ServoImplEx.class, "rightArmServo");
-        leftArmServo = hwMap.get(ServoImplEx.class, "leftArmServo");
+        armServo = hwMap.get(ServoImplEx.class, "armServo");
 
-        rightArmServo.setPwmRange(new PwmControl.PwmRange(rightServoPWMLowerLimit,rightServoPWMHigherLimit));
-        leftArmServo.setPwmRange(new PwmControl.PwmRange(leftServoLowerPWMLimit,leftServoHigherPWMLimit));
-
-        armEncoder = hwMap.get(AnalogInput.class, "armEncoder");
-
-        encoder = new AbsoluteAnalogEncoder(armEncoder, 3.3).zero(encoderOffset).setInverted(false);
+        armServo.setPwmRange(new PwmControl.PwmRange(rightServoPWMLowerLimit,rightServoPWMHigherLimit));
 
     }
     public void armToDepositPosition(){
         telemetry.addData("Arm Position Called", "Deposit");
-        rightArmServo.setPosition(0.03);
-        leftArmServo.setPosition(0.98);
+        armServo.setPosition(0.01);
     }
     public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
-        rightArmServo.setPosition(0.97);
-        leftArmServo.setPosition(0.01);
-
+        armServo.setPosition(0.99);
     }
 }

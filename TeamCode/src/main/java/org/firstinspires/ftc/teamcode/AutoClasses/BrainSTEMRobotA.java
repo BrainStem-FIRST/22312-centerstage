@@ -33,7 +33,6 @@ public class BrainSTEMRobotA {
     public DrawbridgeA drawbridge;
     public HopperA hopper;
     public LiftA lift;
-    public FulcrumA fulcrum;
     public ArmA arm;
     public GrabberA grabber;
 
@@ -51,7 +50,6 @@ public class BrainSTEMRobotA {
         drawbridge = new DrawbridgeA(hardwareMap, telemetry);
         hopper = new HopperA(hardwareMap, telemetry);
         lift = new LiftA(hardwareMap, telemetry);
-        fulcrum = new FulcrumA(hardwareMap, telemetry);
         arm = new ArmA(hardwareMap, telemetry);
         grabber = new GrabberA(hardwareMap, telemetry);
 

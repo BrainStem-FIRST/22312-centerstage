@@ -20,8 +20,8 @@ public class HopperA {
     public HopperA(HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
-        colorSensor1 = hwMap.get(NormalizedColorSensor.class, "bottomHopperColorSensor");
-        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "upperHopperColorSensor");
+        colorSensor1 = hwMap.get(NormalizedColorSensor.class, "frontPixelColorSensor");
+        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "backPixelColorSensor");
 
     }
 }
