@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -31,7 +25,7 @@ public class Intake {
     public final String INTAKE_PIXEL_PICKUP_STATE_IN_PROGRESS = "INTAKE_PIXEL_PICKUP_STATE_IN_PROGRESS";
     public final String INTAKE_PIXEL_PICKUP_STATE_COMPLETED = "INTAKE_PIXEL_PICKUP_STATE_COMPLETED";
 
-    public ElapsedTime cycleSpitTime = new ElapsedTime();
+    public ElapsedTime intakeExtraRunning = new ElapsedTime();
     private Hopper hopper;
 
 
@@ -63,10 +57,17 @@ public class Intake {
         }
         if (cycleInProgress()) {
             intakeMotor.setPower(1.0);
+        } else if(((String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
+            if(intakeExtraRunning.seconds() < 1.0 ){
+                intakeMotor.setPower(1.0);
+            } else{
+                stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_COMPLETE);
+                intakeMotor.setPower(0);
+            }
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_SPITTING_STATE)) {
             intakeMotor.setPower(-1.0);
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_DRIVER_INPUT)) {
-            intakeMotor.setPower(-1.0);
+            intakeMotor.setPower(1.0);
         } else{
             intakeMotor.setPower(0);
         }

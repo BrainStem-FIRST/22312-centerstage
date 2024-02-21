@@ -37,7 +37,7 @@ public class Arm {
     private double leftIdlePosition = 0.01;
     private double encoderOffset = 0;
 
-    private int liftMinPosition = 250;
+    private int liftMinPosition = 400;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
@@ -61,7 +61,6 @@ public class Arm {
                 } else {
                     armToDepositPosition();
                 }
-                armToDepositPosition();
                 break;
             }
 

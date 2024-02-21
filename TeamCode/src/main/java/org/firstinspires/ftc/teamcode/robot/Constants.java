@@ -5,6 +5,8 @@ public class Constants {
 
     public final String PIXEL_CYCLE = "PIXEL_CYCLE";
     public final String PIXEL_CYCLE_INTAKE_INTAKING = "PIXEL_CYCLE_INTAKE";
+    public final String PIXEL_CYCLE_INTAKE_EXTRA = "PIXEL_CYCLE_INTAKE_EXTRA";
+    public final String HANGING_MODE = "HANGING_MODE";
     public final String PIXEL_CYCLE_ONE_WAY_GATE = "PIXEL_CYCLE_ONE_WAY_GATE";
     public final String PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE = "PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE";
     public final String PIXEL_CYCLE_STATE_NOT_STARTED = "PIXEL_CYCLE_STATE_NOT_STARTED";
@@ -20,4 +22,6 @@ public class Constants {
 
     public final String DRIVER_2_SELECTED_HEIGHT = "DRIVER_2_SELECTED_HEIGHT";
 
+    public final String CURRENT_RIGHT_DEPSOSITER = "CURRENT_RIGHT_DEPSOSITER";
+    public final String CURRENT_LEFT_DEPSOSITER = "CURRENT_LEFT_DEPSOSITER";
 }

@@ -37,7 +37,7 @@ public class BrainSTEMRobot {
         arm = new Arm(hardwareMap, telemetry, stateMap);
         lift = new Lift(hardwareMap, telemetry, stateMap);
         wrist = new Wrist(hardwareMap, telemetry, stateMap);
-//        drone = new Drone(hardwareMap, telemetry, stateMap);
+        drone = new Drone(hardwareMap, telemetry, stateMap);
         depositer = new Depositer(hardwareMap, telemetry, stateMap);
         transfer  = new Transfer(hardwareMap, telemetry, stateMap);
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
@@ -46,6 +46,7 @@ public class BrainSTEMRobot {
         stateMap.put(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
+        stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
 
         telemetry.addData("Robot", "is ready");
         telemetry.update();
@@ -63,7 +64,7 @@ public class BrainSTEMRobot {
             arm.setState(lift);
             lift.setState(arm);
             wrist.setState();
-//            drone.setState();
+            drone.setState();
             depositer.setState();
         }
     }
@@ -90,10 +91,14 @@ public class BrainSTEMRobot {
             stateMap.put(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
             depositer.depositerCycleTime.reset();
             transfer.transferCycleTime.reset();
+        } else if(startIntakeExtra()){
+            stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
+            intake.intakeExtraRunning.reset();
         } else if(pixelCycleFunctionComplete()){
             stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
             stateMap.put(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+            stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         }
         setPixelPickupSubsystems();
     }
@@ -101,17 +106,27 @@ public class BrainSTEMRobot {
     private boolean pixelCycleFunctionComplete(){
         String intakeCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
         String pixelCycleTransferDepositer = (String) stateMap.get(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE);
-        if(intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && pixelCycleTransferDepositer.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE)){
+        String intakeExtra = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA);
+        if(intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && pixelCycleTransferDepositer.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && intakeExtra.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE)){
             return true;
         }
         return false;
     }
 
     private boolean startGateAndDepositer() {
-        String intakeCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
+        String intakeExtraState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA);
         String depositerCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE);
-        long endTime = (long) (stateMap.get(constants.PICKUP_DELAY_TIMESTART)) + 700;
-        if (intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && System.currentTimeMillis() > endTime) {
+        long endTime = (long) (stateMap.get(constants.PICKUP_DELAY_TIMESTART)) + 900;
+        if (intakeExtraState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && System.currentTimeMillis() > endTime) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean startIntakeExtra(){
+        String intakeCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
+        String intakeExtraState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA);
+        if(intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && intakeExtraState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED)){
             return true;
         }
         return false;

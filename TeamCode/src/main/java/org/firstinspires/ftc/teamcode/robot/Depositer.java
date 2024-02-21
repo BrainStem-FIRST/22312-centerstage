@@ -24,11 +24,11 @@ public class Depositer {
     public final String RED_DEPOSITER_OPEN = "RED_DEPOSITER_OPEN";
 
 
-    private int greenDepositerPWMMin = 1819;
-    private int greenDepositerPWMMax = 2500;
+    private int greenDepositerPWMMin = 700;
+    private int greenDepositerPWMMax = 1366;
 
-    private int redDepositerPWMMin = 1378;
-    private int redDepositerPWMMax = 2200;
+    private int redDepositerPWMMin = 880;
+    private int redDepositerPWMMax = 1586;
 
     public Depositer(HardwareMap hwMap, Telemetry telemetry, Map stateMap) {
         this.telemetry = telemetry;

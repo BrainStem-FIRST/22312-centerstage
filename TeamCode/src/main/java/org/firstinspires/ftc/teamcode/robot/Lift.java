@@ -94,21 +94,24 @@ public class Lift {
     }
 
     public void setState(Arm arm){
-        String currentLevel = getCurrentState();
-        String desiredLevel = (String) stateMap.get(LIFT_SYSTEM_NAME);
-        int desiredPosition = selectTransition(desiredLevel, arm);
-        boolean liftGoingUp = desiredPosition > liftMotor2.getCurrentPosition();
-        telemetry.addData("Lift going up", liftGoingUp);
-        stateMap.put(LIFT_CURRENT_STATE, currentLevel);
-        stateMap.put(LIFT_DESIRED_POSITION, selectTransition(desiredLevel, arm));
-        if(desiredLevel.equalsIgnoreCase(currentLevel)) {
-            liftController.updateWithError(0);
-            liftControllerDown.updateWithError(0);
-        } else {
-            if(liftGoingUp){
-                raiseHeightPID(desiredPosition);
-            } else{
-                lowerHeightPID(desiredPosition);
+        String hangingMode  = (String) stateMap.get(constants.HANGING_MODE);
+        if(hangingMode.equalsIgnoreCase("false")){
+            String currentLevel = getCurrentState();
+            String desiredLevel = (String) stateMap.get(LIFT_SYSTEM_NAME);
+            int desiredPosition = selectTransition(desiredLevel, arm);
+            boolean liftGoingUp = desiredPosition > liftMotor2.getCurrentPosition();
+            telemetry.addData("Lift going up", liftGoingUp);
+            stateMap.put(LIFT_CURRENT_STATE, currentLevel);
+            stateMap.put(LIFT_DESIRED_POSITION, selectTransition(desiredLevel, arm));
+            if(desiredLevel.equalsIgnoreCase(currentLevel)) {
+                liftController.updateWithError(0);
+                liftControllerDown.updateWithError(0);
+            } else {
+                if(liftGoingUp){
+                    raiseHeightPID(desiredPosition);
+                } else{
+                    lowerHeightPID(desiredPosition);
+                }
             }
         }
     }
