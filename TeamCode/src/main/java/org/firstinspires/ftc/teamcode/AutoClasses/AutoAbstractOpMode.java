@@ -161,7 +161,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
                         telemetry.update();
                         return false;
-                }
+                },
+                parking_traj(robot)
         )); // Need to calculate trajectories dynamically
 
         telemetry.addLine("Finished trajectory");
@@ -170,6 +171,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //////////////////////////////////////////////////////////
         //           FINAL APPROACH USING SENSORS               //
         //////////////////////////////////////////////////////////
+
+        /*
         int targetBlockPos = -1; // The block of interest within the blocks array.
 
         while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
@@ -419,6 +422,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // TODO: In future revisions, add time check to park within 30 seconds
 
 /*
+
                 parking_traj(robot),
 
                 new Action() {
@@ -441,11 +445,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 new SleepAction(4.0)
         ));
 
- */
-
 
     }
 
+ */
     public enum Alliance {
         RED,
         BLUE

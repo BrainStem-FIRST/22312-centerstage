@@ -56,7 +56,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .lineToYLinearHeading(30, Math.toRadians(25))
 
                 // Drop yellow pixel in position
-//                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
@@ -78,7 +78,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
                 .lineToY(robot.drive.pose.position.y - 8.0)
 
-//                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.intake.spitPixel)
 
                 .setReversed(true)
                 .setTangent(Math.toRadians(-90))
@@ -101,7 +101,7 @@ public class AutoBR extends AutoAbstractOpMode {
 //                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
 //                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
 
-//                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
                 .setReversed(true)

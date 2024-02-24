@@ -56,7 +56,7 @@ public class AutoBL extends AutoAbstractOpMode {
 //                        .lineToX(vBlueLeftSpike_Left.x - robot_length / 2)
 
                 // Drop yellow pixel in position
-//                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()
@@ -77,7 +77,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 // Replace prop with your yellow pixel (just push)
                 .lineToY(constants.vBlueLeftSpike_Center.y - constants.robot_length/2.0 + 2.0)
 
-//                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.intake.spitPixel)
 
                 .endTrajectory()
                 .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
@@ -102,7 +102,7 @@ public class AutoBL extends AutoAbstractOpMode {
                 .lineToX(constants.vBlueLeftSpike_Right.x + constants.robot_length / 2.0 - 1.5)
 
                 // Drop yellow pixel in position
-//                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.intake.spitPixel)
 
                 // Discontinue trajectory
                 .endTrajectory()

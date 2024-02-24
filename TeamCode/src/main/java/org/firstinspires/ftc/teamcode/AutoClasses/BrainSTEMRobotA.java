@@ -28,8 +28,9 @@ public class BrainSTEMRobotA {
     private Telemetry telemetry;
 
     public HuskyLens huskyLens;
-/*
+
     public IntakeA intake;
+    /*
     public DrawbridgeA drawbridge;
     public HopperA hopper;
     public LiftA lift;
