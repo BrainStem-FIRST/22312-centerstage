@@ -67,7 +67,7 @@ public class Intake {
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_SPITTING_STATE)) {
             intakeMotor.setPower(-1.0);
         } else if(((String) stateMap.get(INTAKE_SYSTEM_NAME)).equals(INTAKE_DRIVER_INPUT)) {
-            intakeMotor.setPower(1.0);
+            intakeMotor.setPower(-1.0);
         } else{
             intakeMotor.setPower(0);
         }

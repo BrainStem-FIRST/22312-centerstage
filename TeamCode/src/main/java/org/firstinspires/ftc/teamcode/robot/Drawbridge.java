@@ -17,12 +17,12 @@ public class Drawbridge {
     public final String DRAWBRIDGE_3_PIXEL_HEIGHT = "DRAWBRIDGE_3_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_4_PIXEL_HEIGHT = "DRAWBRIDGE_4_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_5_PIXEL_HEIGHT = "DRAWBRIDGE_5_PIXEL_HEIGHT";
-    private int drawbridgePWMLowerLimit = 373;
-    private int drawbridgePWMHigherLimit = 2254;
+    private int drawbridgePWMLowerLimit = 500;
+    private int drawbridgePWMHigherLimit = 2000;
 
-    private int hardstopPWMLowerLimit = 675;
-    private int hardstopPWMHigherLimit = 2130;
-    private double firstPixelPosition = 0.99;
+    private int hardstopPWMLowerLimit = 500;
+    private int hardstopPWMHigherLimit = 2000;
+    private double firstPixelPosition = 0.5;
     private double secondPixelPosition = 0.5;
     private double thirdPixelPosition = 0.01;
 //    private double fourthPixelPosition = 0.22;
@@ -72,7 +72,7 @@ public class Drawbridge {
         switch(state){
             case DRAWBRIDGE_UP_STATE:{
                 setDrawBridgeUp();
-                setHardstopPosition(firstPixelPosition);
+//                setHardstopPosition(firstPixelPosition);
                 break;
             }
             case DRAWBRIDGE_DOWN_STATE:{
@@ -107,7 +107,7 @@ public class Drawbridge {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(0.99);
+        drawBridge.setPosition(0.5);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");

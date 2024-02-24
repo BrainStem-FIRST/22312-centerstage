@@ -33,7 +33,7 @@ public class BrainSTEMRobot {
 
         hopper = new Hopper(hardwareMap, telemetry, stateMap);
         intake = new Intake(hardwareMap, telemetry, stateMap, hopper);
-//        drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
+        drawbridge = new Drawbridge(hardwareMap, telemetry, stateMap);
         arm = new Arm(hardwareMap, telemetry, stateMap);
         lift = new Lift(hardwareMap, telemetry, stateMap);
         wrist = new Wrist(hardwareMap, telemetry, stateMap);
@@ -47,6 +47,7 @@ public class BrainSTEMRobot {
         stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
         stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+        stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
 
         telemetry.addData("Robot", "is ready");
         telemetry.update();
@@ -60,7 +61,7 @@ public class BrainSTEMRobot {
         } else {
             hopper.setState();
             intake.setState();
-//            drawbridge.setState();
+            drawbridge.setState();
             arm.setState(lift);
             lift.setState(arm);
             wrist.setState();
@@ -74,7 +75,8 @@ public class BrainSTEMRobot {
         hopper.setState();
         depositer.setState();
         transfer.setState();
-//        drawbridge.setState();
+        drawbridge.setState();
+        lift.setState(arm);
     }
     private boolean startIntake(){
         String pixelCycle = (String) stateMap.get(constants.PIXEL_CYCLE);
@@ -94,11 +96,16 @@ public class BrainSTEMRobot {
         } else if(startIntakeExtra()){
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
             intake.intakeExtraRunning.reset();
+        } else if(startLiftDown()){
+            lift.LIFT_IDLE_STATE_POSITION = 0;
+            stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
+            lift.liftCycleTime.reset();
         } else if(pixelCycleFunctionComplete()){
             stateMap.put(constants.PIXEL_CYCLE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
             stateMap.put(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
+            stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_NOT_STARTED);
         }
         setPixelPickupSubsystems();
     }
@@ -107,17 +114,27 @@ public class BrainSTEMRobot {
         String intakeCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_INTAKING);
         String pixelCycleTransferDepositer = (String) stateMap.get(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE);
         String intakeExtra = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA);
-        if(intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && pixelCycleTransferDepositer.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && intakeExtra.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE)){
+        String liftDown  = (String) stateMap.get(constants.PIXEL_CYCLE_LIFT_DOWN);
+        if(intakeCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && pixelCycleTransferDepositer.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && intakeExtra.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && liftDown.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE)){
             return true;
         }
         return false;
     }
 
     private boolean startGateAndDepositer() {
-        String intakeExtraState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA);
+        String liftDown = (String) stateMap.get(constants.PIXEL_CYCLE_LIFT_DOWN);
         String depositerCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE);
         long endTime = (long) (stateMap.get(constants.PICKUP_DELAY_TIMESTART)) + 900;
-        if (intakeExtraState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && System.currentTimeMillis() > endTime) {
+        if (liftDown.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && System.currentTimeMillis() > endTime) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean startLiftDown(){
+        String intakeExtraState = (String) stateMap.get(constants.PIXEL_CYCLE_INTAKE_EXTRA);
+        String liftCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_LIFT_DOWN);
+        if(intakeExtraState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && liftCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED)){
             return true;
         }
         return false;

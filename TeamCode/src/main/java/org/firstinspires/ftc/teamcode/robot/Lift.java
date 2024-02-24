@@ -23,6 +23,13 @@ public class Lift {
     public final String LIFT_ROW3_STATE = "LIFT_ROW3_STATE";
     public final String LIFT_ROW4_STATE = "LIFT_ROW4_STATE";
     public final String LIFT_ROW5_STATE = "LIFT_ROW5_STATE";
+    public final String LIFT_ROW6_STATE = "LIFT_ROW6_STATE";
+    public final String LIFT_ROW7_STATE = "LIFT_ROW7_STATE";
+    public final String LIFT_ROW8_STATE = "LIFT_ROW8_STATE";
+    public final String LIFT_ROW9_STATE = "LIFT_ROW9_STATE";
+    public final String LIFT_ROW10_STATE = "LIFT_ROW10_STATE";
+    public final String LIFT_ROW11_STATE = "LIFT_ROW11_STATE";
+    public final String LIFT_ROW12_STATE = "LIFT_ROW12_STATE";
 
     public final String LIFT_IDLE_STATE = "LIFT_IDLE_STATE";
 
@@ -41,12 +48,19 @@ public class Lift {
     //lift row 4: 996
     //lift row 5: 1044
     private int LIFT_GROUND_STATE_POSITION = 0;
-    public int LIFT_IDLE_STATE_POSITION = 200;
-    private int LIFT_ROW1_POSITION = 330;
-    private int LIFT_ROW2_POSITION = 544;
-    private int LIFT_ROW3_POSITION = 750;
-    private int LIFT_ROW4_POSITION = 996;
-    private int LIFT_ROW5_POSITION = 1500;
+    public int LIFT_IDLE_STATE_POSITION = 100;
+    private int LIFT_ROW1_POSITION = 74;
+    private int LIFT_ROW2_POSITION = 124;
+    private int LIFT_ROW3_POSITION = 369;
+    private int LIFT_ROW4_POSITION = 520;
+    private int LIFT_ROW5_POSITION = 670;
+    private int LIFT_ROW_6_POSITION = 820;
+    private int LIFT_ROW_7_POSITION = 970;
+    private int LIFT_ROW_8_POSITION = 1020;
+    private int LIFT_ROW_9_POSITION = 1170;
+    private int LIFT_ROW_10_POSITION = 1320;
+    private int LIFT_ROW_11_POSITION = 1470;
+    private int LIFT_ROW_12_POSITION = 1620;
 
     //PID values
     private double kP = 0.0065;
@@ -96,11 +110,16 @@ public class Lift {
     public void setState(Arm arm){
         String hangingMode  = (String) stateMap.get(constants.HANGING_MODE);
         if(hangingMode.equalsIgnoreCase("false")){
+            updatePixelCycleState();
+
             String currentLevel = getCurrentState();
             String desiredLevel = (String) stateMap.get(LIFT_SYSTEM_NAME);
+
             int desiredPosition = selectTransition(desiredLevel, arm);
             boolean liftGoingUp = desiredPosition > liftMotor2.getCurrentPosition();
+
             telemetry.addData("Lift going up", liftGoingUp);
+
             stateMap.put(LIFT_CURRENT_STATE, currentLevel);
             stateMap.put(LIFT_DESIRED_POSITION, selectTransition(desiredLevel, arm));
             if(desiredLevel.equalsIgnoreCase(currentLevel)) {
@@ -116,13 +135,13 @@ public class Lift {
         }
     }
 
-//    private void updatePixelCycleState(){
-//        if(isCycleInProgress()){
-//            if(inCycleTolerance(liftMotor2.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
-//                stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
-//            }
-//        }
-//    }
+    private void updatePixelCycleState(){
+        if(isCycleInProgress()){
+            if(inCycleTolerance(liftMotor2.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
+                stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
+            }
+        }
+    }
 
     public void resetEncoders(){
         liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -179,6 +198,20 @@ public class Lift {
             state = LIFT_ROW4_STATE;
         } else if(inHeightTolerance(currentPosition, LIFT_ROW5_POSITION)){
             state = LIFT_ROW5_STATE;
+        } else if(inHeightTolerance(currentPosition, LIFT_ROW_6_POSITION)){
+            state = LIFT_ROW6_STATE;
+        } else if(inHeightTolerance(currentPosition, LIFT_ROW_7_POSITION)){
+            state = LIFT_ROW7_STATE;
+        } else if(inHeightTolerance(currentPosition, LIFT_ROW_8_POSITION)){
+            state = LIFT_ROW8_STATE;
+        } else if(inHeightTolerance(currentPosition, LIFT_ROW_9_POSITION)){
+            state = LIFT_ROW9_STATE;
+        } else if(inHeightTolerance(currentPosition, LIFT_ROW_10_POSITION)){
+            state = LIFT_ROW10_STATE;
+        } else if(inHeightTolerance(currentPosition, LIFT_ROW_11_POSITION)){
+            state = LIFT_ROW11_STATE;
+        }else if(inHeightTolerance(currentPosition, LIFT_ROW_12_POSITION)){
+            state = LIFT_ROW12_STATE;
         }
         return state;
     }
@@ -217,10 +250,39 @@ public class Lift {
                 target = LIFT_ROW5_POSITION;
                 break;
             }
+            case LIFT_ROW6_STATE:{
+                target = LIFT_ROW_6_POSITION;
+                break;
+            }
+            case LIFT_ROW7_STATE:{
+                target = LIFT_ROW_7_POSITION;
+                break;
+            }
+            case LIFT_ROW8_STATE:{
+                target = LIFT_ROW_8_POSITION;
+                break;
+            }
+            case LIFT_ROW9_STATE:{
+                target = LIFT_ROW_9_POSITION;
+                break;
+            }
+            case LIFT_ROW10_STATE:{
+                target = LIFT_ROW_10_POSITION;
+                break;
+            }
+            case LIFT_ROW11_STATE:{
+                target = LIFT_ROW_11_POSITION;
+                break;
+            }
+            case LIFT_ROW12_STATE:{
+                target = LIFT_ROW_12_POSITION;
+                break;
+            }
             case LIFT_IDLE_STATE:{
                 target = LIFT_IDLE_STATE_POSITION;
                 break;
             }
+
         }
         return target;
     }
