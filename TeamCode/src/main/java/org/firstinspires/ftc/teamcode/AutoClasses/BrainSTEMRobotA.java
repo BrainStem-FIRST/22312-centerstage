@@ -30,13 +30,13 @@ public class BrainSTEMRobotA {
     public HuskyLens huskyLens;
 
     public IntakeA intake;
-    /*
+
+/* Use of classes were commented out until they are adopted to Robot V2
     public DrawbridgeA drawbridge;
     public HopperA hopper;
     public LiftA lift;
     public ArmA arm;
     public GrabberA grabber;
-
  */
 
     public NormalizedColorSensor colorSensor;
@@ -48,8 +48,10 @@ public class BrainSTEMRobotA {
         this.telemetry = telemetry;
 
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-/*
+
         intake = new IntakeA(hardwareMap, telemetry);
+
+/* Classes commented out for UCS tournament disabling all actions other than SpitOut()
         drawbridge = new DrawbridgeA(hardwareMap, telemetry);
         hopper = new HopperA(hardwareMap, telemetry);
         lift = new LiftA(hardwareMap, telemetry);
@@ -66,7 +68,8 @@ public class BrainSTEMRobotA {
         telemetry.addData("Robot", "is ready");
         telemetry.update();
     }
-/*
+
+/* Commented out until deposit to backdrop actions are adopted to the Robot V2
     public Action depositToBoardinAuto = new SequentialAction(
             new Action() {
                 @Override
