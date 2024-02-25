@@ -48,7 +48,7 @@ public class Lift {
     //lift row 4: 996
     //lift row 5: 1044
     private int LIFT_GROUND_STATE_POSITION = 0;
-    public int LIFT_IDLE_STATE_POSITION = 100;
+    public int LIFT_IDLE_STATE_POSITION = 55;
     private int LIFT_ROW1_POSITION = 74;
     private int LIFT_ROW2_POSITION = 124;
     private int LIFT_ROW3_POSITION = 369;

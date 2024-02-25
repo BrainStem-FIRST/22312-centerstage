@@ -78,7 +78,7 @@ public class Arm {
     }
     public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
-        armServo.setPosition(0.99);
+        armServo.setPosition(0.97);
 
     }
 }

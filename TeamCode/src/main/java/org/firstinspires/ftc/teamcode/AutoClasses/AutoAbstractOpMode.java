@@ -93,9 +93,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         double distanceRight = 0;
 
         /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
-//        while (!programConfirmation && !isStopRequested()) {
-//            setTimeDelay();
-//        }
+
+        setTimeDelay();
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 

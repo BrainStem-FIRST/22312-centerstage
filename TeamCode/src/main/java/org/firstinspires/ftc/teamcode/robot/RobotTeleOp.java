@@ -41,6 +41,9 @@ public class RobotTeleOp extends LinearOpMode {
     private StickyButton dpad_right = new StickyButton();
     private StickyButton dpad_left = new StickyButton();
 
+    private boolean liftGoingUp = false;
+    private ElapsedTime liftGoingUpTime = new ElapsedTime();
+
     private boolean isReset = false;
 
     Map<String, Boolean> toggleMap = new HashMap<String, Boolean>() {{
@@ -137,8 +140,11 @@ public class RobotTeleOp extends LinearOpMode {
                     robot.lift.setRawPower(0);
                 }
                 if (gamepad1rightbutton.getState()) {
-                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, stateMap.get(constants.CURRENT_RIGHT_DEPSOSITER));
-                    bumperPushes += 1;
+                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_OPEN);
+                    if(gamepad1.right_bumper){
+                        retractionInProgress = true;
+                        retractionTime.reset();
+                    }
                 }
 
                 if(bumperPushes == 2){
@@ -179,7 +185,7 @@ public class RobotTeleOp extends LinearOpMode {
                                     (0.6 * -gamepad1.left_stick_y),
                                     (0.6 * -gamepad1.left_stick_x)
                             ),
-                            (0.6 * -gamepad1.right_stick_x)));
+                            (0.45 * -gamepad1.right_stick_x)));
                 } else {
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(
