@@ -68,7 +68,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Move close enough to center spike
-                .lineToY(-30.5)
+                .lineToY(-35)
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose before findSpike:");

@@ -30,14 +30,10 @@ public class BrainSTEMRobotA {
     public HuskyLens huskyLens;
 
     public IntakeA intake;
-    /*
     public DrawbridgeA drawbridge;
     public HopperA hopper;
     public LiftA lift;
     public ArmA arm;
-    public GrabberA grabber;
-
- */
 
     public NormalizedColorSensor colorSensor;
     public NormalizedRGBA colors;
@@ -48,15 +44,13 @@ public class BrainSTEMRobotA {
         this.telemetry = telemetry;
 
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-/*
+
         intake = new IntakeA(hardwareMap, telemetry);
         drawbridge = new DrawbridgeA(hardwareMap, telemetry);
         hopper = new HopperA(hardwareMap, telemetry);
         lift = new LiftA(hardwareMap, telemetry);
         arm = new ArmA(hardwareMap, telemetry);
-        grabber = new GrabberA(hardwareMap, telemetry);
 
- */
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftFloorColorSensor");
         colorSensor.setGain(50);

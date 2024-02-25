@@ -365,7 +365,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         robot.lift.raiseHeightTo(robot.lift.LIFT_LOW_STATE_POSITION);
-                        telemetry.addData("lift position", robot.lift.liftMotor1.getCurrentPosition());
+                        telemetry.addData("lift position", robot.lift.liftMotor2.getCurrentPosition());
                         telemetry.update();
                         return false;
                     }
@@ -548,7 +548,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
                 telemetry.addData("Alpha", "%.3f", currentColor.alpha);
 
-                telemetry.update();
 
 /*
                 // Find spike based on color value
@@ -571,7 +570,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // Find spike based on change in hue value
                 // Rubber mat (gray) gives out 180.
                 // Any color moves the hue away from 180 (can be in either direction)
-                if (Math.abs(180.0 - hsv[0]) > 20.0){
+                if (Math.abs(180.0 - hsv[0]) > 80){
                     moveToSpike = 0;
                     foundSpike = true;  // found it
                 } else {

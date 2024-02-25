@@ -39,15 +39,15 @@ public class ArmA {
 
         armServo = hwMap.get(ServoImplEx.class, "armServo");
 
-        armServo.setPwmRange(new PwmControl.PwmRange(rightServoPWMLowerLimit,rightServoPWMHigherLimit));
+        armServo.setPwmRange(new PwmControl.PwmRange(1080,2050));
 
     }
     public void armToDepositPosition(){
         telemetry.addData("Arm Position Called", "Deposit");
-        armServo.setPosition(0.01);
+        armServo.setPosition(0.04);
     }
     public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
-        armServo.setPosition(0.99);
+        armServo.setPosition(0.97);
     }
 }

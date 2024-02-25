@@ -10,11 +10,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 @TeleOp(name="Robot: TeleTesting", group="Robot")
-public class TeleTesting extends LinearOpMode {
+public class TeleTEsting extends LinearOpMode {
     @Override
     public void runOpMode() {
+        ElapsedTime initTimer = new ElapsedTime();
+        Constants constants = new Constants();
+        Map<String, String> stateMap = new HashMap<String, String>() {{ }};
+        waitForStart();
 
-    }
+//        robot.lift.raiseHeightTo(800);
+//        sleep(500);
+//        robot.arm.armToIdlePosition();
+//        sleep(200);
+//        robot.lift.raiseHeightTo(0);
+//        isReset = true;
 
+        while(!isStopRequested()) {
+        }
+        }
 
 }
