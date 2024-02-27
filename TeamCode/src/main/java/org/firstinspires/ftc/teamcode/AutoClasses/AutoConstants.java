@@ -78,7 +78,7 @@ public class AutoConstants {
     public static Vector2d vBlueClearStageGate = new Vector2d(TILE_CENTER_TO_CENTER / 2.0, TILE_CENTER_TO_CENTER / 2.0);
 
     // Starting positions
-    public static Pose2d pStartingPose_RedLeft  = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2.0, Math.toRadians(-90));
+    public static Pose2d pStartingPose_RedLeft  = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2.0 , Math.toRadians(-90));
     public static Pose2d pStartingPose_RedRight = new Pose2d(0.5 * TILE_CENTER_TO_CENTER, -FIELD_BOUNDARY_FROM_CENTER + robot_length / 2.0, Math.toRadians(-90));
     public static Pose2d pStartingPose_BlueRight = new Pose2d(-1.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2.0, Math.toRadians(90));
     public static Pose2d pStartingPose_BlueLeft  = new Pose2d(0.5 * TILE_CENTER_TO_CENTER, FIELD_BOUNDARY_FROM_CENTER - robot_length / 2.0, Math.toRadians(90));

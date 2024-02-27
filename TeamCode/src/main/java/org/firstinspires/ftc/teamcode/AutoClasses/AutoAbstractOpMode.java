@@ -151,6 +151,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
                 traj_init(robot) // all variations first go to center spike
         ));
+        robot.drive.updatePoseEstimate();
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
                 telemetryPacket -> {
@@ -160,8 +161,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
                         telemetry.update();
                         return false;
-                },
-                parking_traj(robot)
+                }
+//                parking_traj(robot)
         )); // Need to calculate trajectories dynamically
 
         telemetry.addLine("Finished trajectory");
