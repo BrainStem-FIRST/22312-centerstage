@@ -74,7 +74,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         // Set starting pose since robot was initialized with Pose2d(0,0,0)
         robot.drive.pose = startPose();
 
-        // Additional variables
+        // variables controlling approach to the backdrop using camera and distance sensors
         int xDirection = 0;
         int yDirection = 0;
         int zDirection = 0;
@@ -102,11 +102,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         /////////////////////////////////////////////
         //             START WAS GIVEN             //
+        //        No need for waitforstart()       //
         /////////////////////////////////////////////
 
         // Change recognition mode to AprilTags before the While Loop
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-        sleep(100);
 
         int loopCounter = 0;    // for debug purposes, no longer necessary
 
@@ -151,7 +151,9 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
                 traj_init(robot) // all variations first go to center spike
         ));
-        robot.drive.updatePoseEstimate();
+
+        robot.drive.updatePoseEstimate(); // This should not be unnecessary since updatePoseEstimate is already being called within findSpike()
+
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
                 telemetryPacket -> {
@@ -349,7 +351,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.toDouble()));
 
             telemetry.update();
-        }
+
 
 
         // Arrived at position. Place pixel and park
@@ -444,11 +446,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 },
                 new SleepAction(4.0)
         ));
-
+*/
 
     }
 
- */
+
     public enum Alliance {
         RED,
         BLUE
