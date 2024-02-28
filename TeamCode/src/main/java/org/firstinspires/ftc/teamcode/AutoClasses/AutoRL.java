@@ -62,7 +62,7 @@ public class AutoRL extends AutoAbstractOpMode {
                     telemetry.addData("x", robot.drive.pose.position.x);
                     telemetry.addData("y", robot.drive.pose.position.y);
                     telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-//                    telemetry.update();
+                    telemetry.update();
                     return false;
                 })
                 .setReversed(true)
@@ -75,12 +75,12 @@ public class AutoRL extends AutoAbstractOpMode {
                     telemetry.addData("x", robot.drive.pose.position.x);
                     telemetry.addData("y", robot.drive.pose.position.y);
                     telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-//                    telemetry.update();
+                    telemetry.update();
                     return false;
                 })
 
                 .stopAndAdd(findSpike(robot))
-
+//                .lineToY(-22)
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after traj_init:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -114,9 +114,8 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
-//                .setTangent(Math.toRadians(135))
-               // .setTangent(-90)
-              //  .splineToLinearHeading(new Pose2d(/*-constants.TILE_CENTER_TO_CENTER*2.25*/-56, /*(-constants.TILE_CENTER_TO_CENTER / 2.0)*/-12, Math.toRadians(180)), Math.toRadians(135))
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0), Math.toRadians(180)), Math.toRadians(135))
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after spline:");
                     telemetry.addData("x", robot.drive.pose.position.x);

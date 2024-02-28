@@ -571,7 +571,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // Find spike based on change in hue value
                 // Rubber mat (gray) gives out 180.
                 // Any color moves the hue away from 180 (can be in either direction)
-                if (Math.abs(180.0 - hsv[0]) > 80){
+                if (Math.abs(148 - hsv[0]) > 30){
                     moveToSpike = 0;
                     foundSpike = true;  // found it
                 } else {
