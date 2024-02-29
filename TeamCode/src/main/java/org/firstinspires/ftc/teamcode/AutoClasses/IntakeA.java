@@ -40,7 +40,7 @@ public class IntakeA {
     }
 
     public void intakePixelinAuto() {
-        intakeMotor.setPower(0.5);
+        intakeMotor.setPower(1.0);
     }
 
     public  void stopIntakeinAuto() {

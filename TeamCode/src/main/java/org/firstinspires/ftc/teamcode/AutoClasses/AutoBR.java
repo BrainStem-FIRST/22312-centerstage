@@ -83,9 +83,10 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
                 .setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25 - 12, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .stopAndAdd(robot.intake.intakePixel)
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x - 12, constants.vBlueBackdrop_Center.y - 12, Math.toRadians(-180)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x - 12, constants.vBlueBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(90))
 
                 .build();
     }

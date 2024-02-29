@@ -584,7 +584,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
                 robot.drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
-                                0.25 * moveToSpike,
+                                0.4 * moveToSpike,
                                 0.0
 
                         ),
