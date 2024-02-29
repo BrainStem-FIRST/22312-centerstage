@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.opencv.core.Mat;
 
 @Config
 @Autonomous(name="Robot: Red-Left Auto", group="Robot")
@@ -80,7 +81,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 })
 
                 .stopAndAdd(findSpike(robot))
-//                .lineToY(-22)
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after traj_init:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -115,7 +115,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0), Math.toRadians(180)), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180)), Math.toRadians(135))
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after spline:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -124,9 +124,9 @@ public class AutoRL extends AutoAbstractOpMode {
                     telemetry.update();
                     return false;
                 })
-//                .setTangent(0)
-//                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-//                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(-90))
+                .setTangent(0)
+                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y + 24, Math.toRadians(-180)), Math.toRadians(-90))
 
                 .build();
     }

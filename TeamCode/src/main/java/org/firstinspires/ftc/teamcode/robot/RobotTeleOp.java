@@ -179,6 +179,12 @@ public class RobotTeleOp extends LinearOpMode {
                 if(gamepad1xbutton.getState() && ((String)stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
                     stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
                 }
+                if(gamepad2.dpad_up){
+                    stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_UP_STATE);
+                }
+                if(gamepad2.dpad_down){
+                    stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_5_PIXEL_HEIGHT);
+                }
                 if (robot.lift.liftMotor2.getCurrentPosition() > 230) {
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(

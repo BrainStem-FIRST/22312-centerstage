@@ -18,16 +18,16 @@ public class Drawbridge {
     public final String DRAWBRIDGE_4_PIXEL_HEIGHT = "DRAWBRIDGE_4_PIXEL_HEIGHT";
     public final String DRAWBRIDGE_5_PIXEL_HEIGHT = "DRAWBRIDGE_5_PIXEL_HEIGHT";
     private int drawbridgePWMLowerLimit = 500;
-    private int drawbridgePWMHigherLimit = 2000;
+    private int drawbridgePWMHigherLimit = 2500;
 
     private int hardstopPWMLowerLimit = 500;
     private int hardstopPWMHigherLimit = 2000;
-    private double firstPixelPosition = 0.5;
+    private double firstPixelPosition = 0.01;
     private double secondPixelPosition = 0.5;
     private double thirdPixelPosition = 0.01;
 //    private double fourthPixelPosition = 0.22;
 //    private double fifthPixelPosition = 0.01;
-    private double drawBridge5thPixelPosition = 0.1425;
+    private double drawBridge5thPixelPosition = 0.99;
     private double drawBridge4thPixelPosition = 0.117;
 
     // 120 is 5th pixel pwm
@@ -71,8 +71,8 @@ public class Drawbridge {
         telemetry.addData("State of drawbridge", state);
         switch(state){
             case DRAWBRIDGE_UP_STATE:{
-                setDrawBridgeUp();
-//                setHardstopPosition(firstPixelPosition);
+//                setDrawBridgeUp();
+                setHardstopPosition(firstPixelPosition);
                 break;
             }
             case DRAWBRIDGE_DOWN_STATE:{
@@ -99,7 +99,8 @@ public class Drawbridge {
                 break;
             }
             case DRAWBRIDGE_5_PIXEL_HEIGHT:{
-                setDrawbridgePosition(drawBridge5thPixelPosition);
+//                setDrawbridgePosition(drawBridge5thPixelPosition);
+                setHardstopPosition(drawBridge5thPixelPosition);
                 break;
             }
         }
@@ -107,11 +108,11 @@ public class Drawbridge {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(0.5);
+        drawBridge.setPosition(0.01);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");
-        drawBridge.setPosition(0);
+        drawBridge.setPosition(0.99);
     }
 
     public void setHardstopPosition(double position){
