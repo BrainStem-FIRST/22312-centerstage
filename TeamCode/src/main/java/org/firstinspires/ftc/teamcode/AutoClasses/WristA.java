@@ -40,15 +40,15 @@ public class WristA {
         wristServo.setPosition(ninety_degree_position);
     }
 
-    public void wristToZeroDegreePosition(){
-        wristServo.setPosition(zero_degree_position);
+    public void wristToOneEightyDegreePosition(){
+        wristServo.setPosition(1.0);
     }
 
     public Action turnWrist = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    wristToZeroDegreePosition();
+                    wristToOneEightyDegreePosition();
                     return false;
                 }
             },

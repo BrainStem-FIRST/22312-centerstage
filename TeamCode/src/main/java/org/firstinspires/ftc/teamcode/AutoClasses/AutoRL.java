@@ -50,11 +50,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x, constants.vRedBackdrop_Left.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
-                .stopAndAdd(robot.lift.raiseLiftAuto)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -18))
-                .stopAndAdd(robot.wrist.turnWrist)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -131,11 +126,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
-                .stopAndAdd(robot.lift.raiseLiftAuto)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -24))
-                .stopAndAdd(robot.wrist.turnWrist)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -156,8 +146,8 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 // Turn heading towards right spike
                 .setTangent(Math.toRadians(-35))
-                .lineToYLinearHeading(-35, Math.toRadians(-25))
-
+                .lineToYLinearHeading(-36, Math.toRadians(-25))
+                .lineToX(-24)
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after before spit:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -176,11 +166,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
-                .stopAndAdd(robot.lift.raiseLiftAuto)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -30))
-                .stopAndAdd(robot.wrist.turnWrist)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -204,6 +189,41 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(135)
                 .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X,-20 + 12, Math.toRadians(180)), Math.toRadians(45))
                 .build();
+    }
+
+    @Override
+    public Action deposit_right(BrainSTEMRobotA robot){
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -30))
+                .stopAndAdd(robot.wrist.turnWrist)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                .build();
+    }
+
+    public Action deposit_center(BrainSTEMRobotA robot){
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -24))
+                .stopAndAdd(robot.wrist.turnWrist)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                .build();
+    }
+
+    public Action deposit_left(BrainSTEMRobotA robot){
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -18))
+                .stopAndAdd(robot.wrist.turnWrist)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                .build();
+
     }
 
     @Override

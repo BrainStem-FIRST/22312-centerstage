@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ActionOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.BrainSTEMRobot;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -37,6 +38,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     public abstract Action traj_left(BrainSTEMRobotA robot);
     public abstract Action traj_center(BrainSTEMRobotA robot);
     public abstract Action traj_right(BrainSTEMRobotA robot);
+
+    public abstract Action deposit_right(BrainSTEMRobotA robot);
+    public abstract Action deposit_center(BrainSTEMRobotA robot);
+    public abstract Action deposit_left(BrainSTEMRobotA robot);
     public abstract Action cycle(BrainSTEMRobotA robot);
 
     public abstract Action parking_traj(BrainSTEMRobotA robot);
@@ -67,7 +72,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         // Huskylens initialization (device and Selection of algorithm
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
         robot.depositor.grabBothPixels();
-        robot.wrist.wristToPickUpPosition();
+//        robot.wrist.wristToPickUpPosition();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
@@ -171,14 +176,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum),
-                telemetryPacket -> {
-                        telemetry.addLine("Ending pose:");
-                        telemetry.addData("x", robot.drive.pose.position.x);
-                        telemetry.addData("y", robot.drive.pose.position.y);
-                        telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-                        telemetry.update();
-                        return false;
-                }
+                getDepositTrajectory(robot, targetAprilTagNum)
         )); // Need to calculate trajectories dynamically
 
         telemetry.addLine("Finished trajectory");
@@ -441,13 +439,12 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
 
         runBlocking(new SequentialAction(
-                parking_traj(robot)
-/*
+                parking_traj(robot),
                 // Reset the subsystems for Tele
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.lift.raiseHeightTo(robot.lift.LIFT_MIDDLE_STATE_POSITION);
+                        robot.arm.armToIdlePosition();
                         return false;
                     }
                 },
@@ -457,12 +454,13 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.arm.armToIdlePosition();
+                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
                         return false;
                     }
                 },
                 new SleepAction(4.0)
-*/
+
+
         ));
 
     }
@@ -648,6 +646,36 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             case 3:
             case 6:
                 trajectory = traj_right(robot);
+                break;
+            default:
+                // This default should never be reached because a default value for
+                // targetTagPos is already assigned during readPropPosition().
+                // Still...
+                telemetry.addLine("BUG IN CODE! Target Tag Number was not properly set.");
+                trajectory = traj_center(robot);
+                telemetry.addLine("running default: Right");
+                telemetry.update();
+                break;
+        }
+
+        return trajectory;
+    }
+
+    public Action getDepositTrajectory(BrainSTEMRobotA robot, int targetTagNum){
+        Action trajectory;
+        robot.drive.updatePoseEstimate();
+        switch (targetTagNum) {
+            case 1:
+            case 4:
+                trajectory = deposit_left(robot);
+                break;
+            case 2:
+            case 5:
+                trajectory = deposit_center(robot);
+                break;
+            case 3:
+            case 6:
+                trajectory = deposit_right(robot);
                 break;
             default:
                 // This default should never be reached because a default value for

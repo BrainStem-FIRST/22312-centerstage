@@ -124,7 +124,6 @@ public class LiftA {
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    setRawPower(0.5);
                     raiseHeightTo(LIFT_LOW_STATE_POSITION);
                     return false;
                 }
