@@ -91,10 +91,12 @@ public class Lift {
         liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        liftMotor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

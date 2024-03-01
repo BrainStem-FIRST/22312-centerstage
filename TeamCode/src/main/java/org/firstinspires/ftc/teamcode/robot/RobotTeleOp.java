@@ -210,6 +210,9 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("LIft encoder heights", robot.lift.liftMotor2.getCurrentPosition());
                 telemetry.addData("Wrist Position counter", wristPositionCounter);
                 telemetry.addData("intake motor", robot.intake.intakeMotor.getPower());
+                telemetry.addData("Lift motor 1 ticks", robot.lift.liftMotor1.getCurrentPosition());
+                telemetry.addData("Lift motor 2 ticks", robot.lift.liftMotor2.getCurrentPosition());
+                telemetry.addData("Lift motor 3 ticks", robot.lift.liftMotor3.getCurrentPosition());
                 telemetry.addData("hanging mode ", hangingMode);
                 telemetry.update();
             }

@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -37,4 +43,15 @@ public class WristA {
     public void wristToZeroDegreePosition(){
         wristServo.setPosition(zero_degree_position);
     }
+
+    public Action turnWrist = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    wristToZeroDegreePosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
+    );
 }

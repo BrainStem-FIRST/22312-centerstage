@@ -26,7 +26,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Move close enough to center spike
-                .lineToYSplineHeading(-28, Math.toRadians(180))
+                .lineToY(-28)
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addData("pose before findSpike", robot.drive.pose.position.y);
@@ -75,19 +75,18 @@ public class AutoRR extends AutoAbstractOpMode {
                 // Replace prop with your yellow pixel (just push)
 //                .lineToY(constants.vRedRightSpike_Center.y)
 //                .setTangent(0)
-                .strafeTo(new Vector2d(constants.vRedRightSpike_Center.x+5.0, constants.vRedRightSpike_Center.y))
+//                .strafeTo(new Vector2d(constants.vRedRightSpike_Center.x+5.0, constants.vRedRightSpike_Center.y))
 //                .setTangent(90)
 //                .splineTo(constants.vRedRightSpike_Center, Math.toRadians(180))
 //                .lineToXLinearHeading(constants.vRedRightSpike_Center.x, Math.toRadians(180)) // + 3.0)  // Adjust delta to fine tune pixel drop off position
-
+                .lineToY(robot.drive.pose.position.y + 8)
                 .stopAndAdd(robot.intake.spitPixel)
 
-                .endTrajectory()
-                .setReversed(true)  // re-set reverse after .stopAndAdd as it loses config
+                // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Center.y, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Center.y + 12, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
     }

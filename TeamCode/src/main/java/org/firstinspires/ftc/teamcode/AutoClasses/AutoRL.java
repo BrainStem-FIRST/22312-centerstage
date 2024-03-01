@@ -69,7 +69,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // Move close enough to center spike
-                .lineToY(-32.5)
+                .lineToY(-35)
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose before findSpike:");
@@ -100,7 +100,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
-                .lineToY(robot.drive.pose.position.y + 8.0)
+                .lineToY(robot.drive.pose.position.y + 6.0)
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose before spit:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -110,7 +110,7 @@ public class AutoRL extends AutoAbstractOpMode {
                     return false;
                 })
 
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
@@ -126,8 +126,12 @@ public class AutoRL extends AutoAbstractOpMode {
                 })
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y + 24, Math.toRadians(-180)), Math.toRadians(-90))
-
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -24))
+                .stopAndAdd(robot.wrist.turnWrist)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -164,7 +168,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180.00001)), Math.toRadians(180))
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(-90))
@@ -176,12 +180,12 @@ public class AutoRL extends AutoAbstractOpMode {
     public Action cycle(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
                 .setTangent(90)
-                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER * 2.5, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, (-constants.TILE_CENTER_TO_CENTER / 2) + 12, Math.toRadians(-180)), Math.toRadians(-180))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER * 2.5, (-constants.TILE_CENTER_TO_CENTER / 2) + 12, Math.toRadians(-180)), Math.toRadians(-180))
                 .waitSeconds(2.0)
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, -constants.TILE_CENTER_TO_CENTER / 2, Math.toRadians(180)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x+2, constants.vRedBackdrop_Left.y-2, Math.toRadians(180)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(constants.TILE_CENTER_TO_CENTER / 2+6, (-constants.TILE_CENTER_TO_CENTER / 2) + 12, Math.toRadians(180)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x+2, (constants.vRedBackdrop_Left.y-2) + 12, Math.toRadians(180)), Math.toRadians(-90))
                 .build();
     }
 
@@ -190,7 +194,7 @@ public class AutoRL extends AutoAbstractOpMode {
         return robot.drive.actionBuilder(robot.drive.pose)
 //                .lineToX(37)  /// Add if needed
                 .setTangent(135)
-                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X,-20, Math.toRadians(180)), Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X,-20 + 12, Math.toRadians(180)), Math.toRadians(45))
                 .build();
     }
 

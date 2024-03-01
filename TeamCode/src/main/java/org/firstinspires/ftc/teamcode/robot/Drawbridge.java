@@ -71,7 +71,7 @@ public class Drawbridge {
         telemetry.addData("State of drawbridge", state);
         switch(state){
             case DRAWBRIDGE_UP_STATE:{
-//                setDrawBridgeUp();
+                setDrawBridgeUp();
                 setHardstopPosition(firstPixelPosition);
                 break;
             }

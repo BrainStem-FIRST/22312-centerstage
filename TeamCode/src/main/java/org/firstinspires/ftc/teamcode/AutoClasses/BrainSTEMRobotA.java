@@ -34,6 +34,9 @@ public class BrainSTEMRobotA {
     public HopperA hopper;
     public LiftA lift;
     public ArmA arm;
+    public WristA wrist;
+
+    public DepositorA depositor;
 
     public NormalizedColorSensor colorSensor;
     public NormalizedRGBA colors;
@@ -50,6 +53,8 @@ public class BrainSTEMRobotA {
         hopper = new HopperA(hardwareMap, telemetry);
         lift = new LiftA(hardwareMap, telemetry);
         arm = new ArmA(hardwareMap, telemetry);
+        depositor = new DepositorA(hardwareMap, telemetry);
+        wrist = new WristA(hardwareMap, telemetry);
 
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftFloorColorSensor");
@@ -60,6 +65,16 @@ public class BrainSTEMRobotA {
         telemetry.addData("Robot", "is ready");
         telemetry.update();
     }
+
+    public Action updatePose = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    drive.updatePoseEstimate();
+                    return false;
+                }
+            }
+    );
 /*
     public Action depositToBoardinAuto = new SequentialAction(
             new Action() {

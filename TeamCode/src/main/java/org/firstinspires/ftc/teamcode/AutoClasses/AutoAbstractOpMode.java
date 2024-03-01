@@ -54,6 +54,9 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     private ElapsedTime turnTimer = new ElapsedTime();
     private boolean firstTimeVisiting = true;
 
+    private ElapsedTime findSpikeTimer = new ElapsedTime();
+    private boolean firstTimeRun = true;
+
 
 
     @Override
@@ -63,6 +66,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         // Huskylens initialization (device and Selection of algorithm
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
+        robot.depositor.grabBothPixels();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
@@ -80,7 +84,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         int zDirection = 0;
         boolean foundX = false;
         boolean foundY = false;
-        boolean foundZ = true; //false;
+        boolean foundZ = false; //false;
         int position_error;
 
 
@@ -120,17 +124,28 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         telemetry.update();
 
 // Any initialization of servos before auto will be done here:
-//        runBlocking(new SequentialAction (
-//                new Action() {
-//                    @Override
-//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                        robot.grabber.grabber.setPosition(0.0);
-//                        return false;
-//                    }
-//                },
-//                new SleepAction(0.5)
-//        ));
-/*
+        runBlocking(new SequentialAction (
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.depositor.grabBothPixels();
+                        return false;
+                    }
+                },
+                new SleepAction(0.5)
+        ));
+
+        runBlocking(new SequentialAction(
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.drawbridge.setDrawBridgeDown();
+                        return false;
+                    }
+                },
+                new SleepAction(0.2)
+        ));
+
         runBlocking(new SequentialAction(
                 new Action() {
                     @Override
@@ -141,7 +156,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 }
         ));
 
- */
 
         //////////////////////////////////////////////////////////
         //                GO TO BACKDROP                        //
@@ -164,7 +178,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         telemetry.update();
                         return false;
                 }
-//                parking_traj(robot)
         )); // Need to calculate trajectories dynamically
 
         telemetry.addLine("Finished trajectory");
@@ -174,188 +187,183 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //           FINAL APPROACH USING SENSORS               //
         //////////////////////////////////////////////////////////
 
-        /*
-        int targetBlockPos = -1; // The block of interest within the blocks array.
 
-        while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
-
-            telemetry.addData("Loop Counter: ", ++loopCounter);
-
-// TODO: Move the AprilTag read and strafe to a separate method
-
-            blocks = robot.huskyLens.blocks();
-            telemetry.addData("Block count", blocks.length);
-            telemetry.update();
-
-            // poll all block[i] and check if any of their id matches targetPos
-            // targetBlock = i
-
-            targetBlockPos = -1;    // This will crash the program if no blocks were seen.
-            for (int i = 0; i < blocks.length; i++) {
-                telemetry.addData("Block", blocks[i].toString());
-
-                if (blocks[i].id == targetAprilTagNum) {
-                    targetBlockPos = i;
-                    telemetry.addData("block seen (target): ", blocks[i].id);
-                }
-            }
-
-            telemetry.addData("block of interest is in slot", targetBlockPos);
-
-
-            // Read distance
-            distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM)); //sensorDistanceLeft.getDistance(DistanceUnit.MM);
-            distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM)); //sensorDistanceRight.getDistance(DistanceUnit.MM);
-
-            telemetry.addData("distance right", distanceRight);
-            telemetry.addData("distance left", distanceLeft);
-
-            if (targetBlockPos >= 0) {
-                position_error = blocks[targetBlockPos].x - 160;
-            } else {
-                if (blocks.length == 0) {
-                    telemetry.addLine("didn't see anything");
-                    if (distanceRight < constants.minTagVision) {
-                        position_error = 0;
-                        foundY = true;
-                        telemetry.addLine("too close to board");
-                    }
-                    else if (robot.drive.pose.position.y < constants.vRedBackdrop_Center.y) {
-                        position_error = -160;
-                    } else {
-                        position_error = 160;
-                    }
-                } else {
-                    telemetry.addData("block seen (not the target): ", blocks[0].id);
-                    if (blocks[0].id > targetAprilTagNum) {
-                        position_error = -160;
-                    } else {
-                        position_error = 160;
-                    }
-                }
-            }
-            telemetry.addData("position error", position_error);
-
-
-            // direction to turn
-            if (distanceLeft < 1000.00 && distanceRight < 1000.00 && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
-                if (Math.abs(distanceRight - distanceLeft) > 50.00 ) {
-                    if (distanceRight > distanceLeft) {
-                        zDirection = -1;
-                    } else {
-                        zDirection = 1;
-                    }
-                    telemetry.addLine("turning");
-                    telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
-                } else {
-                    zDirection = 0;
-                    foundZ = true;
-                    telemetry.addLine("stopped turning");
-                    telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
-                }
-            }
-            else {
-                zDirection = 0;
-                telemetry.addLine("turning paused due to OOR sensor");
-                telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
-
-                // Give up after 2 seconds
-                if(firstTimeVisiting) {
-                    turnTimer.reset();
-                    telemetry.addLine("Turning time started!");
-                    firstTimeVisiting = false;
-                }
-                
-                if (turnTimer.seconds() > 2.0) {
-                    foundZ = true;
-                    zDirection = 0;
-                    telemetry.addLine("Turning timed out");
-                }
-            }
-
-            // which way to strafe?
-            if (Math.abs(position_error) > 12 && !foundY) {
-                if (position_error < 0) {
-                    yDirection = -1;
-                    telemetry.addLine("strafing left");
-
-                    // increment counter if the direction changed
-                    if(prevStrafeDir == 1) {
-                        strafeCounter++;
-                        prevStrafeDir = -1;
-                    }
-                } else {
-                    yDirection = 1;
-                    telemetry.addLine("strafing right");
-
-                    // increment counter if the direction changed
-                    if(prevStrafeDir == -1) {
-                        strafeCounter++;
-                        prevStrafeDir = 1;
-                    }
-                }
-
-                // Exit strafing if it caught up in a loop
-                if (strafeCounter>3) {
-                    yDirection = 0;
-                    foundY = true;
-                    telemetry.addLine("Exit strafing due to frequent direction change.");
-                }
-
-                // TODO: if position_error is 160 or -160 more than x seconds, do something
-            } else {
-                yDirection = 0;
-                telemetry.addLine("stopped strafing temporarily");
-
-                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
-                    foundY = true;
-                    telemetry.addLine("stopped strafing permanently");
-                }
-            }
-
-            // Adjust distance from backdrop
-            // Only approach to the backdrop if both Y and Z axes were found.
-            if (foundY) { //foundY also means foundZ
-                if (Math.abs(distanceRight - constants.targetDistance) > 8.00 && !foundX) {
-                    if (distanceRight < constants.targetDistance) {
-                        xDirection = 1;
-                        telemetry.addLine("moving away");
-                    } else {
-                        xDirection = -1;
-                        telemetry.addLine("moving towards");
-                    }
-                } else {
-                    xDirection = 0;
-                    foundX = true;
-                    telemetry.addLine("stopped moving");
-                }
-            }
+//        int targetBlockPos = -1; // The block of interest within the blocks array.
+//
+//        while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
+//
+//            telemetry.addData("Loop Counter: ", ++loopCounter);
+//
+//// TODO: Move the AprilTag read and strafe to a separate method
+//
+//            blocks = robot.huskyLens.blocks();
+//            telemetry.addData("Block count", blocks.length);
+//            telemetry.update();
+//
+//            // poll all block[i] and check if any of their id matches targetPos
+//            // targetBlock = i
+//
+//            targetBlockPos = -1;    // This will crash the program if no blocks were seen.
+//            for (int i = 0; i < blocks.length; i++) {
+//                telemetry.addData("Block", blocks[i].toString());
+//
+//                if (blocks[i].id == targetAprilTagNum) {
+//                    targetBlockPos = i;
+//                    telemetry.addData("block seen (target): ", blocks[i].id);
+//                }
+//            }
+//
+//            telemetry.addData("block of interest is in slot", targetBlockPos);
+//
+//
+//            // Read distance
+//            distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM)); //sensorDistanceLeft.getDistance(DistanceUnit.MM);
+//            distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM)); //sensorDistanceRight.getDistance(DistanceUnit.MM);
+//
+//            telemetry.addData("distance right", distanceRight);
+//            telemetry.addData("distance left", distanceLeft);
+//
+//            if (targetBlockPos >= 0) {
+//                position_error = blocks[targetBlockPos].x - 160;
+//            } else {
+//                if (blocks.length == 0) {
+//                    telemetry.addLine("didn't see anything");
+//                    if (distanceRight < constants.minTagVision) {
+//                        position_error = 0;
+//                        foundY = true;
+//                        telemetry.addLine("too close to board");
+//                    } else if (robot.drive.pose.position.y < constants.vRedBackdrop_Center.y) {
+//                        position_error = -160;
+//                    } else {
+//                        position_error = 160;
+//                    }
+//                } else {
+//                    telemetry.addData("block seen (not the target): ", blocks[0].id);
+//                    if (blocks[0].id > targetAprilTagNum) {
+//                        position_error = -160;
+//                    } else {
+//                        position_error = 160;
+//                    }
+//                }
+//            }
+//            telemetry.addData("position error", position_error);
+//
+//
+//            // direction to turn
+//            if (distanceLeft < 1000.00 && distanceRight < 1000.00 && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
+//                if (Math.abs(distanceRight - distanceLeft) > 50.00) {
+//                    if (distanceRight > distanceLeft) {
+//                        zDirection = -1;
+//                    } else {
+//                        zDirection = 1;
+//                    }
+//                    telemetry.addLine("turning");
+//                    telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
+//                } else {
+//                    zDirection = 0;
+//                    foundZ = true;
+//                    telemetry.addLine("stopped turning");
+//                    telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
+//                }
+//            } else {
+//                zDirection = 0;
+//                telemetry.addLine("turning paused due to OOR sensor");
+//                telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
+//
+//                // Give up after 2 seconds
+//                if (firstTimeVisiting) {
+//                    turnTimer.reset();
+//                    telemetry.addLine("Turning time started!");
+//                    firstTimeVisiting = false;
+//                }
+//
+//                if (turnTimer.seconds() > 5.0) {
+//                    foundZ = true;
+//                    zDirection = 0;
+//                    telemetry.addLine("Turning timed out");
+//                }
+//            }
+//
+//            // which way to strafe?
+//            if (Math.abs(position_error) > 12 && !foundY) {
+//                if (position_error < 0) {
+//                    yDirection = -1;
+//                    telemetry.addLine("strafing left");
+//
+//                    // increment counter if the direction changed
+//                    if (prevStrafeDir == 1) {
+//                        strafeCounter++;
+//                        prevStrafeDir = -1;
+//                    }
+//                } else {
+//                    yDirection = 1;
+//                    telemetry.addLine("strafing right");
+//
+//                    // increment counter if the direction changed
+//                    if (prevStrafeDir == -1) {
+//                        strafeCounter++;
+//                        prevStrafeDir = 1;
+//                    }
+//                }
+//
+//                // Exit strafing if it caught up in a loop
+//                if (strafeCounter > 3) {
+//                    yDirection = 0;
+//                    foundY = true;
+//                    telemetry.addLine("Exit strafing due to frequent direction change.");
+//                }
+//
+//                // TODO: if position_error is 160 or -160 more than x seconds, do something
+//            } else {
+//                yDirection = 0;
+//                telemetry.addLine("stopped strafing temporarily");
+//
+//                if (foundZ) {  // do not stop seeking the tag unless turning is complete. turning can make you lose position.
+//                    foundY = true;
+//                    telemetry.addLine("stopped strafing permanently");
+//                }
+//            }
+//
+//            // Adjust distance from backdrop
+//            // Only approach to the backdrop if both Y and Z axes were found.
+//            if (foundY) { //foundY also means foundZ
+//                if (Math.abs(distanceRight - constants.targetDistance) > 8.00 && !foundX) {
+//                    if (distanceRight < constants.targetDistance) {
+//                        xDirection = 1;
+//                        telemetry.addLine("moving away");
+//                    } else {
+//                        xDirection = -1;
+//                        telemetry.addLine("moving towards");
+//                    }
+//                } else {
+//                    xDirection = 0;
+//                    foundX = true;
+//                    telemetry.addLine("stopped moving");
+//                }
+//            }
+//
+//            // Strafe left or right to approach to the target tag
+//            robot.drive.setDrivePowers(new PoseVelocity2d(
+//                    new Vector2d(
+//                            0.27 * xDirection,
+//                            0.32 * yDirection
+//                    ),
+//                    0.0 //25 * zDirection
+//            ));
+//
+//
+//            robot.drive.updatePoseEstimate();
+//
+//            telemetry.addData("x", robot.drive.pose.position.x);
+//            telemetry.addData("y", robot.drive.pose.position.y);
+//            telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.toDouble()));
+//
+//            telemetry.update();
+//        }
 
 /*
-            // Strafe left or right to approach to the target tag
-            robot.drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            0.27 * xDirection,
-                            0.32 * yDirection
-                    ),
-                    0.0 //25 * zDirection
-            ));
-
- */
-
-
-            robot.drive.updatePoseEstimate();
-
-            telemetry.addData("x", robot.drive.pose.position.x);
-            telemetry.addData("y", robot.drive.pose.position.y);
-            telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.toDouble()));
-
-            telemetry.update();
-
-
-
-        // Arrived at position. Place pixel and park
-     /*   runBlocking(new SequentialAction(
+        // Arrived at position. Place yellow pixel
+        runBlocking(new SequentialAction(
                 new Action() {  // TODO: This action may not be needed if the grabber is squeezed at the start via golden gear
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -392,7 +400,9 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         ));
 */
 
-    /*    runBlocking(new SequentialAction(
+/*
+        // Reset the lift and arm for the next cycle
+        runBlocking(new SequentialAction(
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -407,26 +417,32 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         return false;
                     }
                 }
-/*
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        runBlocking(cycle(robot));
-                        return false;
-                    }
-                }
-
-                )
-        );
+        ));
 */
 
-                // GO TO PARK
-                // TODO: In future revisions, add time check to park within 30 seconds
+        // Run another cycle
+//        runBlocking(new SequentialAction(
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        runBlocking(cycle(robot));
+//                        return false;
+//                    }
+//                }
+//                // Add actions to place the white pixels
+//
+//                )
+//        );
 
+
+        // GO TO PARK
+        // TODO: In future revisions, add time check to park within 30 seconds
+
+
+        runBlocking(new SequentialAction(
+                parking_traj(robot)
 /*
-
-                parking_traj(robot),
-
+                // Reset the subsystems for Tele
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -435,7 +451,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 },
 
-//                new SleepAction(1.0),
+                new SleepAction(1.0),
 
                 new Action() {
                     @Override
@@ -445,10 +461,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 },
                 new SleepAction(4.0)
-        ));
 */
+        ));
 
     }
+
 
 
     public enum Alliance {
@@ -537,6 +554,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
                 // read current color values
+                if(firstTimeRun){
+                    findSpikeTimer.reset();
+                    firstTimeRun = false;
+                }
                 currentColor = robot.colorSensor.getNormalizedColors();
                 Color.colorToHSV(currentColor.toColor(), hsv);
 
@@ -573,7 +594,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // Find spike based on change in hue value
                 // Rubber mat (gray) gives out 180.
                 // Any color moves the hue away from 180 (can be in either direction)
-                if (Math.abs(148 - hsv[0]) > 30){
+                if (Math.abs(148 - hsv[0]) > 30 || findSpikeTimer.seconds() > 0.5){
                     moveToSpike = 0;
                     foundSpike = true;  // found it
                 } else {
@@ -668,7 +689,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     for (int i = 0; i < blocks.length; i++) {
                         telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 1) {    // Look only for Red
+                        if (blocks[i].id == 1 || blocks[i].id == 2) {    // Look only for Red
                             targetTagNum = getTargetTag(blocks[i]);
                             telemetry.addData("Found target prop: ", targetTagNum);
                         }
@@ -677,7 +698,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     for (int i = 0; i < blocks.length; i++) {
                         telemetry.addData("Block", blocks[i].toString());
 
-                        if (blocks[i].id == 2) {    // Look only for Blue
+                        if (blocks[i].id == 3 || blocks[i].id == 4) {    // Look only for Blue
                             targetTagNum = getTargetTag(blocks[i]);
                             telemetry.addData("Found target prop: ", targetTagNum);
                         }

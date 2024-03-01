@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -50,4 +56,15 @@ public class ArmA {
         telemetry.addData("Arm Position Called", "Idle");
         armServo.setPosition(0.97);
     }
+
+    public Action armToDeposit = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    armToDepositPosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
+    );
 }

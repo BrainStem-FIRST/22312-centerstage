@@ -23,7 +23,7 @@ public class LiftA {
 
     // Encoder Positions for Lift heights
     public final int LIFT_GROUND_STATE_POSITION = 0;
-    public final int LIFT_LOW_STATE_POSITION = 124;
+    public final int LIFT_LOW_STATE_POSITION = 400;
     public final int LIFT_MIDDLE_STATE_POSITION = 369;
     public final int LIFT_HIGH_STATE_POSITION = 670;
 
@@ -42,17 +42,19 @@ public class LiftA {
         liftMotor2 = hwMap.get(DcMotorEx.class, "liftMotor2");
         liftMotor3 = hwMap.get(DcMotorEx.class, "liftMotor3");
 
+        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        liftMotor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        liftController.setInputBounds(LIFT_GROUND_STATE_POSITION, LIFT_HIGH_STATE_POSITION);
 //        liftController.setOutputBounds(0,1);
     }
@@ -62,6 +64,14 @@ public class LiftA {
         liftMotor2.setTargetPosition(desiredTickPosition);
         liftMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor2.setPower(1.0);
+
+        liftMotor1.setTargetPosition(desiredTickPosition);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor1.setPower(1.0);
+
+        liftMotor3.setTargetPosition(desiredTickPosition);
+        liftMotor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor3.setPower(1.0);
         int currentPosition = liftMotor2.getCurrentPosition();
         telemetry.addData("Current Position=",currentPosition);
         telemetry.addData("target position", desiredTickPosition);
