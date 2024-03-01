@@ -26,6 +26,7 @@ public class TeleTEsting extends LinearOpMode {
 //        isReset = true;
 
         while(!isStopRequested()) {
+            if(game)
         }
         }
 
