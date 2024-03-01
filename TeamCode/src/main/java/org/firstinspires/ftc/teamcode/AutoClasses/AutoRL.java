@@ -38,7 +38,7 @@ public class AutoRL extends AutoAbstractOpMode {
 //                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
 //                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
 
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 .endTrajectory()
                 .setReversed(true)
@@ -46,11 +46,15 @@ public class AutoRL extends AutoAbstractOpMode {
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, -constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180.00001)), Math.toRadians(180))
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x, constants.vRedBackdrop_Left.y, Math.toRadians(-180)), Math.toRadians(-90))
-
+                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x, constants.vRedBackdrop_Left.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -18))
+                .stopAndAdd(robot.wrist.turnWrist)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -152,7 +156,7 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 // Turn heading towards right spike
                 .setTangent(Math.toRadians(-35))
-                .lineToYLinearHeading(-30, Math.toRadians(-25))
+                .lineToYLinearHeading(-35, Math.toRadians(-25))
 
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after before spit:");
@@ -163,16 +167,20 @@ public class AutoRL extends AutoAbstractOpMode {
                     return false;
                 })
                 // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180.00001)), Math.toRadians(180))
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(-90))
-
+                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .stopAndAdd(robot.lift.raiseLiftAuto)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -30))
+                .stopAndAdd(robot.wrist.turnWrist)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 

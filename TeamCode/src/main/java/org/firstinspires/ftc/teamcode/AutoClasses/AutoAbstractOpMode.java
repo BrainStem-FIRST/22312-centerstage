@@ -67,6 +67,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         // Huskylens initialization (device and Selection of algorithm
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
         robot.depositor.grabBothPixels();
+        robot.wrist.wristToPickUpPosition();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
