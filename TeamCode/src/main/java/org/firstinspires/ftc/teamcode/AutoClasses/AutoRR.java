@@ -55,7 +55,7 @@ public class AutoRR extends AutoAbstractOpMode {
 //                .endTrajectory()
                 .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 1.5)    // Adjust delta accordingly
 
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 .endTrajectory()
                 .setReversed(true)
@@ -105,7 +105,7 @@ public class AutoRR extends AutoAbstractOpMode {
                 .lineToX(constants.vRedRightSpike_Right.x + constants.robot_length / 2+2)
 
                 // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 // Discontinue trajectory
                 .endTrajectory()
@@ -116,21 +116,6 @@ public class AutoRR extends AutoAbstractOpMode {
                 .splineToConstantHeading(new Vector2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
-    }
-
-    @Override
-    public Action deposit_right(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action deposit_center(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action deposit_left(BrainSTEMRobotA robot) {
-        return null;
     }
 
     @Override

@@ -12,8 +12,8 @@ import com.sun.tools.javac.util.Convert;
 public class MeepMeepTesting {
 
     // Robot dimensions. Will become handy to orient around waypoints
-    static double robot_length = 15.75;
-    static double robot_width = 14;
+    static double robot_length = 14.5;
+    static double robot_width = 12;
 
     static double IN_TO_MM = 25.4;  // conversion multiplier from inch to millimeter
     static double DISTANCE_BETWEEN_DISTSENSORS = 10;    // distance between two sensors in inches
@@ -123,10 +123,27 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(new Pose2d(50,-40, Math.toRadians(-150)))
-                        .setTangent(90)
-                        .splineToLinearHeading(new Pose2d(TILE_CENTER_TO_CENTER,-TILE_CENTER_TO_CENTER/2, Math.toRadians(-180)), Math.toRadians(-180))
-                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER*2.5, -TILE_CENTER_TO_CENTER/2, Math.toRadians(-180)), Math.toRadians(-180))
+                myBot.getDrive().actionBuilder(pStartingPose_RedRight)
+// traj_init
+                        // go backwards
+                        .setReversed(true)
+
+                        // Move close enough to center spike
+                        .lineToY(-35)
+                        .waitSeconds(1)
+                        .endTrajectory()
+
+// traj_right
+                        // go backwards
+                        .lineToY(vRedRightSpike_Center.y +8) // myBot.getDrive().getPoseEstimate().position.y + 8)
+                        .endTrajectory()
+
+                        // re-set reverse after .stopAndAdd as it loses config
+
+                        // Go to backdrop to place your purple pixel
+                        .setTangent(0)
+                        .splineToLinearHeading(new Pose2d(vRedBackdrop_Center.x - 4.0, vRedBackdrop_Center.y /*+ 12*/, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+
                         .build();
 
         myBot.runAction(trajectory);

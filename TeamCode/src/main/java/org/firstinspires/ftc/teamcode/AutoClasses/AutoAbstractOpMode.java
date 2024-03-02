@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -34,20 +35,24 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
     public abstract Pose2d startPose();
 
+    // Trajectories are defined in child classes - different for each auto program
     public abstract Action traj_init(BrainSTEMRobotA robot);
     public abstract Action traj_left(BrainSTEMRobotA robot);
     public abstract Action traj_center(BrainSTEMRobotA robot);
     public abstract Action traj_right(BrainSTEMRobotA robot);
-
-    public abstract Action deposit_right(BrainSTEMRobotA robot);
-    public abstract Action deposit_center(BrainSTEMRobotA robot);
-    public abstract Action deposit_left(BrainSTEMRobotA robot);
     public abstract Action cycle(BrainSTEMRobotA robot);
 
     public abstract Action parking_traj(BrainSTEMRobotA robot);
 
     public abstract Alliance alliance();
     public abstract Orientation orientation();
+
+    // Depositing on the backdrop is common to all auto programs but may differ
+    // depending on which side of the board the yellow pixel (or white pixels)
+    // will be deposited (i.e. which way the wrist will turn may be different
+//    public Action deposit_right(BrainSTEMRobotA robot);
+//    public Action deposit_center(BrainSTEMRobotA robot);
+//    public Action deposit_left(BrainSTEMRobotA robot);
 
     // Used for setting a time delay before starting Auto
     private int     autoTimeDelay = 0;
@@ -57,7 +62,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
     // Used for exception handling
     private ElapsedTime turnTimer = new ElapsedTime();
-    private boolean firstTimeVisiting = true;
+    private boolean turnTimerStarted = false;
 
     private ElapsedTime findSpikeTimer = new ElapsedTime();
     private boolean firstTimeRun = true;
@@ -69,7 +74,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         /************** Hardware Initialization ***************/
 
-        // Huskylens initialization (device and Selection of algorithm
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
         robot.depositor.grabBothPixels();
 //        robot.wrist.wristToPickUpPosition();
@@ -77,6 +81,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         // Distance sensors
         // Rev 2m Distance Sensor measurement range: 5 to 200cm with 1mm resolution
+        // Out of range value is >800
         DistanceSensor sensorDistanceLeft, sensorDistanceRight;
         sensorDistanceLeft = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         sensorDistanceRight = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
@@ -125,33 +130,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //                INITIALIZE BEFORE AUTO                //
         //////////////////////////////////////////////////////////
 
-        telemetry.addData("target tag: ", targetAprilTagNum);
-        telemetry.addLine("Started trajectory");
-        telemetry.update();
-
-// Any initialization of servos before auto will be done here:
-        runBlocking(new SequentialAction (
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.depositor.grabBothPixels();
-                        return false;
-                    }
-                },
-                new SleepAction(0.5)
-        ));
-
-        runBlocking(new SequentialAction(
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.drawbridge.setDrawBridgeDown();
-                        return false;
-                    }
-                },
-                new SleepAction(0.2)
-        ));
-
+        // Any initialization of servos before auto will be done here:
         runBlocking(new SequentialAction(
                 new Action() {
                     @Override
@@ -159,16 +138,41 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
                         return false;
                     }
-                }
+                },
+                new ParallelAction(
+                        new Action() {
+                            @Override
+                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                                robot.depositor.grabBothPixels();
+                                return false;
+                            }
+                        },
+                        robot.drawbridge.drawBridgeDown
+
+// Remove this commented section if the equivalent drawBridgeDown works.
+//                        new Action() {
+//                            @Override
+//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                                robot.drawbridge.setDrawBridgeDown();
+//                                return false;
+//                            }
+//                        }
+                    ),
+                new SleepAction(0.5)
         ));
+
 
 
         //////////////////////////////////////////////////////////
         //                GO TO BACKDROP                        //
         //////////////////////////////////////////////////////////
 
+        telemetry.addData("target tag: ", targetAprilTagNum);
+        telemetry.addLine("Started trajectory");
+        telemetry.update();
+
         runBlocking(new SequentialAction(
-//                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
+                new SleepAction(autoTimeDelay), // wait for specified time before running trajectory
                 traj_init(robot) // all variations first go to center spike
         ));
 
@@ -186,6 +190,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //           FINAL APPROACH USING SENSORS               //
         //////////////////////////////////////////////////////////
 
+        // At this point the robot must already be positioned in front of the backdrop across the right AprilTag
+        // The rest is for fine adjustments. Tolerances can be adjusted for X, Y, Z axes to determine accuracy.
 
         int targetBlockPos = -1; // The block of interest within the blocks array.
 
@@ -199,8 +205,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.addData("Block count", blocks.length);
             telemetry.update();
 
-            // poll all block[i] and check if any of their id matches targetPos
-            // targetBlock = i
+            // Poll all block[i] and check if any of their id matches targetPos
+            // That [i] is saved as targetBlockPos to be used as index to the block array
 
             targetBlockPos = -1;    // This will crash the program if no blocks were seen.
             for (int i = 0; i < blocks.length; i++) {
@@ -215,28 +221,51 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.addData("block of interest is in slot", targetBlockPos);
 
 
-            // Read distance
-            distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM)); //sensorDistanceLeft.getDistance(DistanceUnit.MM);
-            distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM)); //sensorDistanceRight.getDistance(DistanceUnit.MM);
+            // Read distance to the backdrop
+            distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM));
+            distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM));
 
             telemetry.addData("distance right", distanceRight);
             telemetry.addData("distance left", distanceLeft);
 
+            // Calculate position error if the target AprilTag was seen
+            position_error = 0;
+
             if (targetBlockPos >= 0) {
-                position_error = blocks[targetBlockPos].x - 160;
-            } else {
+                position_error = blocks[targetBlockPos].x - 160;    // Huskylens resolution is 320pixel width
+            }
+            else {  // Camera did not see the correct AprilTag (i.e. targetBlockPos is still -1)
                 if (blocks.length == 0) {
                     telemetry.addLine("didn't see anything");
-                    if (distanceRight < constants.minTagVision) {
+                    if (distanceRight < constants.minTagViewingDistance) {
                         position_error = 0;
-                        foundY = true;
-                        telemetry.addLine("too close to board");
-                    } else if (robot.drive.pose.position.y < constants.vRedBackdrop_Center.y) {
-                        position_error = -160;
-                    } else {
-                        position_error = 160;
+                        foundY = true;  // Cannot adjust based on camera, so accept your current y position
+                        telemetry.addLine("too close to backdrop");
                     }
-                } else {
+                    // Robot is in viewing distance but still not seeing any AprilTags or it is too far back and cannot see.
+                    else
+                        if (distanceRight < constants.maxTagViewingDistance) {
+                            // Robot is in viewing distance but cannot see any tags. Must be stranded in between the backdrops or lost its heading
+                            if (robot.drive.pose.position.y > constants.vRedBackdrop_Center.y ||
+                                robot.drive.pose.position.y < constants.vBlueBackdrop_Center.y) {
+                                telemetry.addLine("in between backdrops");
+                                // Set position error such that the robot moves towards the alliance backdrop
+                                position_error = (alliance()==Alliance.RED)?-160:160;
+                            }
+                            else {  // Robot is where it should be seeing the tags but still can't. Must have lost heading.
+                                telemetry.addLine("should be seeing tags but can't. Is heading off?");
+                                // TODO: This scenario not implemented. Accept robot's current y position
+                                foundY = true;
+                            }
+                        }
+                        else {
+                            // Robot is far away, cannot see tags. Bring the robot closer to the backdrop
+                            telemetry.addLine("far away from backdrop, cannot see tags.");
+                            // TODO: Not implemented. Accept robot's current y position
+                            foundY = true;
+                        }
+                }
+                else { // Seen some AprilTags but not the one targeted. It means robot's y position is off
                     telemetry.addData("block seen (not the target): ", blocks[0].id);
                     if (blocks[0].id > targetAprilTagNum) {
                         position_error = -160;
@@ -248,7 +277,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.addData("position error", position_error);
 
             // direction to turn
-            if (distanceLeft < 1000.00 && distanceRight < 1000.00 && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
+            if (distanceLeft < constants.maxTagViewingDistance && distanceRight < constants.maxTagViewingDistance && !foundZ) { // don't bother turning if at least one sensor doesn't see the board
                 if (Math.abs(distanceRight - distanceLeft) > 8.00){
                     if (distanceRight > distanceLeft) {
                         zDirection = -1;
@@ -258,6 +287,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     telemetry.addLine("turning");
                     telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
                 } else {
+                    // heading is within tolerance
                     zDirection = 0;
                     foundZ = true;
                     telemetry.addLine("stopped turning");
@@ -265,17 +295,17 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 }
             } else {
                 zDirection = 0;
-                telemetry.addLine("turning paused due to OOR sensor");
+                telemetry.addLine("turning paused due to OOR sensor, or heading is within tolerance.");
                 telemetry.addData("turn error", Math.abs(distanceLeft - distanceRight));
 
                 // Give up after 2 seconds
-                if (firstTimeVisiting) {
+                if (!turnTimerStarted) {
                     turnTimer.reset();
                     telemetry.addLine("Turning time started!");
-                    firstTimeVisiting = false;
+                    turnTimerStarted = true;
                 }
 
-                if (turnTimer.seconds() > 5.0) {
+                if (turnTimer.seconds() > 2.0) {
                     foundZ = true;
                     zDirection = 0;
                     telemetry.addLine("Turning timed out");
