@@ -15,7 +15,8 @@ public class TeleTEsting extends LinearOpMode {
     public void runOpMode() {
         ElapsedTime initTimer = new ElapsedTime();
         Constants constants = new Constants();
-        Map<String, String> stateMap = new HashMap<String, String>() {{ }};
+        Map<String, String> stateMap = new HashMap<String, String>() {{
+        }};
         waitForStart();
 
 //        robot.lift.raiseHeightTo(800);
@@ -25,9 +26,5 @@ public class TeleTEsting extends LinearOpMode {
 //        robot.lift.raiseHeightTo(0);
 //        isReset = true;
 
-        while(!isStopRequested()) {
-            if(game)
-        }
-        }
-
+    }
 }

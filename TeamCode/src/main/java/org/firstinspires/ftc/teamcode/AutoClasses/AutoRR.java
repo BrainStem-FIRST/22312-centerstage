@@ -80,7 +80,8 @@ public class AutoRR extends AutoAbstractOpMode {
 //                .splineTo(constants.vRedRightSpike_Center, Math.toRadians(180))
 //                .lineToXLinearHeading(constants.vRedRightSpike_Center.x, Math.toRadians(180)) // + 3.0)  // Adjust delta to fine tune pixel drop off position
                 .lineToY(robot.drive.pose.position.y + 8)
-                .stopAndAdd(robot.intake.spitPixel)
+
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 // re-set reverse after .stopAndAdd as it loses config
 
@@ -115,6 +116,21 @@ public class AutoRR extends AutoAbstractOpMode {
                 .splineToConstantHeading(new Vector2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
 
                 .build();
+    }
+
+    @Override
+    public Action deposit_right(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action deposit_center(BrainSTEMRobotA robot) {
+        return null;
+    }
+
+    @Override
+    public Action deposit_left(BrainSTEMRobotA robot) {
+        return null;
     }
 
     @Override

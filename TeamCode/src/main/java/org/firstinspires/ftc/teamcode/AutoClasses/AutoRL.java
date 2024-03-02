@@ -80,6 +80,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 })
 
                 .stopAndAdd(findSpike(robot))
+
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after traj_init:");
                     telemetry.addData("x", robot.drive.pose.position.x);
