@@ -114,21 +114,6 @@ public class AutoBL extends AutoAbstractOpMode {
     }
 
     @Override
-    public Action deposit_right(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action deposit_center(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
-    public Action deposit_left(BrainSTEMRobotA robot) {
-        return null;
-    }
-
-    @Override
     public Action cycle(BrainSTEMRobotA robot) {
         return null;
     }

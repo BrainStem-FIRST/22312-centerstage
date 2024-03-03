@@ -192,40 +192,6 @@ public class AutoRL extends AutoAbstractOpMode {
                 .build();
     }
 
-    @Override
-    public Action deposit_right(BrainSTEMRobotA robot){
-        return robot.drive.actionBuilder(robot.drive.pose)
-                .setReversed(true)
-                .stopAndAdd(robot.lift.raiseLiftAuto)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -30))
-                .stopAndAdd(robot.wrist.turnWrist)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                .build();
-    }
-
-    public Action deposit_center(BrainSTEMRobotA robot){
-        return robot.drive.actionBuilder(robot.drive.pose)
-                .setReversed(true)
-                .stopAndAdd(robot.lift.raiseLiftAuto)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -24))
-                .stopAndAdd(robot.wrist.turnWrist)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                .build();
-    }
-
-    public Action deposit_left(BrainSTEMRobotA robot){
-        return robot.drive.actionBuilder(robot.drive.pose)
-                .setReversed(true)
-                .stopAndAdd(robot.lift.raiseLiftAuto)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -18))
-                .stopAndAdd(robot.wrist.turnWrist)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                .build();
-
-    }
 
     @Override
     public Alliance alliance() {

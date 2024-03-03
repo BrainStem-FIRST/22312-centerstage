@@ -65,7 +65,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         /************** Hardware Initialization ***************/
 
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
-        robot.depositor.grabBothPixels();
+//        robot.depositor.grabBothPixels();  // This is done after Start also, so removed this instance
 //        robot.wrist.wristToPickUpPosition();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
@@ -221,14 +221,16 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             else {  // Camera did not see the correct AprilTag (i.e. targetBlockPos is still -1)
                 if (blocks.length == 0) {
                     telemetry.addLine("didn't see anything");
-                    if (distanceRight < constants.minTagViewingDistance) {
+                    if ((robot.drive.pose.position.x + constants.robot_length/2) >
+                            (constants.FIELD_BACKDROP_X - constants.minTagViewingDistance/constants.IN_TO_MM)) {
                         position_error = 0;
                         foundY = true;  // Cannot adjust based on camera, so accept your current y position
                         telemetry.addLine("too close to backdrop");
                     }
                     // Robot is in viewing distance but still not seeing any AprilTags or it is too far back and cannot see.
                     else
-                        if (distanceRight < constants.maxTagViewingDistance) {
+                        if ((robot.drive.pose.position.x + constants.robot_length/2) >
+                                (constants.FIELD_BACKDROP_X - constants.maxTagViewingDistance/constants.IN_TO_MM)) {
                             // Robot is in viewing distance but cannot see any tags. Must be stranded in between the backdrops or lost its heading
                             if (robot.drive.pose.position.y > constants.vRedBackdrop_Center.y ||
                                 robot.drive.pose.position.y < constants.vBlueBackdrop_Center.y) {
@@ -238,6 +240,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                             }
                             else {  // Robot is where it should be seeing the tags but still can't. Must have lost heading.
                                 telemetry.addLine("should be seeing tags but can't. Is heading off?");
+                                telemetry.addData("heading:", Math.toDegrees(robot.drive.pose.heading.log()));
                                 // TODO: This scenario not implemented. Accept robot's current y position
                                 foundY = true;
                             }
@@ -245,6 +248,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                         else {
                             // Robot is far away, cannot see tags. Bring the robot closer to the backdrop
                             telemetry.addLine("far away from backdrop, cannot see tags.");
+                            telemetry.addData("heading:", Math.toDegrees(robot.drive.pose.heading.log()));
                             // TODO: Not implemented. Accept robot's current y position
                             foundY = true;
                         }
@@ -789,10 +793,12 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         if (distToBackdropHypo < 0)
             distToBackdrop = -1;
         else {
-            double c2 = Math.pow((distToBackdropHypo - constants.targetDistance), 2);
-            double b2 = Math.pow(constants.distSensorHeight, 2);
-            distToBackdrop = Math.sqrt(c2 - b2) / constants.IN_TO_MM;
+            double c = distToBackdropHypo - constants.targetDistance;
+            double b = constants.distSensorHeight - (constants.targetDistance * Math.sin(Math.toRadians(20)));
+            distToBackdrop = Math.sqrt(Math.pow(c,2) - Math.pow(b,2)) / constants.IN_TO_MM;
         }
+
+        telemetry.addData("Distance to move towards backdrop: ", distToBackdrop);
 
         return distToBackdrop;
     }
