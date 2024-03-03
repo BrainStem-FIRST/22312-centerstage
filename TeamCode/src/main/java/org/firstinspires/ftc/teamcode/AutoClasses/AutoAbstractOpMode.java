@@ -162,7 +162,16 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         robot.drive.updatePoseEstimate(); // This should not be unnecessary since updatePoseEstimate is already being called within findSpike()
 
         runBlocking(new SequentialAction(
-                getTrajectory(robot, targetAprilTagNum)
+                getTrajectory(robot, targetAprilTagNum),
+                telemetryPacket -> {
+                    telemetry.addLine("Ending pose:");
+                    telemetry.addData("x", robot.drive.pose.position.x);
+                    telemetry.addData("y", robot.drive.pose.position.y);
+                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
+                    telemetry.update();
+                    return false;
+                }
+                // getDepositTrajectory() was moved to after sensor-based alignment
         )); // Need to calculate trajectories dynamically
 
         telemetry.addLine("Finished trajectory");
