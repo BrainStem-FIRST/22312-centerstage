@@ -40,15 +40,31 @@ public class WristA {
         wristServo.setPosition(ninety_degree_position);
     }
 
-    public void wristToOneEightyDegreePosition(){
-        wristServo.setPosition(1.0);
+    public void wristToOneEightyDegreePosition() {
+        wristServo.setPosition(one_eighty_degree_position);
     }
 
-    public Action turnWrist = new SequentialAction(
+    public void wristToZeroDegreePosition() {
+        wristServo.setPosition(zero_degree_position);
+    }
+
+    public Action turnWrist180 = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     wristToOneEightyDegreePosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
+    );
+
+
+    public Action turnWrist0 = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    wristToZeroDegreePosition();
                     return false;
                 }
             },

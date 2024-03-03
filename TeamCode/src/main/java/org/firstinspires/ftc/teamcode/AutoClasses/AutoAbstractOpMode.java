@@ -13,18 +13,12 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TimeTurn;
-import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ActionOpMode;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.BrainSTEMRobot;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -47,13 +41,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     public abstract Alliance alliance();
     public abstract Orientation orientation();
 
-    // Depositing on the backdrop is common to all auto programs but may differ
-    // depending on which side of the board the yellow pixel (or white pixels)
-    // will be deposited (i.e. which way the wrist will turn may be different
-//    public Action deposit_right(BrainSTEMRobotA robot);
-//    public Action deposit_center(BrainSTEMRobotA robot);
-//    public Action deposit_left(BrainSTEMRobotA robot);
-
     // Used for setting a time delay before starting Auto
     private int     autoTimeDelay = 0;
 
@@ -67,7 +54,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     private ElapsedTime findSpikeTimer = new ElapsedTime();
     private boolean firstTimeRun = true;
 
-
+    // SENSOR BYPASS: When set, camera based approach is disabled,
+    // except for moving towards the board after completion of the trajectory
+    private boolean sensorBypass = false;
+    private boolean cycleAllowed = true;
 
     @Override
     public void runOpMode() {
@@ -93,9 +83,9 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         int xDirection = 0;
         int yDirection = 0;
         int zDirection = 0;
-        boolean foundX = false;
+        // boolean foundX = false;
         boolean foundY = false;
-        boolean foundZ = false; //false;
+        boolean foundZ = false;
         int position_error;
 
 
@@ -110,6 +100,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
 
 //        setTimeDelay();
+
+        // TODO: Add configurations for Cycle Off, Park center/far, Sensor Bypass
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
@@ -148,15 +140,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                             }
                         },
                         robot.drawbridge.drawBridgeDown
-
-// Remove this commented section if the equivalent drawBridgeDown works.
-//                        new Action() {
-//                            @Override
-//                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                                robot.drawbridge.setDrawBridgeDown();
-//                                return false;
-//                            }
-//                        }
                     ),
                 new SleepAction(0.5)
         ));
@@ -180,7 +163,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum)
-//                getDepositTrajectory(robot, targetAprilTagNum) TODO: delete if my thing works
         )); // Need to calculate trajectories dynamically
 
         telemetry.addLine("Finished trajectory");
@@ -195,11 +177,13 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         int targetBlockPos = -1; // The block of interest within the blocks array.
 
-        while (opModeIsActive() && !foundX) { // exit the loop once the robot aligned/centered and finally approached
+        // Loop if not bypassed, and until the robot aligned/centered with targeted AprilTag
+        // (final approach to backdrop  was taken outside of this loop)
+        while (opModeIsActive() && !sensorBypass && !foundY) {
 
             telemetry.addData("Loop Counter: ", ++loopCounter);
 
-// TODO: Move the AprilTag read and strafe to a separate method
+            // TODO: Move the AprilTag read and strafe to a separate method
 
             blocks = robot.huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
@@ -352,24 +336,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 }
             }
 
-            // Adjust distance from backdrop
-            // Only approach to the backdrop if both Y and Z axes were found.
-            if (foundY) { //foundY also means foundZ
-                if (Math.abs(distanceRight - constants.targetDistance) > 8.00 && !foundX) {
-                    if (distanceRight < constants.targetDistance) {
-                        xDirection = 1;
-                        telemetry.addLine("moving away");
-                    } else {
-                        xDirection = -1;
-                        telemetry.addLine("moving towards");
-                    }
-                } else {
-                    xDirection = 0;
-                    foundX = true;
-                    telemetry.addLine("stopped moving");
-                }
-            }
-
             // Strafe left or right to approach to the target tag
             robot.drive.setDrivePowers(new PoseVelocity2d(
                     new Vector2d(
@@ -389,82 +355,45 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
             telemetry.update();
         }
 
-        // when at backdrop
-        runBlocking(new SequentialAction(
-                robot.lift.raiseLiftAuto,
-                robot.arm.armToDeposit,
-                robot.wrist.turnWrist,
-                robot.depositor.bothDepositorsDeposit,
-                new SleepAction(0.5)
-        ));
-
-        // TODO: after yellow pixel--- add subsystem stuff
-//        runBlocking(new SequentialAction(
-//                cycle(robot)
-//        ));
-
-/*
-        // Reset the lift and arm for the next cycle
-        runBlocking(new SequentialAction(
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.arm.armToIdlePosition();
-                        return false;
-                    }
-                },
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
-                        return false;
-                    }
-                }
-        ));
-*/
-
-        // Run another cycle
-//        runBlocking(new SequentialAction(
-//                new Action() {
-//                    @Override
-//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                        runBlocking(cycle(robot));
-//                        return false;
-//                    }
-//                }
-//                // Add actions to place the white pixels
-//
-//                )
-//        );
+        /////////////////////////////////////////////////////////////////
+        //
+        //  If sensors used, robot is now aligned with the AprilTag.
+        //  If sensors bypassed, robot is at the end of its center/left/right trajectory.
+        //  Either case, start the depositor action which will move (strafe) the robot towards
+        //  the backdrop by an amount calculated from the distance sensors.
+        //
+        /////////////////////////////////////////////////////////////////
 
 
-        // GO TO PARK
-        // TODO: In future revisions, add time check to park within 30 seconds
+        //////////////////////////////////////////////////////////
+        //
+        // Deposit yellow pixel(s)
+        //
+        //////////////////////////////////////////////////////////
+        runBlocking(getDepositTrajectory(robot, targetAprilTagNum, getDistanceToBackdrop(sensorDistanceLeft,sensorDistanceRight)));
 
 
+        //////////////////////////////////////////////////////////
+        //
+        // After yellow pixel (end of safe auto), run cycle trajectories
+        //
+        //////////////////////////////////////////////////////////
+        if(cycleAllowed) {
+            runBlocking(new SequentialAction(
+                    cycle(robot),
+                    getDepositTrajectory(robot, targetAprilTagNum, getDistanceToBackdrop(sensorDistanceLeft,sensorDistanceRight))
+            ));
+        }
+
+        //////////////////////////////////////////////////////////
+        //
+        // Go to park
+        //
+        //////////////////////////////////////////////////////////
         runBlocking(new SequentialAction(
                 parking_traj(robot),
-                // Reset the subsystems for Tele
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.arm.armToIdlePosition();
-                        return false;
-                    }
-                },
-
-                new SleepAction(1.0),
-
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
-                        return false;
-                    }
-                },
-                new SleepAction(4.0)
-
-
+                robot.arm.armToIdle,
+                robot.lift.lowerLiftAuto
         ));
 
     }
@@ -632,8 +561,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     //         Call this function after the traj_init (which has movement based on color sensor
     //         is finished and current pose is estimated.
     // Note 2: This method uses public targetTagPos and modifies its value
-
-
     private Action getTrajectory(BrainSTEMRobotA robot, int targetTagNum) {
         Action trajectory;
         robot.drive.updatePoseEstimate();
@@ -665,38 +592,83 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         return trajectory;
     }
 
-    /* TODO: delete if my thing works
-    public Action getDepositTrajectory(BrainSTEMRobotA robot, int targetTagNum){
-        Action trajectory;
+    // Returns the trajectory with actions to deposit pixels
+    // Deposit trajectories moves the robot in x direction by distToBackdrop
+    // unless the distToBackdrop is invalid, in which case it moves it to x=52
+    public Action getDepositTrajectory(BrainSTEMRobotA robot, int targetTagNum, double distToBackdrop) {
+        double x, y;
+        Action traj_deposit;
+
         robot.drive.updatePoseEstimate();
+
+        // assign a default x position if the received distance value is invalid
+        if(distToBackdrop<0) {
+            x = 52;
+        }
+        else {
+            x = robot.drive.pose.position.x + distToBackdrop;
+        }
+        y = robot.drive.pose.position.y;
+
         switch (targetTagNum) {
             case 1:
             case 4:
-                trajectory = deposit_left(robot);
+                // Depositing to left side; turn wrist to 0deg
+                traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
+                        .setReversed(true)
+                        .strafeToConstantHeading(new Vector2d(x, y))
+                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0.5, robot.arm.armToDeposit)
+                        .afterTime(0.7, robot.wrist.turnWrist0)
+                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .build();
                 break;
             case 2:
             case 5:
-                trajectory = deposit_center(robot);
+                // Depositing to center side; turn wrist to 180deg
+                traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
+                        .setReversed(true)
+                        .strafeToConstantHeading(new Vector2d(x, y))
+                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0.5, robot.arm.armToDeposit)
+                        .afterTime(0.7, robot.wrist.turnWrist180)
+                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .build();
                 break;
             case 3:
             case 6:
-                trajectory = deposit_right(robot);
+                // Depositing to right side; turn wrist to 180deg
+                traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
+                        .setReversed(true)
+                        .strafeToConstantHeading(new Vector2d(x, y))
+                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0.5, robot.arm.armToDeposit)
+                        .afterTime(0.7, robot.wrist.turnWrist180)
+                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .build();
                 break;
             default:
                 // This default should never be reached because a default value for
                 // targetTagPos is already assigned during readPropPosition().
                 // Still...
                 telemetry.addLine("BUG IN CODE! Target Tag Number was not properly set.");
-                trajectory = traj_center(robot);
                 telemetry.addLine("running default: Right");
                 telemetry.update();
+                // Depositing to right side; turn wrist to 180deg
+                traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
+                        .setReversed(true)
+                        .strafeToConstantHeading(new Vector2d(x, y))
+                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0.5, robot.arm.armToDeposit)
+                        .afterTime(0.7, robot.wrist.turnWrist180)
+                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .build();
                 break;
         }
 
-        return trajectory;
+        return traj_deposit;
     }
 
-     */
 
     ///////////////////////////////////////////////////////////////
     //
@@ -707,7 +679,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     // If no prop is detected, return a default target tag number.
     //
     ///////////////////////////////////////////////////////////////
-    int readPropPosition(BrainSTEMRobotA robot) {
+    private int readPropPosition(BrainSTEMRobotA robot) {
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
         int targetTagNum = -1;
 
@@ -767,7 +739,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
     // Returns the position of the prop based on block's relative location on display.
     // Must receive a valid block (i.e. not null)
-    int getTargetTag(HuskyLens.Block block) {
+    private int getTargetTag(HuskyLens.Block block) {
 
         int propPos;
         Alliance a = alliance();
@@ -787,6 +759,42 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         }
 
         return propPos;
+    }
+
+
+    ///////////////////////////////////////////////////////////////
+    //
+    // Calculates the distance the robot should travel in x axis
+    // from its current position before getting to the deposit
+    // distance (practically touching the backdrop)
+    //
+    ///////////////////////////////////////////////////////////////
+    private double getDistanceToBackdrop(DistanceSensor sensorDistanceLeft, DistanceSensor sensorDistanceRight) {
+        // Read the distance sensor again
+        double distanceLeft = (((DistanceSensor) sensorDistanceLeft).getDistance(DistanceUnit.MM));
+        double distanceRight = (((DistanceSensor) sensorDistanceRight).getDistance(DistanceUnit.MM));
+
+        // Determine the distance to backdrop in inches
+        double distToBackdropHypo;
+        double distToBackdrop;
+
+        // Check validity of sensor readings
+        if (distanceRight < 500) // Right sensor is valid, use it
+            distToBackdropHypo = distanceRight;
+        else if (distanceLeft < 500) // Right sensor is OOR, left sensor is valid, use it
+            distToBackdropHypo = distanceLeft;
+        else
+            distToBackdropHypo = -1; // Neither distance sensors are working, mark distToBackdrop invalid
+
+        if (distToBackdropHypo < 0)
+            distToBackdrop = -1;
+        else {
+            double c2 = Math.pow((distToBackdropHypo - constants.targetDistance), 2);
+            double b2 = Math.pow(constants.distSensorHeight, 2);
+            distToBackdrop = Math.sqrt(c2 - b2) / constants.IN_TO_MM;
+        }
+
+        return distToBackdrop;
     }
 
 }

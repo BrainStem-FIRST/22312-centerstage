@@ -67,4 +67,15 @@ public class ArmA {
             },
             new SleepAction(1.5)
     );
+
+    public Action armToIdle = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    armToIdlePosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
+    );
 }

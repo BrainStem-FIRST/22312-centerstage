@@ -129,4 +129,14 @@ public class LiftA {
                 }
             }
     );
+
+    public Action lowerLiftAuto = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    raiseHeightTo(LIFT_GROUND_STATE_POSITION);
+                    return false;
+                }
+            }
+    );
 }
