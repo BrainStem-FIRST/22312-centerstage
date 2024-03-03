@@ -384,6 +384,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         //
         //////////////////////////////////////////////////////////
         runBlocking(getDepositTrajectory(robot, targetAprilTagNum, getDistanceToBackdrop(sensorDistanceLeft,sensorDistanceRight)));
+        telemetry.update();
 
 
         //////////////////////////////////////////////////////////

@@ -85,9 +85,9 @@ public class AutoConstants {
 
     // This distance is for fine tuning. Start with the trajectory ending position, but it can be adjusted independently for fine tuning.
     // For instance, trajectory brings the robot close enough using MAX_DISTANCE_BEFORE_CRASH, and target distance slowly moves the robot a little more to the backdrop.
-    public static double targetDistance = 115.00; // in MM (empirical value was 200mm)
-    public static double minTagViewingDistance = 150.00; // in mm. TODO: find actual value of this
-    public static double maxTagViewingDistance = 500.00; // in mm. TODO: find actual value of this
+    public static double targetDistance = 125.00; // in MM (empirical value was 200mm)
+    public static double minTagViewingDistance = 315.00; // in mm. TODO: find actual value of this
+    public static double maxTagViewingDistance = 490.00; // in mm. TODO: find actual value of this
 
     public static double distSensorHeight = 100.00; // in mm. TODO: find the actual value
 }
