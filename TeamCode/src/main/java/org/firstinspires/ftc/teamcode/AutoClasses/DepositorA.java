@@ -61,16 +61,18 @@ public class DepositorA {
         greenDepositerServo.setPosition(0);
     }
 
-    public void bothDepositorsDeposit(){
-        greenDepositerServo.setPosition(0);
-        redDepositerServo.setPosition(0);
-    }
+//    public void bothDepositorsDeposit(){
+//        greenDepositerServo.setPosition(0);
+//        redDepositerServo.setPosition(0);
+//    }
 
     public Action bothDepositorsDeposit = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    bothDepositorsDeposit();
+//                    bothDepositorsDeposit();
+                    greenDepositerServo.setPosition(0);
+                    redDepositerServo.setPosition(0);
                     return false;
                 }
             },
