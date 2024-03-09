@@ -102,9 +102,10 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, stateMap.get(constants.DRIVER_2_SELECTED_HEIGHT));
                     stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_DEPOSIT_STATE);
-                    if(gamepad1.a){
-                        wristPositionCounter = 0;
-                    }
+//                    if(gamepad1.a){
+//                        liftGoingUp = true;
+//                        liftGoingUpTime.reset();
+//                    }
                 } else {
                     if (gamepad1.a) {
                         retractionInProgress = true;
@@ -114,8 +115,15 @@ public class RobotTeleOp extends LinearOpMode {
                         stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_IDLE_STATE);
                     }
                 }
+
+                if(liftGoingUp){
+                    if(liftGoingUpTime.seconds() > 0.7){
+                        wristPositionCounter = 0;
+                        liftGoingUp = false;
+                    }
+                }
                 if (retractionInProgress) {
-                    if (retractionTime.seconds() > 0.2) {
+                    if (retractionTime.seconds() > 0.7) {
                         stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_IDLE_STATE);
                     }
                     if(retractionTime.seconds() > 1.0){
@@ -181,14 +189,17 @@ public class RobotTeleOp extends LinearOpMode {
                 dpad_left.update(gamepad1.dpad_left);
                 dpad_right.update(gamepad1.dpad_right);
                 if (dpad_left.getState()) {
-                    wristPositionCounter += 1;
+                    wristPositionCounter -= 1;
                 }
                 if (dpad_right.getState()) {
-                    wristPositionCounter -= 1;
+                    wristPositionCounter += 1;
                 }
                 gamepad1xbutton.update(gamepad1.x);
                 if(gamepad1xbutton.getState() && ((String)stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
                     stateMap.put(constants.PIXEL_CYCLE_INTAKE_INTAKING, constants.PIXEL_CYCLE_STATE_COMPLETE);
+                }
+                if(gamepad1xbutton.getState() && !((String)stateMap.get(constants.PIXEL_CYCLE)).equals(constants.PIXEL_CYCLE_STATE_IN_PROGRESS)){
+                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_PICKUP_TWO);
                 }
                 if(gamepad2.dpad_up){
                     stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_UP_STATE);

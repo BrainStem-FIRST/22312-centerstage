@@ -66,7 +66,7 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
         robot.depositor.bothDepositorsDeposit();
         robot.drawbridge.setDrawBridgeDown();
-        robot.lift.raiseHeightTo(robot.lift.LIFT_IDLE_STATE_POSITION);
+//        robot.lift.raiseHeightTo(robot.lift.LIFT_IDLE_STATE_POSITION);
         robot.drawbridge.setHardstopPosition(0.01);
 //        robot.arm.armToIdlePosition();
 //        robot.wrist.wristToPickUpPosition();
@@ -242,31 +242,31 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
         // TODO: In future revisions, add time check to park within 30 seconds
 
 
-        runBlocking(new SequentialAction(
-                parking_traj(robot),
-                // Reset the subsystems for Tele
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.arm.armToIdlePosition();
-                        robot.wrist.wristToPickUpPosition();
-                        return false;
-                    }
-                },
-
-                new SleepAction(1.0),
-
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
-                        return false;
-                    }
-                },
-                new SleepAction(4.0)
-
-
-        ));
+//        runBlocking(new SequentialAction(
+//                parking_traj(robot),
+//                // Reset the subsystems for Tele
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        robot.arm.armToIdlePosition();
+//                        robot.wrist.wristToPickUpPosition();
+//                        return false;
+//                    }
+//                },
+//
+//                new SleepAction(1.0),
+//
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
+//                        return false;
+//                    }
+//                },
+//                new SleepAction(4.0)
+//
+//
+//        ));
 
     }
 
@@ -457,7 +457,7 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
                 // targetTagPos is already assigned during readPropPosition().
                 // Still...
                 telemetry.addLine("BUG IN CODE! Target Tag Number was not properly set.");
-                trajectory = traj_center(robot);
+                trajectory = traj_left(robot);
                 telemetry.addLine("running default: Center");
                 telemetry.update();
                 break;
@@ -556,7 +556,7 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
         if(targetTagNum == -1) {
             // No prop was detected by the time of Start, return a default value
             // Default is Right
-            targetTagNum = (alliance()== Alliance.BLUE) ? 2 : 5;
+            targetTagNum = (alliance()== Alliance.BLUE) ? 3 : 6; //2 and 5 for default
         }
 
         return targetTagNum;

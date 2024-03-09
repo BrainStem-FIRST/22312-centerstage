@@ -125,7 +125,7 @@ public class BrainSTEMRobot {
     private boolean startGateAndDepositer() {
         String liftDown = (String) stateMap.get(constants.PIXEL_CYCLE_LIFT_DOWN);
         String depositerCycleState = (String) stateMap.get(constants.PIXEL_CYCLE_DEPOSITER_ONE_WAY_GATE);
-        long endTime = (long) (stateMap.get(constants.PICKUP_DELAY_TIMESTART)) + 900;
+        long endTime = (long) (stateMap.get(constants.PICKUP_DELAY_TIMESTART)) + 450;
         if (liftDown.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_COMPLETE) && depositerCycleState.equalsIgnoreCase(constants.PIXEL_CYCLE_STATE_NOT_STARTED) && System.currentTimeMillis() > endTime) {
             return true;
         }

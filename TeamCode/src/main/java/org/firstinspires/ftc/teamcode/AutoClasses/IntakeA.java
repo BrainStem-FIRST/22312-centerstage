@@ -101,4 +101,40 @@ public class IntakeA {
                 }
             }
     );
+
+    public Action intakePixelLeftPixelSpike = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakePixelinAuto();
+                    return false;
+                }
+            },
+            new SleepAction(4),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
+
+    public Action intakePixelSecondPassPixelSpikeLeft = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(1.0);
+                    return false;
+                }
+            },
+            new SleepAction(4),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
 }

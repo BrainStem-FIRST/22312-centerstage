@@ -42,6 +42,10 @@ public class WristA {
         wristServo.setPosition(1.0);
     }
 
+    public void wristToZeroDegreePosition(){
+        wristServo.setPosition(0);
+    }
+
     public Action turnWristOneEighty = new SequentialAction(
             new Action() {
                 @Override
@@ -58,6 +62,17 @@ public class WristA {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     wristToPickUpPosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
+    );
+
+    public Action turnWristZero = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    wristToZeroDegreePosition();
                     return false;
                 }
             },
