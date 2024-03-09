@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @TeleOp(name="Robot: TeleTesting", group="Robot")
-public class TeleTesting extends LinearOpMode {
+public class TeleTEsting extends LinearOpMode {
     @Override
     public void runOpMode() {
         ElapsedTime initTimer = new ElapsedTime();
