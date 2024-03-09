@@ -37,14 +37,14 @@ public class Arm {
     private double leftIdlePosition = 0.01;
     private double encoderOffset = 0;
 
-    private int liftMinPosition = 65;
+    private int liftMinPosition = 80;
 
     public Arm(HardwareMap hwMap, Telemetry telemetry, Map stateMap){
         this.telemetry = telemetry;
         this.stateMap = stateMap;
 
         armServo = hwMap.get(ServoImplEx.class, "armServo");
-        armServo.setPwmRange(new PwmControl.PwmRange(1080,2050));
+        armServo.setPwmRange(new PwmControl.PwmRange(955,2050));
 
     }
 
@@ -78,7 +78,7 @@ public class Arm {
     }
     public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
-        armServo.setPosition(0.97);
+        armServo.setPosition(0.9);
 
     }
 }

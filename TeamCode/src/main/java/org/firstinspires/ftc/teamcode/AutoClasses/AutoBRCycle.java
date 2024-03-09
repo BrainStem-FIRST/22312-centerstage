@@ -7,8 +7,8 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Config
-@Autonomous(name="Robot: Blue-Right Auto", group="Robot")
-public class AutoBR extends AutoAbstractOpMode {
+@Autonomous(name="Robot: Blue-Right Auto Cycle", group="Robot")
+public class AutoBRCycle extends AutoAbstractOpModeCycle {
 
     AutoConstants constants;
 
@@ -69,23 +69,11 @@ public class AutoBR extends AutoAbstractOpMode {
 
     @Override
     public Action traj_center(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(robot.drive.pose)
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
-
-                // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
-                .lineToY(robot.drive.pose.position.y - 8.0)
-
-                .stopAndAdd(robot.intake.spitPixel)
-
-                .setReversed(true)
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25 - 12, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
-                .stopAndAdd(robot.intake.intakePixel)
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x - 12, constants.vBlueBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(90))
-
+//                .splineToLinearHeading(new Pose2d(-48, 12, Math.toRadians(180)), Math.toRadians(90))
+                .lineToY(24)
                 .build();
     }
 

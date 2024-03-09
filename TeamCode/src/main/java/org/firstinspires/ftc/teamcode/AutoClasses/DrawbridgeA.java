@@ -20,8 +20,8 @@ public class DrawbridgeA {
     private final int drawbridgePWMLowerLimit = 500;
     private final int drawbridgePWMHigherLimit = 2500;
 
-    private int hardstopPWMLowerLimit;
-    private int hardstopPWMHigherLimit;
+    private int hardstopPWMLowerLimit = 460;
+    private int hardstopPWMHigherLimit = 2300;
 
     private Telemetry telemetry;
 
@@ -46,11 +46,25 @@ public class DrawbridgeA {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(0.01);
+        drawBridge.setPosition(0.415);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");
         drawBridge.setPosition(0.99);
+    }
+
+    public void setDrawBridgePosition(double position){
+        drawBridge.setPosition(position);
+    }
+
+    public void setDrawBridgeFourthHeight(){
+        drawBridge.setPosition(0.62);
+        telemetry.addLine("In fourth height");
+        telemetry.update();
+    }
+
+    public void setHardstopPosition(double position){
+        hardStop.setPosition(position);
     }
     public Action drawBridgeUp = new SequentialAction(
             new Action() {
@@ -71,5 +85,16 @@ public class DrawbridgeA {
                 }
             },
             new SleepAction(0.2)
+    );
+
+    public Action setDrawBridgeFourthHeight =  new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    setDrawBridgeFourthHeight();
+                    return false;
+                }
+            },
+            new SleepAction(0.5)
     );
 }

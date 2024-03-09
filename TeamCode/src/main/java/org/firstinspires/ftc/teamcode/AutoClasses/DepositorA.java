@@ -76,4 +76,14 @@ public class DepositorA {
             },
             new SleepAction(0.5)
     );
+
+    public Action bothDepositorsPickup = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    grabBothPixels();
+                    return false;
+                }
+            }
+    );
 }

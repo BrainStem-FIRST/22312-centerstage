@@ -6,8 +6,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-
 @Config
 @Autonomous(name="Robot: Red-Right Auto", group="Robot")
 public class AutoRR extends AutoAbstractOpMode {
@@ -70,24 +68,23 @@ public class AutoRR extends AutoAbstractOpMode {
     public Action traj_center(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
-//                .setReversed(true)
-
+                .setReversed(true)
                 // Replace prop with your yellow pixel (just push)
-//                .lineToY(constants.vRedRightSpike_Center.y)
-//                .setTangent(0)
-//                .strafeTo(new Vector2d(constants.vRedRightSpike_Center.x+5.0, constants.vRedRightSpike_Center.y))
-//                .setTangent(90)
-//                .splineTo(constants.vRedRightSpike_Center, Math.toRadians(180))
-//                .lineToXLinearHeading(constants.vRedRightSpike_Center.x, Math.toRadians(180)) // + 3.0)  // Adjust delta to fine tune pixel drop off position
-                .lineToY(robot.drive.pose.position.y + 8)
-                .stopAndAdd(robot.intake.spitPixel)
+                .lineToY(robot.drive.pose.position.y + 6.0)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
+                .afterDisp(5, robot.lift.raiseLiftAutoToLowState)
 
                 // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Center.y + 12, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
-
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Center.y + 9, Math.toRadians(180)), Math.toRadians(0))
+                .setReversed(true)
+//                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(54, -27))
+                .stopAndAdd(robot.wrist.turnWristOneEighty)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)// Then, go to designated tag position
                 .build();
     }
 
@@ -101,7 +98,7 @@ public class AutoRR extends AutoAbstractOpMode {
 //                        .lineToYSplineHeading(vBlueLeftSpike_Left.y, Math.toRadians(0))
                 .endTrajectory()
  */
-                .lineToX(constants.vRedRightSpike_Right.x + constants.robot_length / 2+2)
+                .lineToX(constants.vRedRightSpike_Right.x + constants.robot_length / 2+ 12)
 
                 // Drop yellow pixel in position
                 .stopAndAdd(robot.intake.spitPixel)
@@ -137,6 +134,40 @@ public class AutoRR extends AutoAbstractOpMode {
                 .setTangent(-135)
                 .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, -56, Math.toRadians(180)), Math.toRadians(-45))
                 .build();
+    }
+
+    public Action deposit_right(BrainSTEMRobotA robot){
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -30))
+                .stopAndAdd(robot.wrist.turnWristOneEighty)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                .build();
+    }
+
+    public Action deposit_center(BrainSTEMRobotA robot){
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -24))
+                .stopAndAdd(robot.wrist.turnWristOneEighty)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                .build();
+    }
+
+    public Action deposit_left(BrainSTEMRobotA robot){
+        return robot.drive.actionBuilder(robot.drive.pose)
+                .setReversed(true)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -18))
+                .stopAndAdd(robot.wrist.turnWristOneEighty)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                .build();
+
     }
 
     @Override

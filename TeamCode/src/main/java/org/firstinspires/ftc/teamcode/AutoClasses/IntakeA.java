@@ -74,7 +74,25 @@ public class IntakeA {
                     return false;
                 }
             },
-            new SleepAction(1.5),
+            new SleepAction(5.5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
+
+    public Action intakePixelSecondTime = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(1.0);
+                    return false;
+                }
+            },
+            new SleepAction(4.5),
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

@@ -3,12 +3,13 @@ package org.firstinspires.ftc.teamcode.AutoClasses;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Config
-@Autonomous(name="Robot: Red-Left Auto", group="Robot")
-public class AutoRL extends AutoAbstractOpMode {
+@Autonomous(name="Robot: Red-Left Auto Cycle", group="Robot")
+public class AutoRLCycle extends AutoAbstractOpModeCycle {
 
     AutoConstants constants;
 
@@ -25,8 +26,6 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 .setTangent(-135)
                 .lineToX(constants.vRedLeftSpike_Left.x)
-//                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
-//                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
 
                 .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
@@ -84,38 +83,51 @@ public class AutoRL extends AutoAbstractOpMode {
 
     @Override
     public Action traj_center(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(robot.drive.pose)
+        return robot.drive.actionBuilder(constants.pStartingPose_RedLeft)
                 // go backwards
                 .setReversed(true)
-
-                // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
-                .lineToY(robot.drive.pose.position.y + 6.0)
-                .stopAndAdd(telemetryPacket -> {
-                    telemetry.addLine("Pose before spit:");
-                    telemetry.addData("x", robot.drive.pose.position.x);
-                    telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-                    telemetry.update();
-                    return false;
-                })
-
-                .stopAndAdd(robot.drawbridge.drawBridgeUp)
-
-                // Goto Backdrop to place your yellow pixel
+                .afterDisp(40, robot.drawbridge.drawBridgeUp)
+                .splineToLinearHeading(new Pose2d(-32, -12, Math.toRadians(180)), Math.toRadians(90))
+                .afterDisp(55, robot.intake.intakePixel)
+                .splineToConstantHeading(new Vector2d(-50, -4), Math.toRadians(180))
+//                .waitSeconds(1.0)
+                .afterDisp(0, robot.intake.intakePixel)
+                .splineToConstantHeading(new Vector2d(-57, -4), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .splineToConstantHeading(new Vector2d(-56, -4), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .afterDisp(0, robot.intake.intakePixel)
+                .splineToConstantHeading(new Vector2d(-56.25, -4), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5, 5))
+                .waitSeconds(0.5)
                 .setReversed(true)
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180)), Math.toRadians(135))
-                .stopAndAdd(telemetryPacket -> {
-                    telemetry.addLine("Pose after spline:");
-                    telemetry.addData("x", robot.drive.pose.position.x);
-                    telemetry.addData("y", robot.drive.pose.position.y);
-                    telemetry.addData("heading", Math.toDegrees(robot.drive.pose.heading.log()));
-                    telemetry.update();
-                    return false;
-                })
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .afterDisp(5, robot.lift.lowerLiftToGroundState)
+                .afterDisp(40, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftAutoToLowState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(51, -24), Math.toRadians(-45))
+                .waitSeconds(0.5)
+                .setReversed(false)
+                .afterDisp(5, robot.wrist.turnWristNinety)
+                .afterDisp(5, robot.arm.armToIdle)
+                .afterDisp(40, robot.lift.lowerLiftToGroundState)
+                .splineToConstantHeading(new Vector2d(0, -8), Math.toRadians(180))
+                .afterDisp(0, robot.lift.lowerLiftToIdleState)
+                .afterDisp(40, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-50, -4), Math.toRadians(180))
+                .afterDisp(0, robot.drawbridge.setDrawBridgeFourthHeight)
+                .afterDisp(0, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-57.5, -4), Math.toRadians(180), robot.drive.secondPickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .afterDisp(10, robot.lift.lowerLiftToGroundState)
+                .afterDisp(40, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftToMiddleState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(51.5, -24), Math.toRadians(-45))
+//                // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
                 .build();
     }
 
@@ -181,40 +193,40 @@ public class AutoRL extends AutoAbstractOpMode {
                 .build();
     }
 
-    @Override
-    public Action deposit_right(BrainSTEMRobotA robot){
-        return robot.drive.actionBuilder(robot.drive.pose)
-                .setReversed(true)
-                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -30))
-                .stopAndAdd(robot.wrist.turnWristOneEighty)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                .build();
-    }
-
-    public Action deposit_center(BrainSTEMRobotA robot){
-        return robot.drive.actionBuilder(robot.drive.pose)
-                .setReversed(true)
-                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -24))
-                .stopAndAdd(robot.wrist.turnWristOneEighty)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                .build();
-    }
-
-    public Action deposit_left(BrainSTEMRobotA robot){
-        return robot.drive.actionBuilder(robot.drive.pose)
-                .setReversed(true)
-                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
-                .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -18))
-                .stopAndAdd(robot.wrist.turnWristOneEighty)
-                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                .build();
-
-    }
+//    @Override
+//    public Action deposit_right(@NonNull BrainSTEMRobotA robot){
+//        return robot.drive.actionBuilder(robot.drive.pose)
+//                .setReversed(true)
+//                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+//                .stopAndAdd(robot.arm.armToDeposit)
+//                .strafeToConstantHeading(new Vector2d(52, -30))
+//                .stopAndAdd(robot.wrist.turnWristOneEighty)
+//                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+//                .build();
+//    }
+//
+//    public Action deposit_center(BrainSTEMRobotA robot){
+//        return robot.drive.actionBuilder(robot.drive.pose)
+//                .setReversed(true)
+//                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+//                .stopAndAdd(robot.arm.armToDeposit)
+//                .strafeToConstantHeading(new Vector2d(52, -24))
+//                .stopAndAdd(robot.wrist.turnWristOneEighty)
+//                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+//                .build();
+//    }
+//
+//    public Action deposit_left(BrainSTEMRobotA robot){
+//        return robot.drive.actionBuilder(robot.drive.pose)
+//                .setReversed(true)
+//                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+//                .stopAndAdd(robot.arm.armToDeposit)
+//                .strafeToConstantHeading(new Vector2d(52, -18))
+//                .stopAndAdd(robot.wrist.turnWristOneEighty)
+//                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+//                .build();
+//
+//    }
 
     @Override
     public Alliance alliance() {

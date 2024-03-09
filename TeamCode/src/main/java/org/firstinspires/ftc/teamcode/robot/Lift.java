@@ -48,7 +48,7 @@ public class Lift {
     //lift row 4: 996
     //lift row 5: 1044
     private int LIFT_GROUND_STATE_POSITION = 0;
-    public int LIFT_IDLE_STATE_POSITION = 55;
+    public int LIFT_IDLE_STATE_POSITION = 100;
     private int LIFT_ROW1_POSITION = 74;
     private int LIFT_ROW2_POSITION = 124;
     private int LIFT_ROW3_POSITION = 369;
@@ -141,6 +141,7 @@ public class Lift {
         if(isCycleInProgress()){
             if(inCycleTolerance(liftMotor2.getCurrentPosition(), LIFT_GROUND_STATE_POSITION) || liftCycleTime.milliseconds() > 50){
                 stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_COMPLETE);
+                stateMap.put(constants.PICKUP_DELAY_TIMESTART, System.currentTimeMillis());
             }
         }
     }

@@ -97,6 +97,7 @@ public class BrainSTEMRobot {
             stateMap.put(constants.PIXEL_CYCLE_INTAKE_EXTRA, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
             intake.intakeExtraRunning.reset();
         } else if(startLiftDown()){
+            telemetry.addLine("lift cycle down");
             lift.LIFT_IDLE_STATE_POSITION = 0;
             stateMap.put(constants.PIXEL_CYCLE_LIFT_DOWN, constants.PIXEL_CYCLE_STATE_IN_PROGRESS);
             lift.liftCycleTime.reset();

@@ -20,13 +20,19 @@ public class Drawbridge {
     private int drawbridgePWMLowerLimit = 500;
     private int drawbridgePWMHigherLimit = 2500;
 
-    private int hardstopPWMLowerLimit = 500;
-    private int hardstopPWMHigherLimit = 2000;
+    private int hardstopPWMLowerLimit = 450;
+    private int hardstopPWMHigherLimit = 2300;
+
+    //2300 for 5
+    //1800 for 4 .78
+    //1330 for 3 .565
+    //830 for 2 .36
+    //450 for 1 .196
     private double firstPixelPosition = 0.01;
-    private double secondPixelPosition = 0.5;
-    private double thirdPixelPosition = 0.01;
-//    private double fourthPixelPosition = 0.22;
-//    private double fifthPixelPosition = 0.01;
+    private double secondPixelPosition = 0.23;
+    private double thirdPixelPosition = 0.5;
+    private double fourthPixelPosition = 0.73;
+    private double fifthPixelPosition = 0.99;
     private double drawBridge5thPixelPosition = 0.99;
     private double drawBridge4thPixelPosition = 0.117;
 
@@ -95,12 +101,13 @@ public class Drawbridge {
                 break;
             }
             case DRAWBRIDGE_4_PIXEL_HEIGHT:{
-                setDrawbridgePosition(drawBridge4thPixelPosition);
+                setDrawBridgeDown();
+                setHardstopPosition(fourthPixelPosition);
                 break;
             }
             case DRAWBRIDGE_5_PIXEL_HEIGHT:{
-//                setDrawbridgePosition(drawBridge5thPixelPosition);
-                setHardstopPosition(drawBridge5thPixelPosition);
+                setDrawBridgeDown();
+                setHardstopPosition(fifthPixelPosition);
                 break;
             }
         }
@@ -108,7 +115,7 @@ public class Drawbridge {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(0.01);
+        drawBridge.setPosition(0.5);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");

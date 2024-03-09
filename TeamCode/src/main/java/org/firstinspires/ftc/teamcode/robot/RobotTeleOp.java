@@ -66,7 +66,7 @@ public class RobotTeleOp extends LinearOpMode {
         stateMap.put(robot.lift.LIFT_SYSTEM_NAME, robot.lift.LIFT_IDLE_STATE);
         stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
         stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
-        stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_UP_STATE);
+        stateMap.put(robot.drawbridge.DRAWBRIDGE_SYSTEM_NAME, robot.drawbridge.DRAWBRIDGE_1_PIXEL_HEIGHT);
         stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW3_STATE);
         stateMap.put(constants.HANGING_MODE, "false");
         stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_NOT_RELEASED);
@@ -102,6 +102,9 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, stateMap.get(constants.DRIVER_2_SELECTED_HEIGHT));
                     stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_DEPOSIT_STATE);
+                    if(gamepad1.a){
+                        wristPositionCounter = 0;
+                    }
                 } else {
                     if (gamepad1.a) {
                         retractionInProgress = true;
@@ -112,9 +115,11 @@ public class RobotTeleOp extends LinearOpMode {
                     }
                 }
                 if (retractionInProgress) {
-                    if (retractionTime.seconds() > 0.5) {
-                        wristPositionCounter = 2;
+                    if (retractionTime.seconds() > 0.2) {
                         stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_IDLE_STATE);
+                    }
+                    if(retractionTime.seconds() > 1.0){
+                        wristPositionCounter = 2;
                     }
                     if (retractionTime.seconds() > 1.5) {
                         toggleMap.put(GAMEPAD_1_A_STATE, false);
@@ -167,6 +172,12 @@ public class RobotTeleOp extends LinearOpMode {
                 if(gamepad2.b && hangingMode){
                     stateMap.put(robot.drone.DRONE_SYSTEM_NAME, robot.drone.DRONE_RELEASED);
                 }
+                if(gamepad2.x){
+                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_PICKUP_TWO);
+                }
+                if(gamepad2.y){
+                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_OPEN);
+                }
                 dpad_left.update(gamepad1.dpad_left);
                 dpad_right.update(gamepad1.dpad_right);
                 if (dpad_left.getState()) {
@@ -201,7 +212,21 @@ public class RobotTeleOp extends LinearOpMode {
                             -gamepad1.right_stick_x));
                 }
 
+                dpadUp.update(gamepad2.dpad_up);
+                dpadDown.update(gamepad2.dpad_down);
+                if(dpadDown.getState()){
+                    if(drawbridgeCounter != 1){
+                        drawbridgeCounter -= 1;
+                    }
+                    updateDrawbridge(stateMap, robot);
+                }
+                if(dpadUp.getState()){
+                    drawbridgeCounter += 1;
+                    updateDrawbridge(stateMap, robot);
+                }
+
                 robot.drive.updatePoseEstimate();
+                updateDrawbridge(stateMap, robot);
                 updateWristPosition(stateMap, robot);
                 updateLift(stateMap, robot);
                 robot.updateSystems();

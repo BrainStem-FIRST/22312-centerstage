@@ -45,7 +45,7 @@ public class ArmA {
 
         armServo = hwMap.get(ServoImplEx.class, "armServo");
 
-        armServo.setPwmRange(new PwmControl.PwmRange(1080,2050));
+        armServo.setPwmRange(new PwmControl.PwmRange(955,2050));
 
     }
     public void armToDepositPosition(){
@@ -54,7 +54,7 @@ public class ArmA {
     }
     public void armToIdlePosition(){
         telemetry.addData("Arm Position Called", "Idle");
-        armServo.setPosition(0.97);
+        armServo.setPosition(0.9);
     }
 
     public Action armToDeposit = new SequentialAction(
@@ -65,6 +65,17 @@ public class ArmA {
                     return false;
                 }
             },
-            new SleepAction(1.5)
+            new SleepAction(1.0)
+    );
+
+    public Action armToIdle = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    armToIdlePosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.0)
     );
 }
