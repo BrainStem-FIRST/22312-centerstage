@@ -12,20 +12,18 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.util.Map;
-
 public class WristA {
 
     ServoImplEx wristServo;
 
-    private int minPWM = 750;
-    private int maxPWM = 1748;
+    private int minPWM = 760;
+    private int maxPWM = 1771;
 
     private Telemetry telemetry;
 
     private double zero_degree_position = 0.0;
     private double fourty_five_degree_position = 0.25;
-    private double ninety_degree_position = 0.48;
+    private double ninety_degree_position = 0.5;
     private double one_thirty_five_degree_position = 0.75;
     private double one_eighty_degree_position = 1.0;
 
@@ -40,15 +38,15 @@ public class WristA {
         wristServo.setPosition(ninety_degree_position);
     }
 
-    public void wristToOneEightyDegreePosition() {
-        wristServo.setPosition(one_eighty_degree_position);
+    public void wristToOneEightyDegreePosition(){
+        wristServo.setPosition(1.0);
     }
 
-    public void wristToZeroDegreePosition() {
-        wristServo.setPosition(zero_degree_position);
+    public void wristToZeroDegreePosition(){
+        wristServo.setPosition(0);
     }
 
-    public Action turnWrist180 = new SequentialAction(
+    public Action turnWristOneEighty = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -59,8 +57,18 @@ public class WristA {
             new SleepAction(1.5)
     );
 
+    public Action turnWristNinety =  new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    wristToPickUpPosition();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
+    );
 
-    public Action turnWrist0 = new SequentialAction(
+    public Action turnWristZero = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

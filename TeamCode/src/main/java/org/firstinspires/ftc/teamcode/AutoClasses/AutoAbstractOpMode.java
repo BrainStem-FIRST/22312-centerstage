@@ -9,20 +9,19 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.robot.StickyButton;
-
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
 public abstract class AutoAbstractOpMode extends LinearOpMode {
     AutoConstants constants;
@@ -41,6 +40,10 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     public abstract Alliance alliance();
     public abstract Orientation orientation();
 
+    // Method is defined in child classes AutoBR, AutoBR_Cycle, AutoBL, AutoBL_Cycle
+    public abstract Boolean cycleAllowed();
+
+
     // Used for setting a time delay before starting Auto
     private int     autoTimeDelay = 0;
 
@@ -56,8 +59,8 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
     // SENSOR BYPASS: When set, camera based approach is disabled,
     // except for moving towards the board after completion of the trajectory
-    private boolean sensorBypass = false;
-    private boolean cycleAllowed = true;
+    private boolean sensorBypass = true;
+    private final boolean cycleAllowed = cycleAllowed();
 
     @Override
     public void runOpMode() {
@@ -65,8 +68,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         /************** Hardware Initialization ***************/
 
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
-//        robot.depositor.grabBothPixels();  // This is done after Start also, so removed this instance
-//        robot.wrist.wristToPickUpPosition();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
@@ -97,6 +98,25 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         double distanceLeft = 0;
         double distanceRight = 0;
 
+        //////////////////////////////////////////////////////////
+        //                INITIALIZE BEFORE AUTO                //
+        //////////////////////////////////////////////////////////
+        robot.depositor.bothDepositorsDeposit();
+        robot.drawbridge.setDrawBridgeDown();
+        robot.drawbridge.setHardstopPosition(0.01);
+
+        // Any initialization of servos before auto will be done here:
+        runBlocking(new SequentialAction(
+                new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        robot.lift.raiseHeightTo(robot.lift.LIFT_IDLE_STATE_POSITION);
+                        return false;
+                    }
+                }
+                // Lift remains in idle (not touching) position to allow picking up white pixel later on.
+        ));
+
         /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
 
 //        setTimeDelay();
@@ -116,34 +136,6 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         robot.huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
         int loopCounter = 0;    // for debug purposes, no longer necessary
-
-
-        //////////////////////////////////////////////////////////
-        //                INITIALIZE BEFORE AUTO                //
-        //////////////////////////////////////////////////////////
-
-        // Any initialization of servos before auto will be done here:
-        runBlocking(new SequentialAction(
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
-                        return false;
-                    }
-                },
-                new ParallelAction(
-                        new Action() {
-                            @Override
-                            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                                robot.depositor.grabBothPixels();
-                                return false;
-                            }
-                        },
-                        robot.drawbridge.drawBridgeDown
-                    ),
-                new SleepAction(0.5)
-        ));
-
 
 
         //////////////////////////////////////////////////////////
@@ -407,7 +399,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         runBlocking(new SequentialAction(
                 parking_traj(robot),
                 robot.arm.armToIdle,
-                robot.lift.lowerLiftAuto
+                robot.lift.lowerLiftToIdleState
         ));
 
     }
@@ -630,35 +622,27 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // Depositing to left side; turn wrist to 0deg
                 traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
                         .setReversed(true)
-                        .strafeToConstantHeading(new Vector2d(x, y))
-                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0, robot.lift.raiseLiftAutoToLowState)
                         .afterTime(0.5, robot.arm.armToDeposit)
-                        .afterTime(0.7, robot.wrist.turnWrist0)
-                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .afterTime(0.7, robot.wrist.turnWristZero)
+
+                        .strafeToConstantHeading(new Vector2d(x, y))
+                        .afterTime(0,robot.depositor.bothDepositorsDeposit)
                         .build();
                 break;
             case 2:
             case 5:
+            case 3:
+            case 6:
                 // Depositing to center side; turn wrist to 180deg
                 traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
                         .setReversed(true)
-                        .strafeToConstantHeading(new Vector2d(x, y))
-                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0, robot.lift.raiseLiftAutoToLowState)
                         .afterTime(0.5, robot.arm.armToDeposit)
-                        .afterTime(0.7, robot.wrist.turnWrist180)
-                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
-                        .build();
-                break;
-            case 3:
-            case 6:
-                // Depositing to right side; turn wrist to 180deg
-                traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
-                        .setReversed(true)
+                        .afterTime(0.7, robot.wrist.turnWristOneEighty)
+
                         .strafeToConstantHeading(new Vector2d(x, y))
-                        .afterTime(0, robot.lift.raiseLiftAuto)
-                        .afterTime(0.5, robot.arm.armToDeposit)
-                        .afterTime(0.7, robot.wrist.turnWrist180)
-                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .afterTime(0,robot.depositor.bothDepositorsDeposit)
                         .build();
                 break;
             default:
@@ -671,11 +655,12 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // Depositing to right side; turn wrist to 180deg
                 traj_deposit = robot.drive.actionBuilder(robot.drive.pose)
                         .setReversed(true)
-                        .strafeToConstantHeading(new Vector2d(x, y))
-                        .afterTime(0, robot.lift.raiseLiftAuto)
+                        .afterTime(0, robot.lift.raiseLiftAutoToLowState)
                         .afterTime(0.5, robot.arm.armToDeposit)
-                        .afterTime(0.7, robot.wrist.turnWrist180)
-                        .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+                        .afterTime(0.7, robot.wrist.turnWristOneEighty)
+
+                        .strafeToConstantHeading(new Vector2d(x, y))
+                        .afterTime(0,robot.depositor.bothDepositorsDeposit)
                         .build();
                 break;
         }

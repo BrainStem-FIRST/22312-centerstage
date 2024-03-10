@@ -19,11 +19,11 @@ public class DepositorA {
     private ServoImplEx redDepositerServo;
     private Telemetry telemetry;
 
-    private int greenDepositerPWMMin = 970; //810
-    private int greenDepositerPWMMax = 2280; //2120
+    private int greenDepositerPWMMin = 793; //810
+    private int greenDepositerPWMMax = 1474; //2120
 
-    private int redDepositerPWMMin = 810;
-    private int redDepositerPWMMax = 2120;
+    private int redDepositerPWMMin = 980;
+    private int redDepositerPWMMax = 1830;
 
     public DepositorA(HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -61,21 +61,29 @@ public class DepositorA {
         greenDepositerServo.setPosition(0);
     }
 
-//    public void bothDepositorsDeposit(){
-//        greenDepositerServo.setPosition(0);
-//        redDepositerServo.setPosition(0);
-//    }
+    public void bothDepositorsDeposit(){
+        greenDepositerServo.setPosition(0);
+        redDepositerServo.setPosition(0);
+    }
 
     public Action bothDepositorsDeposit = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                    bothDepositorsDeposit();
-                    greenDepositerServo.setPosition(0);
-                    redDepositerServo.setPosition(0);
+                    bothDepositorsDeposit();
                     return false;
                 }
             },
             new SleepAction(0.5)
+    );
+
+    public Action bothDepositorsPickup = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    grabBothPixels();
+                    return false;
+                }
+            }
     );
 }

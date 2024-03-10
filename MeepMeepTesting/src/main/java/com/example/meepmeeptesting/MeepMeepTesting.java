@@ -2,6 +2,7 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
@@ -68,7 +69,7 @@ public class MeepMeepTesting {
 
     // Trajectory ending positions (takes into account the distance of robot from the backdrop)
     public static double MAX_DISTANCE_BEFORE_CRASH = 8.0;   // inches.  Adjust this value to determine robot's position before backdrop
-    public static double BACKDROP_X_WITH_FOV = FIELD_BACKDROP_X - 12 - robot_length/2.0;    // Adjust value between backdrop and front of robot where it can still see AprilTags
+    public static double BACKDROP_X_WITH_FOV = FIELD_BACKDROP_X - 7 - robot_length/2.0;    // Adjust value between backdrop and front of robot where it can still see AprilTags
 
     public static Vector2d vRedBackdrop_Left = new Vector2d(BACKDROP_X_WITH_FOV, FIELD_RED_BACKDROP_LEFT_Y);
     //    public static Vector2d vRedBackdrop_Left = new Vector2d(36, -28);
@@ -123,26 +124,46 @@ public class MeepMeepTesting {
 *******************************/
 
         Action trajectory =
-                myBot.getDrive().actionBuilder(pStartingPose_RedRight)
-// traj_init
-                        // go backwards
+                myBot.getDrive().actionBuilder(pStartingPose_BlueRight)
                         .setReversed(true)
+                        .lineToY(30.5 - 3 - 8.0)
 
-                        // Move close enough to center spike
-                        .lineToY(-35)
-                        .waitSeconds(1)
-                        .endTrajectory()
+                        // Drops purple pixel at spike. May need to set ds negative so the drawbridge lifts
+//                        .afterDisp(0,robot.drawbridge.drawBridgeUp)
 
-// traj_right
-                        // go backwards
-                        .lineToY(vRedRightSpike_Center.y +8) // myBot.getDrive().getPoseEstimate().position.y + 8)
-                        .endTrajectory()
+                        .setReversed(true)
+                        .setTangent(Math.toRadians(-90))
+                        .splineToLinearHeading(new Pose2d(-50, TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
+                        .splineToConstantHeading(new Vector2d(-57, TILE_CENTER_TO_CENTER / 2.0), Math.toRadians(180))
 
-                        // re-set reverse after .stopAndAdd as it loses config
+                        // Start rolling 1 sec before arrival relative to above splineTo. Automatically stops after x seconds
+//                        .afterTime(-1,robot.intake.intakePixel)
 
-                        // Go to backdrop to place your purple pixel
+                        // May need to jiggle here to ensure picking up white pixel
+                        .waitSeconds(1.5)
+
+                        // Secure the cargo
+//                        .afterTime(0, robot.lift.lowerLiftToGroundState)
+//                        .afterTime(1.5, robot.depositor.bothDepositorsPickup)
+
                         .setTangent(0)
-                        .splineToLinearHeading(new Pose2d(vRedBackdrop_Center.x - 4.0, vRedBackdrop_Center.y /*+ 12*/, Math.toRadians(180)), Math.toRadians(0))     // Then, go to designated tag position
+                        .splineToLinearHeading(new Pose2d(vBlueClearStageGate.x, vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+                        .splineToLinearHeading(new Pose2d(vBlueBackdrop_Center.x, vBlueBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(60))
+
+                        .strafeToConstantHeading(new Vector2d(52,vBlueBackdrop_Center.y))
+                        .waitSeconds(2.0)
+
+                        .setReversed(false)
+                        .setTangent(-90)
+                        .splineToLinearHeading(new Pose2d(-50, TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                        .splineToLinearHeading(new Pose2d(-57, TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+//                        .splineToLinearHeading(new Pose2d(TILE_CENTER_TO_CENTER / 2+6, TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+//                        .splineToLinearHeading(new Pose2d(-TILE_CENTER_TO_CENTER * 2.5, TILE_CENTER_TO_CENTER / 2, Math.toRadians(-180)), Math.toRadians(-180))
+                        .waitSeconds(2.0)
+                        .setTangent(0)
+                        .splineToLinearHeading(new Pose2d(TILE_CENTER_TO_CENTER / 2+6, TILE_CENTER_TO_CENTER / 2, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(vBlueBackdrop_Center.x+2, vBlueBackdrop_Center.y-2, Math.toRadians(180)), Math.toRadians(90))
+                        .strafeToConstantHeading(new Vector2d(52,vBlueBackdrop_Center.y))
 
                         .build();
 

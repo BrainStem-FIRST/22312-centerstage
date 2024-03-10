@@ -23,8 +23,10 @@ public class LiftA {
 
     // Encoder Positions for Lift heights
     public final int LIFT_GROUND_STATE_POSITION = 0;
+
+    public final int LIFT_IDLE_STATE = 50;
     public final int LIFT_LOW_STATE_POSITION = 400;
-    public final int LIFT_MIDDLE_STATE_POSITION = 369;
+    public final int LIFT_MIDDLE_STATE_POSITION = 600;
     public final int LIFT_HIGH_STATE_POSITION = 670;
 
     public final int LIFT_IDLE_STATE_POSITION = 140;
@@ -120,7 +122,7 @@ public class LiftA {
         liftMotor2.setPower(power);
     }
 
-    public Action raiseLiftAuto = new SequentialAction(
+    public Action raiseLiftAutoToLowState = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -130,7 +132,27 @@ public class LiftA {
             }
     );
 
-    public Action lowerLiftAuto = new SequentialAction(
+    public Action raiseLiftToMiddleState = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    raiseHeightTo(LIFT_MIDDLE_STATE_POSITION);
+                    return false;
+                }
+            }
+    );
+
+    public Action lowerLiftToIdleState = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    raiseHeightTo(LIFT_IDLE_STATE_POSITION);
+                    return false;
+                }
+            }
+    );
+
+    public Action lowerLiftToGroundState = new SequentialAction(
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

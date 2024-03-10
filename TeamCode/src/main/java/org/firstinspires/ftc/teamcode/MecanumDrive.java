@@ -72,18 +72,22 @@ public final class MecanumDrive {
         public double kA = 0.00001; //2.19.2024
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 65; // Default: 50
+        public double maxWheelVel = 65;// Default: 50
+        public double pickupWheelVel = 15;
+        public double pickupSecondWheelVel = 10;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 60; // Default: 50
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
+        public double pickupAngVel = maxAngVel / 2;
         public double maxAngAccel = Math.PI;
+        public double pickupAngAccel = maxAngAccel / 2;
 
         // path controller gains
         public double axialGain = 6; // 2.18.2024
         public double lateralGain = 6.5; // 2.18.2024
-        public double headingGain = 7; // 2.18.2024
+        public double headingGain = 12.25; // 2.18.2024
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -102,6 +106,19 @@ public final class MecanumDrive {
                     kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
                     new AngularVelConstraint(PARAMS.maxAngVel)
             ));
+
+    public final VelConstraint pickupVelConstraint =
+            new MinVelConstraint(Arrays.asList(
+                    kinematics.new WheelVelConstraint(PARAMS.pickupWheelVel),
+                    new AngularVelConstraint(PARAMS.pickupAngVel)
+            ));
+
+    public final VelConstraint secondPickupVelConstraint =
+            new MinVelConstraint(Arrays.asList(
+                    kinematics.new WheelVelConstraint(PARAMS.pickupSecondWheelVel),
+                    new AngularVelConstraint(PARAMS.pickupAngVel)
+            ));
+
     public final AccelConstraint defaultAccelConstraint =
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
@@ -479,7 +496,7 @@ public final class MecanumDrive {
                 beginPose, 1e-6, 0.0,
                 defaultTurnConstraints,
                 defaultVelConstraint, defaultAccelConstraint,
-                0.25, 0.1
+                0.25, 0.025
         );
     }
 }
