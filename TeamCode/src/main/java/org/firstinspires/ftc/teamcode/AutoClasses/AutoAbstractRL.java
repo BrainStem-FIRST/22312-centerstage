@@ -1,24 +1,13 @@
 package org.firstinspires.ftc.teamcode.AutoClasses;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import org.checkerframework.checker.units.qual.A;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.opencv.core.Mat;
 
 @Config
 @Autonomous(name="Robot: Red-Left Auto", group="Robot")
-public class AutoRL extends AutoAbstractOpMode {
+public abstract class AutoAbstractRL extends AutoAbstractOpMode {
 
     AutoConstants constants;
 

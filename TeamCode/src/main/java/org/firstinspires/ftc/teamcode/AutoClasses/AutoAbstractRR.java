@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @Autonomous(name="Robot: Red-Right Auto", group="Robot")
-public class AutoRR extends AutoAbstractOpMode {
+public abstract class AutoAbstractRR extends AutoAbstractOpMode {
 
     AutoConstants constants;
 

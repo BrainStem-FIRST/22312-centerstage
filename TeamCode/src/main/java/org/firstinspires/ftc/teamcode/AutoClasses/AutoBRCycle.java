@@ -4,8 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Config
-@Autonomous(name="Robot: Blue-Right SAFE (no cycle)", group="Robot")
-public class AutoBR extends AutoAbstractBR {
+@Autonomous(name="Robot: Blue-Right WITH CYCLE", group="Robot")
+public class AutoBRCycle extends AutoAbstractBR {
     @Override
-    public Boolean cycleAllowed() {return false;}
+    public Boolean cycleAllowed() {return true;}
 }

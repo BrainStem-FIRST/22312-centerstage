@@ -40,7 +40,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
     public abstract Alliance alliance();
     public abstract Orientation orientation();
 
-    // Method is defined in child classes AutoBR, AutoBR_Cycle, AutoBL, AutoBL_Cycle
+    // Method is defined in child classes AutoXXSafe and AutoXXCycle child classes
     public abstract Boolean cycleAllowed();
 
 

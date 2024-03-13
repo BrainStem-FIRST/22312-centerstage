@@ -89,7 +89,7 @@ public abstract class AutoAbstractBR extends AutoAbstractOpMode {
                 .splineToLinearHeading(new Pose2d(-57, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
 
                 // Start rolling 1 sec before arrival relative to above splineTo. Automatically stops after x seconds
-                .afterTime(-1,robot.intake.intakePixel)
+                .afterTime(0,robot.intake.intakePixel)
 
                 // May need to jiggle here to ensure picking up white pixel
                 .waitSeconds(1.5)
