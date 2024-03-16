@@ -48,19 +48,21 @@ public class Hopper {
 
         if(pixelSensor1 && !pixelSensor2) {
             stateMap.put(HOPPER_SYSTEM_NAME, HOPPER_ONE_PIXEL);
-            if (stateMap.get(constants.HOPPER_2_PIXELS_TIME) == null) {
-                stateMap.put(constants.HOPPER_2_PIXELS_TIME, System.currentTimeMillis());
-            }
+//            if (stateMap.get(constants.HOPPER_2_PIXELS_TIME) == null) {
+//                stateMap.put(constants.HOPPER_2_PIXELS_TIME, System.currentTimeMillis());
+//            }
         }
 
-        if(stateMap.get(constants.HOPPER_2_PIXELS_TIME) !=  null){
-            long hopperEndTime = (long) stateMap.get(constants.HOPPER_2_PIXELS_TIME) + 1000;
-            telemetry.addData("Current time", System.currentTimeMillis());
-            telemetry.addData("End time", hopperEndTime);
-            if(System.currentTimeMillis() > hopperEndTime && pixelSensor2){
-                stateMap.put(HOPPER_SYSTEM_NAME, HOPPER_TWO_PIXELS);
-                stateMap.put(constants.HOPPER_2_PIXELS_TIME, null);
-            }
+//        if(stateMap.get(constants.HOPPER_2_PIXELS_TIME) !=  null){
+//            long hopperEndTime = (long) stateMap.get(constants.HOPPER_2_PIXELS_TIME) + 1000;
+//            telemetry.addData("Current time", System.currentTimeMillis());
+//            telemetry.addData("End time", hopperEndTime);
+//            if(System.currentTimeMillis() > hopperEndTime && pixelSensor2){
+//                stateMap.put(HOPPER_SYSTEM_NAME, HOPPER_TWO_PIXELS);
+//                stateMap.put(constants.HOPPER_2_PIXELS_TIME, null);
+//            }
+        if(pixelSensor1 && pixelSensor2){
+            stateMap.put(HOPPER_SYSTEM_NAME, HOPPER_TWO_PIXELS);
         }
     }
 }

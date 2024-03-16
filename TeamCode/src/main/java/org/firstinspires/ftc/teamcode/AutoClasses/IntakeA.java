@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SafePathBuilder;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,10 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.util.Map;
 public class IntakeA {
     private Telemetry telemetry;
 
@@ -102,6 +99,42 @@ public class IntakeA {
             }
     );
 
+    public Action intakePixelSecondTimeBlueRight = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(1.0);
+                    return false;
+                }
+            },
+            new SleepAction(5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
+
+
+    public Action intakeFirstPixelRightSpikeRedSideLeft = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakePixelinAuto();
+                    return false;
+                }
+            },
+            new SleepAction(5.5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
     public Action intakePixelLeftPixelSpike = new SequentialAction(
             new Action() {
                 @Override
@@ -129,6 +162,60 @@ public class IntakeA {
                 }
             },
             new SleepAction(4),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
+
+    public Action intakeFirstPixelBlueSpikeCenter = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(1.0);
+                    return false;
+                }
+            },
+            new SleepAction(5),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
+
+    public Action intakeSafeAutos = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(1.0);
+                    return false;
+                }
+            },
+            new SleepAction(5.0),
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    stopIntakeinAuto();
+                    return false;
+                }
+            }
+    );
+
+    public Action intakeExtra = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(1.0);
+                    return false;
+                }
+            },
+            new SleepAction(0.25),
             new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

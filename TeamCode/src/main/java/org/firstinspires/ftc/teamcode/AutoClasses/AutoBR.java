@@ -47,23 +47,36 @@ public class AutoBR extends AutoAbstractOpMode {
     public Action traj_left(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
                 // go forwards
-                .setReversed(false)
-
-                // Turn heading towards right spike
-                .setTangent(Math.toRadians(35))
-                .lineToYLinearHeading(30, Math.toRadians(25))
-
-                // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
-
-                // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
-                .setTangent(Math.toRadians(-135))
-                .splineToLinearHeading(new Pose2d((-constants.TILE_CENTER_TO_CENTER*2.25) + 12, (constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180.00001)), Math.toRadians(180))
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d((constants.vBlueBackdrop_Left.x) + 12, constants.vBlueBackdrop_Left.y + 12, Math.toRadians(-180)), Math.toRadians(90))
 
+                .splineToLinearHeading(new Pose2d(-34, 24, Math.toRadians(0)), Math.toRadians(0), robot.drive.pickupVelConstraint)
+//
+//                // Turn heading towards right spike
+//                .setTangent(Math.toRadians(35))
+//                .lineToYLinearHeading(30, Math.toRadians(25))
+//
+//                // Drop yellow pixel in position
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
+//
+//                // Goto Backdrop to place your yellow pixel
+                .setReversed(true)
+                .setTangent(Math.toRadians(180))
+                .lineToX(robot.drive.pose.position.x - 10)
+//                .setTangent(Math.toRadians(-135))
+//                .splineToLinearHeading(new Pose2d((-constants.TILE_CENTER_TO_CENTER*2.25) + 12, (constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180.00001)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-45, 12, Math.toRadians(180)), Math.toRadians(0))
+//                .setTangent(0)
+//                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+
+                .splineToConstantHeading(new Vector2d(30, 44), Math.toRadians(60))
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(41, 44))
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -74,17 +87,34 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
-                .lineToY(robot.drive.pose.position.y - 8.0)
+                .lineToY(robot.drive.pose.position.y - 6.0)
 
-                .stopAndAdd(robot.intake.spitPixel)
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
                 .setReversed(true)
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25 - 12, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
-                .stopAndAdd(robot.intake.intakePixel)
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x - 12, constants.vBlueBackdrop_Center.y, Math.toRadians(-180)), Math.toRadians(90))
+                .setTangent(90)
+                .lineToY(robot.drive.pose.position.y - 5)
+
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(-45, 12, Math.toRadians(180)), Math.toRadians(0))
+
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(30, 40), Math.toRadians(60))
+
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(41, 40))
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+//                .setTangent(Math.toRadians(-90))
+//                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25 - 12, (constants.TILE_CENTER_TO_CENTER / 2.0) +  12, Math.toRadians(180.00001)), Math.toRadians(180))
+//                .stopAndAdd(robot.intake.intakePixel)
+//                .setTangent(0)
+//                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+//                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Center.x - 12, constants.vBlueBackdrop_Center.y + 12, Math.toRadians(-180)), Math.toRadians(90))
 
                 .build();
     }
@@ -94,21 +124,38 @@ public class AutoBR extends AutoAbstractOpMode {
         return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
+                .splineToLinearHeading(new Pose2d(-50, 34, Math.toRadians(180)), Math.toRadians(180))
 
-                .setTangent(135)
-                .lineToX(constants.vBlueRightSpike_Right.x)
-//                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
-//                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
+//                .setTangent(135)
+//                .lineToX(constants.vBlueRightSpike_Right.x)
+////                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
+////                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
+//
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
-                .stopAndAdd(robot.intake.spitPixel)
-
-                .endTrajectory()
                 .setReversed(true)
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Right.x-4, constants.vBlueBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(90))
+
+                .splineToConstantHeading(new Vector2d(-45, 12), Math.toRadians(0))
+
+                .splineToConstantHeading(new Vector2d(30, 34), Math.toRadians(60))
+
+
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(41, 33))
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
+//
+//                .endTrajectory()
+//                .setReversed(true)
+//                .setTangent(Math.toRadians(-90))
+//                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (constants.TILE_CENTER_TO_CENTER / 2.0), Math.toRadians(180.00001)), Math.toRadians(180))
+//                .setTangent(0)
+//                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
+//                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Right.x-4, constants.vBlueBackdrop_Right.y + 12, Math.toRadians(-180)), Math.toRadians(90))
 
                 .build();
     }
@@ -129,9 +176,7 @@ public class AutoBR extends AutoAbstractOpMode {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .setTangent(135)
-                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, 56, Math.toRadians(180)), Math.toRadians(45))
-                .build();
+                .splineToConstantHeading(new Vector2d(robot.drive.pose.position.x - 4, 20),Math.toRadians(90))                .build();
     }
     public Action deposit_right(BrainSTEMRobotA robot){
         return robot.drive.actionBuilder(robot.drive.pose)
@@ -160,7 +205,7 @@ public class AutoBR extends AutoAbstractOpMode {
                 .setReversed(true)
                 .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
                 .stopAndAdd(robot.arm.armToDeposit)
-                .strafeToConstantHeading(new Vector2d(52, -18))
+                .strafeToConstantHeading(new Vector2d(50, -18))
                 .stopAndAdd(robot.wrist.turnWristOneEighty)
                 .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();

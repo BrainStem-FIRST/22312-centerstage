@@ -30,8 +30,9 @@ public class AutoRL extends AutoAbstractOpMode {
 
                 .stopAndAdd(robot.drawbridge.drawBridgeUp)
 
-                .endTrajectory()
                 .setReversed(true)
+                .setTangent(Math.toRadians(-90))
+                .lineToY(robot.drive.pose.position.y + 10)
 
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
@@ -40,6 +41,14 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Left.x, constants.vRedBackdrop_Left.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -21))
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -89,7 +98,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setReversed(true)
 
                 // move to position to drop purple pixel - relative to where robot stopped after seeing the center spike
-                .lineToY(robot.drive.pose.position.y + 6.0)
+                .lineToY(robot.drive.pose.position.y + 5)
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose before spit:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -100,11 +109,10 @@ public class AutoRL extends AutoAbstractOpMode {
                 })
 
                 .stopAndAdd(robot.drawbridge.drawBridgeUp)
-
                 // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180)), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, (-constants.TILE_CENTER_TO_CENTER / 2.0) + 15, Math.toRadians(180)), Math.toRadians(135))
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after spline:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -116,6 +124,15 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x, constants.vRedBackdrop_Center.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -25))
+//                .stopAndAdd(robot.wrist.turnWristOneEighty)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -137,7 +154,7 @@ public class AutoRL extends AutoAbstractOpMode {
                 // Turn heading towards right spike
                 .setTangent(Math.toRadians(-35))
                 .lineToYLinearHeading(-36, Math.toRadians(-25))
-                .lineToX(-24)
+                .lineToX(-22)
                 .stopAndAdd(telemetryPacket -> {
                     telemetry.addLine("Pose after before spit:");
                     telemetry.addData("x", robot.drive.pose.position.x);
@@ -156,6 +173,14 @@ public class AutoRL extends AutoAbstractOpMode {
                 .setTangent(0)
                 .splineToLinearHeading(new Pose2d(constants.vRedClearStageGate.x-8, constants.vRedClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
                 .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y + 12, Math.toRadians(-180)), Math.toRadians(-90))
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(52, -31))
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -177,7 +202,7 @@ public class AutoRL extends AutoAbstractOpMode {
         return robot.drive.actionBuilder(robot.drive.pose)
 //                .lineToX(37)  /// Add if needed
                 .setTangent(135)
-                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X,-20 + 12, Math.toRadians(180)), Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X,-2, Math.toRadians(180)), Math.toRadians(45))
                 .build();
     }
 

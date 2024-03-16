@@ -3,8 +3,11 @@ package org.firstinspires.ftc.teamcode.AutoClasses;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.opencv.core.Mat;
 
 @Config
 @Autonomous(name="Robot: Blue-Right Auto Cycle", group="Robot")
@@ -45,26 +48,55 @@ public class AutoBRCycle extends AutoAbstractOpModeCycle {
 
     @Override
     public Action traj_left(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(robot.drive.pose)
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go forwards
-                .setReversed(false)
-
-                // Turn heading towards right spike
-                .setTangent(Math.toRadians(35))
-                .lineToYLinearHeading(30, Math.toRadians(25))
-
-                // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
-
-                // Goto Backdrop to place your yellow pixel
                 .setReversed(true)
-                .setTangent(Math.toRadians(-135))
-                .splineToLinearHeading(new Pose2d((-constants.TILE_CENTER_TO_CENTER*2.25) + 12, (constants.TILE_CENTER_TO_CENTER / 2.0) + 12, Math.toRadians(180.00001)), Math.toRadians(180))
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y + 12, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d((constants.vBlueBackdrop_Left.x) + 12, constants.vBlueBackdrop_Left.y + 12, Math.toRadians(-180)), Math.toRadians(90))
-
+                .afterDisp(47, robot.drawbridge.drawBridgeUpBlue)
+                .splineToLinearHeading(new Pose2d(-38, 25, Math.toRadians(0)), Math.toRadians(0))
+                .waitSeconds(0.5)
+//                .afterDisp(80, robot.intake.intakeFirstPixelBlueSpikeCenter)
+//                .afterDisp(55, robot.intake.intakeFirstPixelBlueSpikeCenter)
+//                .splineToConstantHeading(new Vector2d(-58, 15), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-58, 15, Math.toRadians(180)), Math.toRadians(-70))
+                .afterDisp(0, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-68.5, 15), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .splineToConstantHeading(new Vector2d(-67, 15), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .afterDisp(0, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-68.25, 17), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .afterDisp(0, robot.lift.lowerLiftToGroundState)
+                .afterDisp(5, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftAutoToLowState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristZero)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(39, 45), Math.toRadians(55))
+                .waitSeconds(0.5)
+                .setReversed(false)
+                .afterDisp(5, robot.arm.armToIdle)
+                .afterDisp(40, robot.lift.lowerLiftToGroundState)
+                .splineToConstantHeading(new Vector2d(0, 12), Math.toRadians(180))
+                .afterDisp(0, robot.lift.lowerLiftToIdleState)
+                .afterDisp(0, robot.wrist.turnWristNinety)
+                .afterDisp(40, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-58, 15), Math.toRadians(180))
+                .afterDisp(0, robot.drawbridge.setDrawBridgeFourthHeight)
+                .afterDisp(0, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-69, 15), Math.toRadians(180), robot.drive.secondPickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .afterDisp(0, robot.lift.lowerLiftToGroundState)
+                .afterDisp(5, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftToMiddleState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(39, 45), Math.toRadians(55))
+                .waitSeconds(0.5)
                 .build();
+
     }
 
     @Override
@@ -73,31 +105,101 @@ public class AutoBRCycle extends AutoAbstractOpModeCycle {
                 // go backwards
                 .setReversed(true)
 //                .splineToLinearHeading(new Pose2d(-48, 12, Math.toRadians(180)), Math.toRadians(90))
-                .lineToY(24)
+                .afterDisp(55, robot.drawbridge.drawBridgeUpBlue)
+//                .splineToLinearHeading(new Pose2d(-43, 28, Math.toRadians(180)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-35, 20), Math.toRadians(-90))
+                .setReversed(true)
+//                .afterDisp(, robot.intake.intakeFirstPixelBlueSpikeCenter)
+//                .splineToConstantHeading(new Vector2d(-58, 17), Math.toRadians(180))
+//                .splineToLinearHeading(new Pose2d(-50, -4, Math.toRadians(180)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-58, 17, Math.toRadians(180)), Math.toRadians(180))
+//                .waitSeconds(1.0)
+                .afterDisp(20, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-68.5, 17), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .splineToConstantHeading(new Vector2d(-67, 17), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .afterDisp(0, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-68.25, 17), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .afterDisp(0, robot.lift.lowerLiftToGroundState)
+                .afterDisp(5, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftAutoToLowState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(39, 40), Math.toRadians(55))
+                .waitSeconds(0.5)
+                .setReversed(false)
+                .afterDisp(5, robot.arm.armToIdle)
+                .afterDisp(40, robot.lift.lowerLiftToGroundState)
+                .splineToConstantHeading(new Vector2d(0, 12), Math.toRadians(180))
+                .afterDisp(0, robot.lift.lowerLiftToIdleState)
+                .afterDisp(0, robot.wrist.turnWristNinety)
+                .afterDisp(40, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-58, 17), Math.toRadians(180))
+                .afterDisp(0, robot.drawbridge.setDrawBridgeFourthHeightBlue)
+                .afterDisp(0, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-69.5, 17), Math.toRadians(180), robot.drive.secondPickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .afterDisp(0, robot.lift.lowerLiftToGroundState)
+                .afterDisp(10, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftToMiddleState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(39, 40), Math.toRadians(55))
                 .build();
     }
 
     @Override
     public Action traj_right(BrainSTEMRobotA robot) {
-        return robot.drive.actionBuilder(robot.drive.pose)
+        return robot.drive.actionBuilder(constants.pStartingPose_BlueRight)
                 // go backwards
                 .setReversed(true)
-
-                .setTangent(135)
-                .lineToX(constants.vBlueRightSpike_Right.x)
-//                .splineTo(new Vector2d(constants.vRedLeftSpike_Left.x, constants.vRedLeftSpike_Left.y - 4.0), Math.toRadians(90))
-//                .lineToY(constants.vRedLeftSpike_Left.y + constants.robot_length / 2.0)
-
-                .stopAndAdd(robot.intake.spitPixel)
-
-                .endTrajectory()
+                .afterDisp(20, robot.drawbridge.drawBridgeUpBlue)
+                .splineToLinearHeading(new Pose2d(-46, 34, Math.toRadians(180)), Math.toRadians(-90))
+//                .afterDisp(80, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .afterDisp(55, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-58, 15), Math.toRadians(180))
+                .afterDisp(0, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-68.5, 15), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .splineToConstantHeading(new Vector2d(-67, 15), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .afterDisp(0, robot.intake.intakeFirstPixelBlueSpikeCenter)
+                .splineToConstantHeading(new Vector2d(-68.25, 17), Math.toRadians(180), robot.drive.pickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
                 .setReversed(true)
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(-constants.TILE_CENTER_TO_CENTER*2.25, constants.TILE_CENTER_TO_CENTER / 2.0, Math.toRadians(180.00001)), Math.toRadians(180))
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vBlueClearStageGate.x-8, constants.vBlueClearStageGate.y, Math.toRadians(180)), Math.toRadians(0)) // added delta to x so we don't un-score partner's pixel
-                .splineToLinearHeading(new Pose2d(constants.vBlueBackdrop_Right.x-4, constants.vBlueBackdrop_Right.y, Math.toRadians(-180)), Math.toRadians(90))
-
+                .afterDisp(0, robot.lift.lowerLiftToGroundState)
+                .afterDisp(5, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftAutoToLowState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(39, 35), Math.toRadians(55))
+                .waitSeconds(0.5)
+                .setReversed(false)
+                .afterDisp(5, robot.arm.armToIdle)
+                .afterDisp(40, robot.lift.lowerLiftToGroundState)
+                .splineToConstantHeading(new Vector2d(0, 12), Math.toRadians(180))
+                .afterDisp(0, robot.lift.lowerLiftToIdleState)
+                .afterDisp(0, robot.wrist.turnWristNinety)
+                .afterDisp(40, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-58, 15), Math.toRadians(180))
+                .afterDisp(0, robot.drawbridge.setDrawBridgeFourthHeight)
+                .afterDisp(0, robot.intake.intakePixelSecondTime)
+                .splineToConstantHeading(new Vector2d(-69, 15), Math.toRadians(180), robot.drive.secondPickupVelConstraint, new ProfileAccelConstraint(-5,5))
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .afterDisp(0, robot.lift.lowerLiftToGroundState)
+                .afterDisp(5, robot.depositor.bothDepositorsPickup)
+                .afterDisp(80, robot.lift.raiseLiftToMiddleState)
+                .afterDisp(85, robot.arm.armToDeposit)
+                .afterDisp(95, robot.wrist.turnWristOneEighty)
+                .afterDisp(120,robot.depositor.bothDepositorsDeposit)
+                .splineToConstantHeading(new Vector2d(39, 35), Math.toRadians(55))
+                .waitSeconds(0.5)
                 .build();
     }
 
@@ -117,8 +219,7 @@ public class AutoBRCycle extends AutoAbstractOpModeCycle {
     @Override
     public Action parking_traj(BrainSTEMRobotA robot) {
         return robot.drive.actionBuilder(robot.drive.pose)
-                .setTangent(135)
-                .splineToLinearHeading(new Pose2d(constants.FIELD_BACKSTAGE_X, 56, Math.toRadians(180)), Math.toRadians(45))
+                .splineToConstantHeading(new Vector2d(robot.drive.pose.position.x - 4, 20),Math.toRadians(90))
                 .build();
     }
     public Action deposit_right(BrainSTEMRobotA robot){

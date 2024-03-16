@@ -71,8 +71,11 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         // Huskylens initialization (device and Selection of algorithm
         BrainSTEMRobotA robot = new BrainSTEMRobotA(hardwareMap, telemetry);
-        robot.depositor.grabBothPixels();
-//        robot.wrist.wristToPickUpPosition();
+//        robot.depositor.grabBothPixels();
+        robot.depositor.bothDepositorsDeposit();
+        robot.arm.armToIdlePosition();
+        robot.wrist.wristToPickUpPosition();
+        robot.drawbridge.setDrawBridgeDown();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
@@ -108,7 +111,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
-        int targetAprilTagNum = readPropPosition(robot);
+        int targetAprilTagNum = readPropPosition(robot);  //readPropPosition(robot)
 
         /////////////////////////////////////////////
         //             START WAS GIVEN             //
@@ -130,33 +133,33 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         telemetry.update();
 
 // Any initialization of servos before auto will be done here:
-        runBlocking(new SequentialAction (
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.depositor.grabBothPixels();
-                        return false;
-                    }
-                },
-                new SleepAction(0.5)
-        ));
+//        runBlocking(new SequentialAction (
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        robot.depositor.grabBothPixels();
+//                        return false;
+//                    }
+//                },
+//                new SleepAction(0.5)
+//        ));
+
+//        runBlocking(new SequentialAction(
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        robot.drawbridge.setDrawBridgeDown();
+//                        return false;
+//                    }
+//                },
+//                new SleepAction(0.2)
+//        ));
 
         runBlocking(new SequentialAction(
                 new Action() {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.drawbridge.setDrawBridgeDown();
-                        return false;
-                    }
-                },
-                new SleepAction(0.2)
-        ));
-
-        runBlocking(new SequentialAction(
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        robot.lift.raiseHeightTo(robot.lift.LIFT_GROUND_STATE_POSITION);
+                        robot.lift.raiseHeightTo(robot.lift.LIFT_IDLE_STATE_POSITION);
                         return false;
                     }
                 }
@@ -172,7 +175,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 traj_init(robot) // all variations first go to center spike
         ));
 
-        robot.drive.updatePoseEstimate(); // This should not be unnecessary since updatePoseEstimate is already being called within findSpike()
+        robot.drive.updatePoseEstimate(); // This should not be unnecessary since updatePoseEstimate is already being called within finfindSpikedSpike()
 
         runBlocking(new SequentialAction(
                 getTrajectory(robot, targetAprilTagNum)
@@ -452,7 +455,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                     }
                 },
 
-                new SleepAction(1.0),
+                new SleepAction(2.0),
 
                 new Action() {
                     @Override
@@ -596,7 +599,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
                 // Find spike based on change in hue value
                 // Rubber mat (gray) gives out 180.
                 // Any color moves the hue away from 180 (can be in either direction)
-                if (Math.abs(148 - hsv[0]) > 30 || findSpikeTimer.seconds() > 0.5){
+                if (Math.abs(148 - hsv[0]) > 30 || findSpikeTimer.seconds() > 5){
                     moveToSpike = 0;
                     foundSpike = true;  // found it
                 } else {
@@ -607,7 +610,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
 
                 robot.drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
-                                0.4 * moveToSpike,
+                                0.25 * moveToSpike,
                                 0.0
 
                         ),
@@ -754,7 +757,7 @@ public abstract class AutoAbstractOpMode extends LinearOpMode {
         if(targetTagNum == -1) {
             // No prop was detected by the time of Start, return a default value
             // Default is Right
-            targetTagNum = (alliance()==Alliance.BLUE) ? 2 : 5;
+            targetTagNum = (alliance()==Alliance.BLUE) ? 1 : 4;
         }
 
         return targetTagNum;

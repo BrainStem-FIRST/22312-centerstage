@@ -102,10 +102,10 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(constants.NUMBER_OF_PIXELS, constants.PIXEL_PICKUP_2_PIXELS);
                     stateMap.put(robot.lift.LIFT_SYSTEM_NAME, stateMap.get(constants.DRIVER_2_SELECTED_HEIGHT));
                     stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_DEPOSIT_STATE);
-//                    if(gamepad1.a){
-//                        liftGoingUp = true;
-//                        liftGoingUpTime.reset();
-//                    }
+                    if(gamepad1.a){
+                        liftGoingUp = true;
+                        liftGoingUpTime.reset();
+                    }
                 } else {
                     if (gamepad1.a) {
                         retractionInProgress = true;
@@ -140,10 +140,15 @@ public class RobotTeleOp extends LinearOpMode {
                     stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, stateMap.get(constants.CURRENT_LEFT_DEPSOSITER));
                     bumperPushes += 1;
                 }
+                if(gamepad1rightbutton.getState()){
+                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, stateMap.get(constants.CURRENT_RIGHT_DEPSOSITER));
+                    bumperPushes += 1;
+                }
                 if(gamepad2.right_bumper && gamepad2.b){
                     hangingMode = true;
                     stateMap.put(constants.HANGING_MODE, "true");
                     stateMap.put(robot.arm.ARM_SYSTEM_NAME, robot.arm.ARM_DEPOSIT_STATE);
+                    robot.lift.setZeroBrakeBehavior();
                 }
                 if(hangingMode && gamepad2.left_stick_y > 0.5){
                     robot.lift.setRawPower(0.5 * gamepad2.left_stick_y);
@@ -152,25 +157,32 @@ public class RobotTeleOp extends LinearOpMode {
                 } else if(hangingMode){
                     robot.lift.setRawPower(0);
                 }
-                if (gamepad1rightbutton.getState()) {
+//                if (gamepad1rightbutton.getState()) {
+//                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_OPEN);
+//                    if(gamepad1.right_bumper){
+//                        retractionInProgress = true;
+//                        retractionTime.reset();
+//                    }
+//                }
+                if(gamepad1.left_trigger > 0.9){
                     stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_OPEN);
-                    if(gamepad1.right_bumper){
-                        retractionInProgress = true;
-                        retractionTime.reset();
-                    }
+                    retractionTime.reset();
+                    retractionInProgress = true;
                 }
-
                 if(bumperPushes == 2){
-                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_OPEN);
+//                    stateMap.put(robot.depositer.DEPOSITER_SYSTEM_NAME, robot.depositer.DEPOSITER_OPEN);
                     if(gamepad1.right_bumper || gamepad1.left_bumper){
                         retractionInProgress = true;
+                        bumperPushes = 0;
                         retractionTime.reset();
                     }
                 }
                 gamepad2RightButton.update(gamepad2.right_bumper);
                 gamepad2LeftButton.update(gamepad2.left_bumper);
                 if (gamepad2RightButton.getState() && !hangingMode) {
-                    liftCounter += 1;
+                    if(liftCounter != 7){
+                        liftCounter += 1;
+                    }
                 }
                 if (gamepad2LeftButton.getState() && !hangingMode) {
                     if (liftCounter != 0) {
@@ -210,10 +222,10 @@ public class RobotTeleOp extends LinearOpMode {
                 if (robot.lift.liftMotor2.getCurrentPosition() > 230) {
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(
-                                    (0.6 * -gamepad1.left_stick_y),
+                                    (0.8 * -gamepad1.left_stick_y),
                                     (0.6 * -gamepad1.left_stick_x)
                             ),
-                            (0.45 * -gamepad1.right_stick_x)));
+                            (0.3 * -gamepad1.right_stick_x)));
                 } else {
                     robot.drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(
@@ -243,6 +255,7 @@ public class RobotTeleOp extends LinearOpMode {
                 robot.updateSystems();
                 telemetry.addData("retraction time", retractionTime.seconds());
                 telemetry.addData("Bumper pushes", bumperPushes);
+                telemetry.addData("lift counter", liftCounter);
                 telemetry.addData("LIft encoder heights", robot.lift.liftMotor2.getCurrentPosition());
                 telemetry.addData("Wrist Position counter", wristPositionCounter);
                 telemetry.addData("intake motor", robot.intake.intakeMotor.getPower());
@@ -250,6 +263,7 @@ public class RobotTeleOp extends LinearOpMode {
                 telemetry.addData("Lift motor 2 ticks", robot.lift.liftMotor2.getCurrentPosition());
                 telemetry.addData("Lift motor 3 ticks", robot.lift.liftMotor3.getCurrentPosition());
                 telemetry.addData("hanging mode ", hangingMode);
+                telemetry.addData("Bumper pushes", bumperPushes);
                 telemetry.update();
             }
             }
@@ -276,9 +290,6 @@ public class RobotTeleOp extends LinearOpMode {
     }
     private void updateLift(Map stateMap, BrainSTEMRobot robot){
         Constants constants = new Constants();
-        if(liftCounter == 12){
-            liftCounter = 0;
-        }
         if(liftCounter == 0){
             stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW1_STATE);
         }
@@ -302,18 +313,6 @@ public class RobotTeleOp extends LinearOpMode {
         }
         if(liftCounter == 7){
             stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW8_STATE);
-        }
-        if(liftCounter == 8){
-            stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW9_STATE);
-        }
-        if(liftCounter == 9){
-            stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW10_STATE);
-        }
-        if(liftCounter == 10){
-            stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW11_STATE);
-        }
-        if(liftCounter == 11){
-            stateMap.put(constants.DRIVER_2_SELECTED_HEIGHT, robot.lift.LIFT_ROW12_STATE);
         }
     }
 
@@ -348,28 +347,28 @@ public class RobotTeleOp extends LinearOpMode {
 
         if(wristPositionCounter == 0){
             stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_0_DEGREE_STATE);
-            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
-            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
         }
         if(wristPositionCounter == 1){
             stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_45_DEGREE_STATE);
-            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
-            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
         }
         if(wristPositionCounter == 2){
             stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_90_DEGREE_STATE);
-            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
-            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
         }
         if(wristPositionCounter == 3){
             stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_135_DEGREE_STATE);
-            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
-            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
         }
         if(wristPositionCounter == 4){
             stateMap.put(robot.wrist.WRIST_SYSTEM_NAME, robot.wrist.WRIST_180_DEGREE_STATE);
-            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
-            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_LEFT_DEPSOSITER, robot.depositer.GREEN_DEPOSITER_OPEN);
+            stateMap.put(robot.constants.CURRENT_RIGHT_DEPSOSITER, robot.depositer.RED_DEPOSITER_OPEN);
 
         }
     }

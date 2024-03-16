@@ -115,11 +115,11 @@ public class Drawbridge {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(0.5);
+        drawBridge.setPosition(0.2);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");
-        drawBridge.setPosition(0.99);
+        drawBridge.setPosition(0.58);
     }
 
     public void setHardstopPosition(double position){

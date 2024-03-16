@@ -30,6 +30,14 @@ public class Lift {
     public final String LIFT_ROW10_STATE = "LIFT_ROW10_STATE";
     public final String LIFT_ROW11_STATE = "LIFT_ROW11_STATE";
     public final String LIFT_ROW12_STATE = "LIFT_ROW12_STATE";
+    public final String LIFT_ROW13_STATE = "LIFT_ROW13_STATE";
+    public final String LIFT_ROW14_STATE = "LIFT_ROW14_STATE";
+    public final String LIFT_ROW15_STATE = "LIFT_ROW15_STATE";
+    public final String LIFT_ROW16_STATE = "LIFT_ROW16_STATE";
+    public final String LIFT_ROW17_STATE = "LIFT_ROW17_STATE";
+
+
+
 
     public final String LIFT_IDLE_STATE = "LIFT_IDLE_STATE";
 
@@ -49,18 +57,24 @@ public class Lift {
     //lift row 5: 1044
     private int LIFT_GROUND_STATE_POSITION = 0;
     public int LIFT_IDLE_STATE_POSITION = 100;
-    private int LIFT_ROW1_POSITION = 74;
-    private int LIFT_ROW2_POSITION = 124;
-    private int LIFT_ROW3_POSITION = 369;
-    private int LIFT_ROW4_POSITION = 520;
-    private int LIFT_ROW5_POSITION = 670;
-    private int LIFT_ROW_6_POSITION = 820;
-    private int LIFT_ROW_7_POSITION = 970;
-    private int LIFT_ROW_8_POSITION = 1020;
-    private int LIFT_ROW_9_POSITION = 1170;
-    private int LIFT_ROW_10_POSITION = 1320;
-    private int LIFT_ROW_11_POSITION = 1470;
-    private int LIFT_ROW_12_POSITION = 1620;
+    private int LIFT_ROW1_POSITION = 388;
+    private int LIFT_ROW2_POSITION = 584;
+    private int LIFT_ROW3_POSITION = 737;
+    private int LIFT_ROW4_POSITION = 959;
+    private int LIFT_ROW5_POSITION = 1120;
+    private int LIFT_ROW_6_POSITION = 1415;
+    private int LIFT_ROW_7_POSITION = 1525;
+    private int LIFT_ROW_8_POSITION = 1740;
+//    private int LIFT_ROW_9_POSITION = 1170;
+//    private int LIFT_ROW_10_POSITION = 1320;
+//    private int LIFT_ROW_11_POSITION = 1470;
+//    private int LIFT_ROW_12_POSITION = 1620;
+//    private int LIFT_ROW_13_POSITION = 1740;
+    private int LIFT_ROW_14_POSITION = 1920;
+    private int LIFT_ROW_15_POSITION = 2070;
+    private int LIFT_ROW_16_POSITION = 2220;
+    private int LIFT_ROW_17_POSITION = 2370;
+
 
     //PID values
     private double kP = 0.0065;
@@ -87,16 +101,16 @@ public class Lift {
         liftMotor1 = hwMap.get(DcMotorEx.class, "liftMotor1");
         liftMotor3 = hwMap.get(DcMotorEx.class, "liftMotor3");
 
-        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        liftMotor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        liftMotor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor3.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -207,14 +221,6 @@ public class Lift {
             state = LIFT_ROW7_STATE;
         } else if(inHeightTolerance(currentPosition, LIFT_ROW_8_POSITION)){
             state = LIFT_ROW8_STATE;
-        } else if(inHeightTolerance(currentPosition, LIFT_ROW_9_POSITION)){
-            state = LIFT_ROW9_STATE;
-        } else if(inHeightTolerance(currentPosition, LIFT_ROW_10_POSITION)){
-            state = LIFT_ROW10_STATE;
-        } else if(inHeightTolerance(currentPosition, LIFT_ROW_11_POSITION)){
-            state = LIFT_ROW11_STATE;
-        }else if(inHeightTolerance(currentPosition, LIFT_ROW_12_POSITION)){
-            state = LIFT_ROW12_STATE;
         }
         return state;
     }
@@ -263,22 +269,6 @@ public class Lift {
             }
             case LIFT_ROW8_STATE:{
                 target = LIFT_ROW_8_POSITION;
-                break;
-            }
-            case LIFT_ROW9_STATE:{
-                target = LIFT_ROW_9_POSITION;
-                break;
-            }
-            case LIFT_ROW10_STATE:{
-                target = LIFT_ROW_10_POSITION;
-                break;
-            }
-            case LIFT_ROW11_STATE:{
-                target = LIFT_ROW_11_POSITION;
-                break;
-            }
-            case LIFT_ROW12_STATE:{
-                target = LIFT_ROW_12_POSITION;
                 break;
             }
             case LIFT_IDLE_STATE:{
@@ -343,5 +333,11 @@ public class Lift {
         liftMotor2.setPower(power);
         liftMotor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor3.setPower(power);
+    }
+
+    public void setZeroBrakeBehavior(){
+        liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 }

@@ -48,19 +48,28 @@ public class AutoRR extends AutoAbstractOpMode {
         return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
-
-//                .lineToYSplineHeading(constants.vRedRightSpike_Left.y, Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(8, -24, Math.toRadians(180)), Math.toRadians(180))
+//
+////                .lineToYSplineHeading(constants.vRedRightSpike_Left.y, Math.toRadians(180))
+////                .endTrajectory()
+//                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 1.5)    // Adjust delta accordingly
+//
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
+//
 //                .endTrajectory()
-                .lineToX(constants.vRedRightSpike_Left.x + constants.robot_length / 2.0 + 1.5)    // Adjust delta accordingly
-
-                .stopAndAdd(robot.intake.spitPixel)
-
-                .endTrajectory()
                 .setReversed(true)
-
-                // Go to backdrop to place your purple pixel
-                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x - 4, constants.vRedBackdrop_Left.y), Math.toRadians(0))
-
+//
+//                // Go to backdrop to place your purple pixel
+//                .splineTo(new Vector2d(constants.vRedBackdrop_Left.x - 4, constants.vRedBackdrop_Left.y), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(constants.vRedBackdrop_Left.x - 4, constants.vRedBackdrop_Left.y + 12), Math.toRadians(0))
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.liftToBackDrop)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .strafeToConstantHeading(new Vector2d(55, -20))
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 
@@ -70,20 +79,26 @@ public class AutoRR extends AutoAbstractOpMode {
                 // go backwards
                 .setReversed(true)
                 // Replace prop with your yellow pixel (just push)
-                .lineToY(robot.drive.pose.position.y + 6.0)
+                .lineToY(robot.drive.pose.position.y + 5.0)
                 .stopAndAdd(robot.drawbridge.drawBridgeUp)
-                .afterDisp(5, robot.lift.raiseLiftAutoToLowState)
+
+//                .setReversed(true)
+//                .splineToConstantHeading(new Vector2d(robot.drive.pose.position.x, robot.drive.pose.position.y -3),Math.toRadians(90))
 
                 // re-set reverse after .stopAndAdd as it loses config
 
                 // Go to backdrop to place your purple pixel
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Center.y + 9, Math.toRadians(180)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Center.x - 4.0, constants.vRedBackdrop_Center.y + 12, Math.toRadians(180)), Math.toRadians(0))
                 .setReversed(true)
 //                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .stopAndAdd(robot.lift.liftToBackDrop)
                 .stopAndAdd(robot.arm.armToDeposit)
                 .strafeToConstantHeading(new Vector2d(54, -27))
-                .stopAndAdd(robot.wrist.turnWristOneEighty)
                 .stopAndAdd(robot.depositor.bothDepositorsDeposit)// Then, go to designated tag position
                 .build();
     }
@@ -93,24 +108,27 @@ public class AutoRR extends AutoAbstractOpMode {
         return robot.drive.actionBuilder(robot.drive.pose)
                 // go backwards
                 .setReversed(true)
-/*
-                .splineTo(new Vector2d(constants.vRedRightSpike_Right.x, constants.vRedRightSpike_Right.y - 5.0), Math.toRadians(0))
-//                        .lineToYSplineHeading(vBlueLeftSpike_Left.y, Math.toRadians(0))
-                .endTrajectory()
- */
-                .lineToX(constants.vRedRightSpike_Right.x + constants.robot_length / 2+ 12)
 
-                // Drop yellow pixel in position
-                .stopAndAdd(robot.intake.spitPixel)
-
-                // Discontinue trajectory
+                .splineToConstantHeading(new Vector2d(20, -24), Math.toRadians(0))
+//                // Drop yellow pixel in position
+                .stopAndAdd(robot.drawbridge.drawBridgeUp)
+//
+//                // Discontinue trajectory
                 .endTrajectory()
                 .setReversed(true)
 
                 // Goto Backdrop to place your purple pixel
                 .setTangent(0)
-                .splineToConstantHeading(new Vector2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y), Math.toRadians(0))     // Then, go to designated tag position
-
+//                .splineToConstantHeading(new Vector2d(constants.vRedBackdrop_Right.x-4, constants.vRedBackdrop_Right.y + 12), Math.toRadians(0))     // Then, go to designated tag position
+                .splineToLinearHeading(new Pose2d(constants.vRedBackdrop_Right.x - 4, constants.vRedBackdrop_Right.y + 12, Math.toRadians(180)), Math.toRadians(0))
+                .stopAndAdd(robot.intake.intakeSafeAutos)
+                .stopAndAdd(robot.lift.liftToGroundStateSafeAuto)
+                .stopAndAdd(robot.intake.intakeExtra)
+                .stopAndAdd(robot.depositor.bothDepositorPickupSafe)
+                .strafeToConstantHeading(new Vector2d(54, -35))
+                .stopAndAdd(robot.lift.raiseLiftAutoToLowState)
+                .stopAndAdd(robot.arm.armToDeposit)
+                .stopAndAdd(robot.depositor.bothDepositorsDeposit)
                 .build();
     }
 

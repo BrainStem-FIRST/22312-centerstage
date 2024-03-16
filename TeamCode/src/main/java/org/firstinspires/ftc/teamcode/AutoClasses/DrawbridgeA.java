@@ -46,11 +46,17 @@ public class DrawbridgeA {
 
     public void setDrawBridgeUp(){
         telemetry.addData("Drawbridge State", "up");
-        drawBridge.setPosition(0.415);
+        drawBridge.setPosition(0.2);
+    }
+    public void setDrawBridgeAllTheWayUp(){
+        drawBridge.setPosition(0.01);
+    }
+    public void setDrawBridgeUpBlueRight(){
+        drawBridge.setPosition(0.16);
     }
     public void setDrawBridgeDown(){
         telemetry.addData("Drawbridge State", "down");
-        drawBridge.setPosition(0.99);
+        drawBridge.setPosition(0.75);
     }
 
     public void setDrawBridgePosition(double position){
@@ -58,7 +64,7 @@ public class DrawbridgeA {
     }
 
     public void setDrawBridgeFourthHeight(){
-        drawBridge.setPosition(0.62);
+        drawBridge.setPosition(0.3);
         telemetry.addLine("In fourth height");
         telemetry.update();
     }
@@ -76,6 +82,7 @@ public class DrawbridgeA {
             },
             new SleepAction(0.5)
     );
+
     public Action drawBridgeDown = new SequentialAction(
             new Action() {
                 @Override
@@ -96,5 +103,38 @@ public class DrawbridgeA {
                 }
             },
             new SleepAction(0.5)
+    );
+    public Action setDrawBridgeFourthHeightBlue =  new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    drawBridge.setPosition(0.3);
+                    return false;
+                }
+            },
+            new SleepAction(0.5)
+    );
+
+
+    public Action drawBridgeUpBlue = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    setDrawBridgeUpBlueRight();
+                    return false;
+                }
+            },
+            new SleepAction(0.5)
+    );
+
+    public Action drawBridgeAllTheWayUp =  new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    setDrawBridgeAllTheWayUp();
+                    return false;
+                }
+            },
+            new SleepAction(1.5)
     );
 }

@@ -74,7 +74,9 @@ public final class MecanumDrive {
         // path profile parameters (in inches)
         public double maxWheelVel = 65;// Default: 50
         public double pickupWheelVel = 15;
-        public double pickupSecondWheelVel = 10;
+        public double pickupSecondWheelVel = 5;
+
+        public double depositWheelVel = 45;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 60; // Default: 50
 
@@ -110,6 +112,11 @@ public final class MecanumDrive {
     public final VelConstraint pickupVelConstraint =
             new MinVelConstraint(Arrays.asList(
                     kinematics.new WheelVelConstraint(PARAMS.pickupWheelVel),
+                    new AngularVelConstraint(PARAMS.pickupAngVel)
+            ));
+    public final VelConstraint depositVelConstraint =
+            new MinVelConstraint(Arrays.asList(
+                    kinematics.new WheelVelConstraint(PARAMS.depositWheelVel),
                     new AngularVelConstraint(PARAMS.pickupAngVel)
             ));
 

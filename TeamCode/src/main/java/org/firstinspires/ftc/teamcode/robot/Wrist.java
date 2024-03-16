@@ -27,7 +27,7 @@ public class Wrist {
 
     private double zero_degree_position = 0.0;
     private double fourty_five_degree_position = 0.25;
-    private double ninety_degree_position = 0.5;
+    private double ninety_degree_position = 0.5125;
     private double one_thirty_five_degree_position = 0.75;
     private double one_eighty_degree_position = 1.0;
 

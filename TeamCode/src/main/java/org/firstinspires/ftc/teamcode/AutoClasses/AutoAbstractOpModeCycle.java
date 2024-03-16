@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.robot.StickyButton;
 
 public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
@@ -55,6 +56,8 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
     private ElapsedTime findSpikeTimer = new ElapsedTime();
     private boolean firstTimeRun = true;
 
+    public boolean intakeStarted = false;
+
 
 
     @Override
@@ -68,8 +71,9 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
         robot.drawbridge.setDrawBridgeDown();
 //        robot.lift.raiseHeightTo(robot.lift.LIFT_IDLE_STATE_POSITION);
         robot.drawbridge.setHardstopPosition(0.01);
-//        robot.arm.armToIdlePosition();
-//        robot.wrist.wristToPickUpPosition();
+        robot.wrist.wristToPickUpPosition();
+        robot.arm.armToIdlePosition();
+        robot.wrist.wristToPickUpPosition();
         HuskyLens.Block[] blocks;   // recognized objects will be added to this array
 
         // Distance sensors
@@ -101,7 +105,7 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
 
         /******** SET THE AUTO TIME DELAY DURING INITIALIZATION *********/
 
-//        setTimeDelay();
+        setTimeDelay();
 
         /******** READ PROP POSITION CONTINUOUSLY UNTIL START *********/
 
@@ -249,13 +253,19 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
 //                    @Override
 //                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 //                        robot.arm.armToIdlePosition();
+//                        return false;
+//                    }
+//                },
+//                new SleepAction(1.0),
+//
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 //                        robot.wrist.wristToPickUpPosition();
 //                        return false;
 //                    }
 //                },
-//
-//                new SleepAction(1.0),
-//
+//                new SleepAction(5.0),
 //                new Action() {
 //                    @Override
 //                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -264,7 +274,6 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
 //                    }
 //                },
 //                new SleepAction(4.0)
-//
 //
 //        ));
 
@@ -428,6 +437,34 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
         };
     }
 
+    public Action intakePixelColorSensor(BrainSTEMRobotA robot){
+        return new Action() {
+            int motorPower = 0;
+
+            boolean twoPixelsInTransfer = false;
+
+            ElapsedTime intakeTimeout = new ElapsedTime();
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                telemetry.addData("Color sensor 1 distance", (((DistanceSensor) robot.colorSensor1).getDistance(DistanceUnit.CM)));
+                telemetry.addData("Color sensor 2 distance", (((DistanceSensor) robot.colorSensor2).getDistance(DistanceUnit.CM)));
+                telemetry.addData("Intaketimeout", intakeTimeout);
+                telemetry.update();
+                boolean pixelSensor1 = (((DistanceSensor) robot.colorSensor1).getDistance(DistanceUnit.CM)) < 0.65;
+                boolean pixelSensor2 = (((DistanceSensor) robot.colorSensor2).getDistance(DistanceUnit.CM)) < 1.5;
+                if(pixelSensor1 && pixelSensor2){
+                    motorPower = 0;
+                    twoPixelsInTransfer = true;
+                } else {
+                    motorPower = 1;
+                }
+                robot.intake.intakeMotor.setPower(motorPower);
+                return !twoPixelsInTransfer;
+            }
+        };
+
+    }
+
     // CHOOSE YOUR TRAJECTORY BASED ON PROP POSITION
     // Note 1: Due to dynamic change in pose, the trajectories need to be built on-demand
     //         Call this function after the traj_init (which has movement based on color sensor
@@ -556,7 +593,7 @@ public abstract class AutoAbstractOpModeCycle extends LinearOpMode {
         if(targetTagNum == -1) {
             // No prop was detected by the time of Start, return a default value
             // Default is Right
-            targetTagNum = (alliance()== Alliance.BLUE) ? 3 : 6; //2 and 5 for default
+            targetTagNum = (alliance()== Alliance.BLUE) ? 1 : 4; //2 and 5 for default
         }
 
         return targetTagNum;

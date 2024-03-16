@@ -38,7 +38,10 @@ public class BrainSTEMRobotA {
 
     public DepositorA depositor;
 
+    public boolean intakePixelSensor = false;
     public NormalizedColorSensor colorSensor;
+    public NormalizedColorSensor colorSensor1;
+    public NormalizedColorSensor colorSensor2;
     public NormalizedRGBA colors;
 
     public MecanumDrive drive;
@@ -57,7 +60,9 @@ public class BrainSTEMRobotA {
         wrist = new WristA(hardwareMap, telemetry);
 
 
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "leftFloorColorSensor");
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "rightFloorColorSensor");
+        colorSensor1 = hardwareMap.get(NormalizedColorSensor.class, "backPixelColorSensor");
+        colorSensor2 = hardwareMap.get(NormalizedColorSensor.class, "frontPixelColorSensor");
         colorSensor.setGain(50);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));

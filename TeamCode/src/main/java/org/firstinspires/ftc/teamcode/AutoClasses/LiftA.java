@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,11 +26,12 @@ public class LiftA {
     public final int LIFT_GROUND_STATE_POSITION = 0;
 
     public final int LIFT_IDLE_STATE = 50;
-    public final int LIFT_LOW_STATE_POSITION = 400;
+    public final int BACKDROP_LIFT_POSITION = 400;
+    public final int LIFT_LOW_STATE_POSITION = 520;
     public final int LIFT_MIDDLE_STATE_POSITION = 600;
     public final int LIFT_HIGH_STATE_POSITION = 670;
 
-    public final int LIFT_IDLE_STATE_POSITION = 140;
+    public final int LIFT_IDLE_STATE_POSITION = 160;
 
 
     //Other important variables
@@ -159,6 +161,28 @@ public class LiftA {
                     raiseHeightTo(LIFT_GROUND_STATE_POSITION);
                     return false;
                 }
+            },
+            new SleepAction(1.0)
+    );
+
+    public Action liftToBackDrop = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    raiseHeightTo(BACKDROP_LIFT_POSITION);
+                    return false;
+                }
             }
+    );
+
+    public Action liftToGroundStateSafeAuto = new SequentialAction(
+            new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    raiseHeightTo(LIFT_GROUND_STATE_POSITION);
+                    return false;
+                }
+            },
+            new SleepAction(3.0)
     );
 }
